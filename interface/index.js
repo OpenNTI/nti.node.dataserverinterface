@@ -5,13 +5,13 @@ var Promise = global.Promise || require('es6-promise').Promise;
 
 
 var Url = require('url');
-var request = require('request');
+var request = require('../util/request');
 var merge = require('merge');
 
-var getLink = require('../utils/getlink.js');
-var clean = require('../utils/object-clean.js');
+var getLink = require('../utils/getlink');
+var clean = require('../utils/object-clean');
 
-var service = require('../models/service.js');
+var service = require('../models/service');
 
 
 var DataServerInterface = function (config) {

@@ -2,7 +2,7 @@
 
 var merge = require('merge');
 
-var getLink = require('../utils/getlink.js');
+var getLink = require('../utils/getlink');
 
 
 var ServiceDocument = function (json) {
