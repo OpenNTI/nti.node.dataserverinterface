@@ -21,5 +21,6 @@
   "white": true,
   "newcap": false,
   "globals": {
+      "ActiveXObject"
   }
 }
