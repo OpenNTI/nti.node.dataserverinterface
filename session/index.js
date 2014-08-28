@@ -1,6 +1,5 @@
 'use strict';
 
-var http = require('http');
 var merge = require('merge');
 var server = require('../interface');
 
