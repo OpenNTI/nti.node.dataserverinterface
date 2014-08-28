@@ -5,7 +5,7 @@ var Promise = global.Promise || require('es6-promise').Promise;
 
 
 var Url = require('url');
-var request = require('../util/request');
+var request = require('../utils/request');
 var merge = require('merge');
 
 var getLink = require('../utils/getlink');
