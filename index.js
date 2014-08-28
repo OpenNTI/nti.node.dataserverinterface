@@ -1,4 +1,4 @@
-var Sesson = require('./session');
+var Session = require('./session');
 var Interface = require('./interface');
 
 module.exports = function(config) {
