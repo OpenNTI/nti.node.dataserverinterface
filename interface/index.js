@@ -4,18 +4,20 @@ var Url = require('url');
 var request = require('request');
 var merge = require('merge');
 
-var config = require('../../common.js').config();
 var getLink = require('../utils/getlink.js');
 var clean = require('../utils/object-clean.js');
 
 var service = require('../models/service.js');
 
-var DataServerInterface = function () {};
+
+var DataServerInterface = function (config) {
+	this.config = config;
+};
 
 merge(DataServerInterface.prototype, {
 
 	request: function(req, view, data) {
-		var url = Url.parse(config.server),
+		var url = Url.parse(this.config.server),
 				start = Date.now();
 		if (view) {
 			if (view.charAt(0) === '/') {
@@ -107,4 +109,6 @@ merge(DataServerInterface.prototype, {
 });
 
 
-module.exports = new DataServerInterface();
+module.exports = function(config) {
+	return new DataServerInterface(config);
+};
