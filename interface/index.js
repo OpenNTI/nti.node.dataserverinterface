@@ -1,5 +1,9 @@
 'use strict';
 
+
+var Promise = global.Promise || require('es6-promise').Promise;
+
+
 var Url = require('url');
 var request = require('request');
 var merge = require('merge');
@@ -11,6 +15,9 @@ var service = require('../models/service.js');
 
 
 var DataServerInterface = function (config) {
+	if (!config || !config.server) {
+		throw new Error('No configuration');
+	}
 	this.config = config;
 };
 
@@ -109,6 +116,4 @@ merge(DataServerInterface.prototype, {
 });
 
 
-module.exports = function(config) {
-	return new DataServerInterface(config);
-};
+module.exports = DataServerInterface;

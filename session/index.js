@@ -1,9 +1,14 @@
 'use strict';
 
+var Promise = global.Promise || require('es6-promise').Promise;
 var merge = require('merge');
-var server = require('../interface');
 
-var SessionManager = function () {};
+var SessionManager = function (server) {
+	if (!server) {
+		throw new Error('No server interface!');
+	}
+	this.server = server;
+};
 
 merge(SessionManager.prototype, {
 
@@ -22,6 +27,7 @@ merge(SessionManager.prototype, {
 	},
 
 	getServiceDocument: function(req) {
+		var server = this.server;
 		return server.ping(req)
 			.then(server.getServiceDocument.bind(server, req));
 	},
@@ -64,4 +70,4 @@ merge(SessionManager.prototype, {
 });
 
 
-module.exports = new SessionManager();
+module.exports = SessionManager;
