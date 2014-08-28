@@ -37,15 +37,20 @@ merge(DataServerInterface.prototype, {
 
 		url = url.format();
 
+		var headers = merge(true, (req || {}).headers || {}, {
+			'accept': 'application/json',
+			//'host': 'localhost:8082',
+			'x-requested-with': 'XMLHttpRequest'
+		});
+
+		if(req) {
+			headers['accept-encoding'] = '';
+		}
+
 		var options = {
 			url: url,
 			method: 'GET',
-			headers: merge(true, req.headers, {
-				'accept': 'application/json',
-				'accept-encoding': '',
-				//'host': 'localhost:8082',
-				'x-requested-with': 'XMLHttpRequest'
-			})
+			headers: headers
 		};
 
 		if (data) {
