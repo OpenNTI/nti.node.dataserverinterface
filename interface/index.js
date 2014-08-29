@@ -23,6 +23,50 @@ var DataServerInterface = function (config) {
 
 merge(DataServerInterface.prototype, {
 
+	_request: function(link,options,data) {
+
+		var url = Url.parse(this.config.server);
+		var start = Date.now();
+		var url = url.resolve(link);
+		
+		var headers = merge( true, {
+			'accept': 'application/json',
+			'x-requested-with': 'XMLHttpRequest'
+		}, (options.headers || {}));
+
+		var opts = {
+			url: url,
+			method: data ? 'POST' : 'GET',
+			headers: headers
+		};
+
+		if (data) {
+			opts.form = data;
+		}
+
+		var opts = merge(true, opts, options);
+
+		return new Promise(function(fulfill, reject) {
+			console.log('DATASERVER <- [%s] %s %s', new Date().toUTCString(), opts.method, url);
+
+			request(opts, function(error, res, body) {
+				console.log('DATASERVER -> [%s] %s %s %s %dms',
+					new Date().toUTCString(), opts.method, url,
+					error || res.statusCode, Date.now() - start);
+
+				if (error || res.statusCode >= 300) {
+					return reject(error || res);
+				}
+
+				if (res.headers['set-cookie']) {
+					req.responseHeaders['set-cookie'] = res.headers['set-cookie'];
+				}
+
+				fulfill(JSON.parse(body));
+			});
+		});
+	},
+
 	request: function(req, view, data) {
 		var url = Url.parse(this.config.server),
 				start = Date.now();
@@ -70,17 +114,14 @@ merge(DataServerInterface.prototype, {
 					return reject(error || res);
 				}
 
-
 				if (res.headers['set-cookie']) {
 					req.responseHeaders['set-cookie'] = res.headers['set-cookie'];
 				}
-
 
 				fulfill(JSON.parse(body));
 			});
 		});
 	},
-
 
 	getServiceDocument: function(req) {
 		return this.request(req).then(function(json) {
@@ -88,6 +129,19 @@ merge(DataServerInterface.prototype, {
 		});
 	},
 
+	logInPassword: function(url,credentials) {
+		var username = credentials ? credentials.username : undefined;
+		var password = credentials ? credentials.password : undefined;
+		var auth = password ? ('Basic '+btoa(username+':'+password)) : undefined;
+		var options = {
+			method: 'GET',
+			xhrFields: { withCredentials: true },
+			headers: {
+				Authorization: auth	
+			}
+		};
+		return this._request(url,options);
+	},
 
 	ping: function(req, username) {
 		username = username || (req && req.cookies && req.cookies.username);
@@ -106,12 +160,12 @@ merge(DataServerInterface.prototype, {
 			}.bind(this))
 			.then(function(urls) {
 				if (!username) {
-					return urls;
+					return {links: urls};
 				}
 
 				return this.request(req, urls['logon.handshake'], {username: username})
 					.then(function(data) {
-						var result = merge(true, urls, getLink.asMap(data));
+						var result = {links: merge(true, urls, getLink.asMap(data))};
 						if (!getLink(data, 'logon.continue')) {
 							result.reason = 'Not authenticated, no continue after handshake.';
 							return Promise.reject(result);
