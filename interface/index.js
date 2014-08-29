@@ -89,8 +89,8 @@ merge(DataServerInterface.prototype, {
 	},
 
 
-	ping: function(req) {
-		var username = req.cookies.username;
+	ping: function(req, username) {
+		username = username || (req && req.cookies && req.cookies.username);
 
 		return this.request(req, 'logon.ping')//ping
 			//pong
@@ -105,6 +105,10 @@ merge(DataServerInterface.prototype, {
 
 			}.bind(this))
 			.then(function(urls) {
+				if (!username) {
+					return urls;
+				}
+
 				return this.request(req, urls['logon.handshake'], {username: username})
 					.then(function(data) {
 						var result = merge(true, urls, getLink.asMap(data));
