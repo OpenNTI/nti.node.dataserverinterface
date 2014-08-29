@@ -107,16 +107,16 @@ merge(DataServerInterface.prototype, {
 			.then(function(urls) {
 				return this.request(req, urls['logon.handshake'], {username: username})
 					.then(function(data) {
+						var result = merge(true, urls, getLink.asMap(data));
 						if (!getLink(data, 'logon.continue')) {
-							return Promise.reject('Not authenticated, no continue after handshake.');
+							result.reason = 'Not authenticated, no continue after handshake.';
+							return Promise.reject(result);
 						}
-
-						return merge(true, urls, getLink.asMap(data));
+						return result;
 					});
 
 			}.bind(this));
 	}
-
 
 });
 
