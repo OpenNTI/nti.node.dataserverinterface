@@ -23,43 +23,64 @@ var DataServerInterface = function (config) {
 
 merge(DataServerInterface.prototype, {
 
-	_request: function(link,options,data) {
+	/**
+	 * Makes a request to the dataserver.
+	 *   It should be noted that this is intented to facilitate and abstract the act
+	 *   of making a request to the dataserve so it is transparent between nodejs and a
+	 *   web browser.  Do not use this directly.  Only use the interface methods NOT
+	 *   prefixed with underscores.
+	 *
+	 * @param {String} [link] - The dataserver resource we wish to make the request for.
+	 * @param {Object} [options] - Request options
+	 * @param {Object} [options.method] - defaults to GET, and POST if `form` is set.
+	 * @param {Object} [options.form]
+	 * @param {Object} [options.headers]
+	 * @param {Object} [data] - A dictionary of form values to send with the request.
+	 * @param {Object} [req] - An active request to the node's "express" http server.
+	 * @returns {Promise}
+	 * @private
+	 */
+	_request: function(link, options, data, activeRequest) {
 
-		var url = Url.parse(this.config.server);
+		var url = Url.parse(this.config.server).resolve(link || '');
 		var start = Date.now();
-		var url = url.resolve(link);
-		
-		var headers = merge( true, {
+
+		var opts = merge(true, {
+			url: url,
+			method: data ? 'POST' : 'GET'
+		}, options);
+
+		opts.headers = merge( true, ((options || {}).headers || {}), {
+			//Always override these headers
 			'accept': 'application/json',
 			'x-requested-with': 'XMLHttpRequest'
-		}, (options.headers || {}));
+		});
 
-		var opts = {
-			url: url,
-			method: data ? 'POST' : 'GET',
-			headers: headers
-		};
+		if(activeRequest) {
+			opts.headers = merge(true,
+				activeRequest.headers || {},
+				opts.headers,
+				{'accept-encoding': ''}
+				);
+		}
 
 		if (data) {
 			opts.form = data;
 		}
-
-		var opts = merge(true, opts, options);
 
 		return new Promise(function(fulfill, reject) {
 			console.log('DATASERVER <- [%s] %s %s', new Date().toUTCString(), opts.method, url);
 
 			request(opts, function(error, res, body) {
 				console.log('DATASERVER -> [%s] %s %s %s %dms',
-					new Date().toUTCString(), opts.method, url,
-					error || res.statusCode, Date.now() - start);
+					new Date().toUTCString(), opts.method, url, error || res.statusCode, Date.now() - start);
 
 				if (error || res.statusCode >= 300) {
 					return reject(error || res);
 				}
 
-				if (res.headers['set-cookie']) {
-					req.responseHeaders['set-cookie'] = res.headers['set-cookie'];
+				if (res.headers['set-cookie'] && activeRequest) {
+					activeRequest.responseHeaders['set-cookie'] = res.headers['set-cookie'];
 				}
 
 				fulfill(JSON.parse(body));
@@ -67,64 +88,11 @@ merge(DataServerInterface.prototype, {
 		});
 	},
 
-	request: function(req, view, data) {
-		var url = Url.parse(this.config.server),
-				start = Date.now();
-		if (view) {
-			if (view.charAt(0) === '/') {
-				url.pathname = view;
-			}
-			else {
-				url.pathname += view;
-			}
-		}
 
-		url = url.format();
 
-		var headers = merge(true, (req || {}).headers || {}, {
-			'accept': 'application/json',
-			//'host': 'localhost:8082',
-			'x-requested-with': 'XMLHttpRequest'
-		});
-
-		if(req) {
-			headers['accept-encoding'] = '';
-		}
-
-		var options = {
-			url: url,
-			method: 'GET',
-			headers: headers
-		};
-
-		if (data) {
-			options.method = 'POST';
-			options.form = data;
-		}
-
-		return new Promise(function(fulfill, reject) {
-			console.log('DATASERVER <- [%s] %s %s', new Date().toUTCString(), options.method, url);
-
-			request(options, function(error, res, body) {
-				console.log('DATASERVER -> [%s] %s %s %s %dms',
-					new Date().toUTCString(), options.method, url,
-					error || res.statusCode, Date.now() - start);
-
-				if (error || res.statusCode >= 300) {
-					return reject(error || res);
-				}
-
-				if (res.headers['set-cookie']) {
-					req.responseHeaders['set-cookie'] = res.headers['set-cookie'];
-				}
-
-				fulfill(JSON.parse(body));
-			});
-		});
-	},
 
 	getServiceDocument: function(req) {
-		return this.request(req).then(function(json) {
+		return this._request(null, null, null, req).then(function(json) {
 			return new service(json);
 		});
 	},
@@ -137,7 +105,7 @@ merge(DataServerInterface.prototype, {
 			method: 'GET',
 			xhrFields: { withCredentials: true },
 			headers: {
-				Authorization: auth	
+				Authorization: auth
 			}
 		};
 		return this._request(url,options);
@@ -146,7 +114,7 @@ merge(DataServerInterface.prototype, {
 	ping: function(req, username) {
 		username = username || (req && req.cookies && req.cookies.username);
 
-		return this.request(req, 'logon.ping')//ping
+		return this._request('logon.ping', null, null, req)//ping
 			//pong
 			.then(function(data) {
 				var urls = getLink.asMap(data);
@@ -163,7 +131,7 @@ merge(DataServerInterface.prototype, {
 					return {links: urls};
 				}
 
-				return this.request(req, urls['logon.handshake'], {username: username})
+				return this._request(urls['logon.handshake'], null, {username: username}, req)
 					.then(function(data) {
 						var result = {links: merge(true, urls, getLink.asMap(data))};
 						if (!getLink(data, 'logon.continue')) {
