@@ -52,16 +52,17 @@ merge(DataServerInterface.prototype, {
 
 		url = Url.parse(this.config.server).resolve(url || '');
 
-		var mime = (options.headers || {}).Accept;
+		var mime = (options.headers || {}).accept;
 		var data = options.data;
 		var opts = merge(true, {
-			url: url,
 			method: data ? 'POST' : 'GET'
-		}, options);
+		}, options, {
+			url: url//ensure the resolved url is used.
+		});
 
 		opts.headers = merge( true, ((options || {}).headers || {}), {
 			//Always override these headers
-			'Accept': mime || 'application/json',
+			'accept': mime || 'application/json',
 			'x-requested-with': 'XMLHttpRequest'
 		});
 
@@ -182,6 +183,7 @@ merge(DataServerInterface.prototype, {
 
 			}.bind(this))
 			.then(function(urls) {
+
 				if (!username) {
 					return {links: urls};
 				}
@@ -218,7 +220,7 @@ merge(DataServerInterface.prototype, {
 						}));
 
 					url = url.format();
-					headers.Accept = mime;
+					headers.accept = mime;
 				}
 
 				return this._request({url: url, headers: headers}, req);
