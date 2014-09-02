@@ -12,10 +12,12 @@ var deepFreeze = require('../utils/object-deepfreeze');
 var joinWithURL = require('../utils/urljoin');
 
 var ServiceDocument = function (json) {
+	var caps = json.CapabilityList || [];
+
 	deepFreeze(json); //make the data immutable
 	merge(this, json);
-	this.capabilities = new Capabilities(this.CapabilityList || []);
-	console.log(this.capabilities);
+
+	this.capabilities = new Capabilities(this, caps);
 };
 
 
@@ -99,9 +101,9 @@ merge(ServiceDocument.prototype, {
 			var items = workspace.Items || [];
 
 			items.every(function(collection) {
-				if (item.accepts.indexOf(mimeType) > -1) {
-					if (!title || item.Title === title) {
-						result = item;
+				if (collection.accepts.indexOf(mimeType) > -1) {
+					if (!title || collection.Title === title) {
+						result = collection;
 					}
 				}
 

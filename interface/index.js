@@ -45,6 +45,10 @@ merge(DataServerInterface.prototype, {
 		var start = Date.now();
 		var url = (options || {}).url;
 
+		if (!options) {
+			options = {};
+		}
+
 		if (typeof options === 'string') {
 			url = options;
 			options = {};

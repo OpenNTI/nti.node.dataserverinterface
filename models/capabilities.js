@@ -43,10 +43,22 @@ var capabilities = {
 };
 
 
+function withValue(value) {
+	var d = withValue.d || (
+	withValue.d = {
+		enumerable: false,
+		writable: false,
+		configurable: false,
+		value: null
+	});
+	d.value = value;
+	return d;
+}
+
 
 function Capabilities(service, list) {
-	this._service = service;
-	this._list = freeze(list || []);
+	Object.defineProperty(this, '_service', withValue(service));
+	Object.defineProperty(this, '_list', withValue(list || []));
 
 	var cap, test;
 
