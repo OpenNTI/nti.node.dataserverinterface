@@ -8,6 +8,8 @@ var Url = require('url');
 var request = require('../utils/request');
 var merge = require('merge');
 
+var DataCache = require('../utils/datacache');
+
 var getLink = require('../utils/getlink');
 var clean = require('../utils/object-clean');
 var NTIIDs = require('../utils/ntiids');
@@ -149,7 +151,13 @@ merge(DataServerInterface.prototype, {
 
 
 	getServiceDocument: function(req) {
+		var cached = DataCache.get('service-doc');
+		if (cached) {
+			return Promise.resolve(new service(cached));
+		}
+
 		return this._get(null, req).then(function(json) {
+			DataCache.set('service-doc', json);
 			return new service(json);
 		});
 	},
