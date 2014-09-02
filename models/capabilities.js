@@ -3,7 +3,7 @@
 var merge = require('merge');
 
 var freeze = require('../utils/object-deepfreeze');
-
+var withValue = require('../utils/object-attribute-withvalue');
 
 var capabilities = {
 	canUploadAvatar: 'nti.platform.customization.avatar_upload',
@@ -43,17 +43,7 @@ var capabilities = {
 };
 
 
-function withValue(value) {
-	var d = withValue.d || (
-	withValue.d = {
-		enumerable: false,
-		writable: false,
-		configurable: false,
-		value: null
-	});
-	d.value = value;
-	return d;
-}
+
 
 
 function Capabilities(service, list) {

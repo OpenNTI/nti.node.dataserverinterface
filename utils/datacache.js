@@ -1,11 +1,13 @@
 'use strict';
 
+var isBrowser = require('./browser');
+console.log(isBrowser);
+
 var globalKey = '%%app-data%%';
 
 function DataCache() {
 	this.data = global[globalKey] || {};
 	delete global[globalKey];
-	//console.warn('Constructing new DataCache instance', this);
 }
 
 
@@ -39,4 +41,25 @@ DataCache.prototype.serialize = function ToScriptTag() {
 };
 
 
-module.exports = new DataCache();
+DataCache.getForRequest = function(req) {
+	var cache;
+	if (req) {
+		cache = req[globalKey];
+		if (!cache) {
+			cache = req[globalKey] = new DataCache();
+		}
+	} else {
+		if (!isBrowser) {
+			throw new Error('There must be an active request passed if we are called on the server');
+		}
+
+		cache = this.globalInstance;
+		if (!cache) {
+			cache = this.globalInstance = new DataCache();
+		}
+	}
+
+	return cache;
+};
+
+module.exports = DataCache;

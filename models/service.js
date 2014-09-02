@@ -6,6 +6,8 @@ var merge = require('merge');
 
 var Capabilities = require('./capabilities');
 
+var datacache = require('../utils/datacache');
+
 var constants = require('../constants');
 var getLink = require('../utils/getlink');
 var deepFreeze = require('../utils/object-deepfreeze');
@@ -46,27 +48,6 @@ merge(ServiceDocument.prototype, {
 		});
 
 		return workspace;
-	},
-
-
-	getLibrary: function(name) {
-		var libs = this.getWorkspace('Library') || {},
-			items = libs.Items || [],
-			library = null;
-
-		items.every(function(o) {
-			if (o.Title === name) {
-				library = o;
-			}
-			return !library;
-		});
-
-		return library;
-	},
-
-
-	getMainLibrary: function() {
-		return this.getLibrary('Main') || {};
 	},
 
 
@@ -114,6 +95,24 @@ merge(ServiceDocument.prototype, {
 		});
 
 		return result;
+	},
+
+
+	getLibraryURL: function(name) {
+		var libs = this.getWorkspace('Library') || {},
+			items = libs.Items || [],
+			library = null;
+
+		name = name || 'Main';
+
+		items.every(function(o) {
+			if (o.Title === name) {
+				library = o;
+			}
+			return !library;
+		});
+
+		return (library || {}).href;
 	},
 
 
