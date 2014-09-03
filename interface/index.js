@@ -93,6 +93,7 @@ merge(DataServerInterface.prototype, {
 					new Date().toUTCString(), opts.method, url, error || res.statusCode, Date.now() - start);
 
 				if (error || res.statusCode >= 300) {
+					res.___isResponse = true;
 					return reject(error || res);
 				}
 

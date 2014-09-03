@@ -71,6 +71,10 @@ merge(SessionManager.prototype, {
 			.then(this.setupIntitalData.bind(this, req))
 			.then(finish)
 			.catch(function(reason) {
+				if ((reason || {}).___isResponse) {
+					reason = reason.statusCode;
+				}
+
 				console.error('CATCH: ', reason);
 				if (!/\/login/.test(req.url)) {
 					console.log('SESSION -> [%s] %s %s REDIRECT %slogin/ (User: annonymous, %dms)',
