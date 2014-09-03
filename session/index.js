@@ -10,6 +10,7 @@ var SessionManager = function (server) {
 		throw new Error('No server interface!');
 	}
 	this.server = server;
+	this.config = server.config;
 };
 
 merge(SessionManager.prototype, {
@@ -52,6 +53,7 @@ merge(SessionManager.prototype, {
 	middleware: function(req, res, next) {
 		var start = Date.now();
 		var url = req.originalUrl || req.url;
+		var basepath = this.config.basepath || '/';
 
 		req.responseHeaders = {};
 
@@ -71,10 +73,10 @@ merge(SessionManager.prototype, {
 			.catch(function(reason) {
 				console.error('CATCH: ', reason);
 				if (!/\/login/.test(req.url)) {
-					console.log('SESSION -> [%s] %s %s REDIRECT ./login/ (User: annonymous, %dms)',
-						new Date().toUTCString(), req.method, url, Date.now() - start);
+					console.log('SESSION -> [%s] %s %s REDIRECT %slogin/ (User: annonymous, %dms)',
+						new Date().toUTCString(), req.method, url, basepath, Date.now() - start);
 
-					res.redirect('./login/');
+					res.redirect(basepath + 'login/');
 				} else {
 					console.log('SESSION -> [%s] %s %s (%s, %dms)',
 						new Date().toUTCString(), req.method, url, reason, Date.now() - start);
