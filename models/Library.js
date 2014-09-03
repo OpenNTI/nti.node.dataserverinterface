@@ -21,7 +21,7 @@ function Library(service, name, data) {
 
 	data.packages = data.packages.map(function(pkg) {
 		pkg = Package.parse(service, pkg);
-		pkg.on('change', onChange);
+		pkg.on('change', this.onChange);
 		return pkg;
 	}.bind(this));
 

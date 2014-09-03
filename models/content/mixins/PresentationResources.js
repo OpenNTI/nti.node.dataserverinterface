@@ -58,7 +58,7 @@ function getAsset(name) {
 	if (isEmpty(root)) {
 		return Promise.reject('No root');
 	}
-console.log(url);
+
 	return this._server._request({ method: 'HEAD', url: url })
 		.then(
 			function() { return url; },
