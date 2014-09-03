@@ -180,6 +180,11 @@ merge(DataServerInterface.prototype, {
 		return this._request(options);
 	},
 
+	logInOAuth: function(url) {
+		return this._request({
+			url: url
+		});
+	},
 
 	ping: function(req, username) {
 		username = username || (req && req.cookies && req.cookies.username);
