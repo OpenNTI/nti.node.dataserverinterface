@@ -1,7 +1,6 @@
 'use strict';
 
 var isBrowser = require('./browser');
-console.log(isBrowser);
 
 var globalKey = '%%app-data%%';
 

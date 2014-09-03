@@ -4,16 +4,18 @@ var Path = require('path');
 var Url = require('url');
 var merge = require('merge');
 
-var Capabilities = require('./capabilities');
+var Capabilities = require('./Capabilities');
 
 var datacache = require('../utils/datacache');
 
 var constants = require('../constants');
 var getLink = require('../utils/getlink');
 var deepFreeze = require('../utils/object-deepfreeze');
+var withValue = require('../utils/object-attribute-withvalue');
 var joinWithURL = require('../utils/urljoin');
 
-var ServiceDocument = function (json) {
+var ServiceDocument = function (json, server) {
+	Object.defineProperty(this, '_server', withValue(server));
 	var caps = json.CapabilityList || [];
 
 	deepFreeze(json); //make the data immutable
@@ -24,6 +26,11 @@ var ServiceDocument = function (json) {
 
 
 merge(ServiceDocument.prototype, {
+
+	getServer: function() {
+		return this._server;
+	},
+
 
 	getUserWorkspace: function() {
 		var workspace;
@@ -99,20 +106,27 @@ merge(ServiceDocument.prototype, {
 
 
 	getLibraryURL: function(name) {
-		var libs = this.getWorkspace('Library') || {},
-			items = libs.Items || [],
-			library = null;
+		return (this.getCollection(name || 'Main', 'Library') || {}).href;
+	},
 
-		name = name || 'Main';
 
-		items.every(function(o) {
-			if (o.Title === name) {
-				library = o;
-			}
-			return !library;
-		});
+	getBundleCollectionURL: function () {
+		return (this.getCollection('VisibleContentBundles', 'ContentBundles') || {}).href;
+	},
 
-		return (library || {}).href;
+
+	getCoursesEnrolledURL: function() {
+		return (this.getCollection('EnrolledCourses', 'Courses') || {}).href;
+	},
+
+
+	getCoursesAdministeringURL: function() {
+		return (this.getCollection('AdministeredCourses', 'Courses') || {}).href;
+	},
+
+
+	getCoursesCatalogURL: function() {
+		return (this.getCollection('AllCourses', 'Courses') || {}).href;
 	},
 
 

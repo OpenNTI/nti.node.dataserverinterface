@@ -3,6 +3,8 @@
 var Promise = global.Promise || require('es6-promise').Promise;
 var merge = require('merge');
 
+var Library = require('../models/Library');
+
 var SessionManager = function (server) {
 	if (!server) {
 		throw new Error('No server interface!');
@@ -15,8 +17,7 @@ merge(SessionManager.prototype, {
 	getUser: function(req) {
 
 		return this.getServiceDocument(req)
-			.then(
-				function(doc) {
+			.then(function(doc) {
 					var w = doc.getUserWorkspace();
 					if (w) {
 						return w.Title;
@@ -34,37 +35,52 @@ merge(SessionManager.prototype, {
 
 
 
+	setupIntitalData: function(req) {
+		return this.server.getServiceDocument(req)
+			.then(function(service) {
+
+				return Promise.all([
+
+					Library.load(service, 'Main', req)
+				]);
+
+			});
+	},
+
+
 
 	middleware: function(req, res, next) {
 		var start = Date.now();
 		var url = req.originalUrl || req.url;
 
+		req.responseHeaders = {};
 
 		console.log('SESSION <- [%s] %s %s', new Date().toUTCString(), req.method, url);
 
-		req.responseHeaders = {};
-
-		this.getUser(req).then(function(user) {
+		function finish() {
 			res.set(req.responseHeaders);
-			req.username = user;
-
 			console.log('SESSION -> [%s] %s %s (User: %s, %dms)',
-				new Date().toUTCString(), req.method, url, user, Date.now() - start);
-
+				new Date().toUTCString(), req.method, url, req.username, Date.now() - start);
 			next();
-		})
-		.catch(function(reason) {
-			if (!/\/login/.test(req.url)) {
-				console.log('SESSION -> [%s] %s %s REDIRECT ./login/ (User: annonymous, %dms)',
-					new Date().toUTCString(), req.method, url, Date.now() - start);
+		}
 
-				res.redirect('./login/');
-			} else {
-				console.log('SESSION -> [%s] %s %s (%s, %dms)',
-					new Date().toUTCString(), req.method, url, reason, Date.now() - start);
-				res.end(reason);
-			}
-		});
+		this.getUser(req)
+			.then(function(user) { req.username = user; })
+			.then(this.setupIntitalData.bind(this, req))
+			.then(finish)
+			.catch(function(reason) {
+				console.error('CATCH: ', reason);
+				if (!/\/login/.test(req.url)) {
+					console.log('SESSION -> [%s] %s %s REDIRECT ./login/ (User: annonymous, %dms)',
+						new Date().toUTCString(), req.method, url, Date.now() - start);
+
+					res.redirect('./login/');
+				} else {
+					console.log('SESSION -> [%s] %s %s (%s, %dms)',
+						new Date().toUTCString(), req.method, url, reason, Date.now() - start);
+					res.end(reason);
+				}
+			});
 	}
 
 });

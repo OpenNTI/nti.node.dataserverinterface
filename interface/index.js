@@ -14,7 +14,7 @@ var getLink = require('../utils/getlink');
 var clean = require('../utils/object-clean');
 var NTIIDs = require('../utils/ntiids');
 
-var service = require('../models/service');
+var Service = require('../models/Service');
 
 
 var DataServerInterface = function (config) {
@@ -113,7 +113,7 @@ merge(DataServerInterface.prototype, {
 					}
 				}
 
-				fulfill(JSON.parse(body));
+				fulfill(body && JSON.parse(body));
 			});
 		});
 	},
@@ -154,12 +154,12 @@ merge(DataServerInterface.prototype, {
 		var cache = DataCache.getForRequest(req),
 			cached = cache.get('service-doc');
 		if (cached) {
-			return Promise.resolve(new service(cached, this));
+			return Promise.resolve(new Service(cached, this));
 		}
 
 		return this._get(null, req).then(function(json) {
 			cache.set('service-doc', json);
-			return new service(json, this);
+			return new Service(json, this);
 		}.bind(this));
 	},
 
