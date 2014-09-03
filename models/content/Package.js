@@ -11,6 +11,8 @@ function Package(service, data) {
 	Object.defineProperty(this, '_server', withValue(service.getServer()));
 	merge(this, data);
 
+	this.author = (data.DCCreator || []).join(', ');
+
 	var me = this;
 	this.getAsset('landing').then(function(url) {
 		me.icon = url;
