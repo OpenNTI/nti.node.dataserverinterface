@@ -5,27 +5,49 @@ var EventEmitter = require('events').EventEmitter;
 
 var withValue = require('../utils/object-attribute-withvalue');
 var DataCache = require('../utils/datacache');
+var identity = require('../utils/identity');
 
 var Package = require('../models/content/Package');
+var Bundle = require('../models/content/Bundle');
+var Course = require('../models/courses/Enrollment');
 
-function Library(service, name, data) {
+function Library(service, name, contentPackages,
+								contentBundles,
+								enrolledCourses,
+								administeredCourses) {
+
 	Object.defineProperty(this, '_service', withValue(service));
-
-	//Lets not confuse content packages as "titles"
-	if (data.titles && !data.packages) {
-		data.packages = data.titles;
-		delete data.titles;
-	}
 
 	this.onChange = this.onChange.bind(this);
 
-	data.packages = data.packages.map(function(pkg) {
-		pkg = Package.parse(service, pkg);
-		pkg.on('change', this.onChange);
-		return pkg;
-	}.bind(this));
+	this.packages = contentPackages.map(function(pkg) {
+		if (pkg.isCourse) {return null;}
 
-	merge(this, data);
+		pkg = Package.parse(service, pkg);
+		pkg.on('changed', this.onChange);
+		return pkg;
+	}.bind(this)).filter(identity);//strip falsy items
+
+
+	this.bundles = contentBundles.map(function(bdl) {
+		bdl = Bundle.parse(service, bdl);
+		bdl.on('changed', this.onChange);
+		return bdl;
+	}.bind(this)).filter(identity);//strip falsy items
+
+
+	this.courses = enrolledCourses.map(function(course) {
+		course = Course.parse(service, course);
+		course.on('changed', this.onChange);
+		return course;
+	}.bind(this)).filter(identity);//strip falsy items
+
+
+	this.coursesAdmin = administeredCourses.map(function(course) {
+		course = Course.parse(service, course, true);
+		course.on('changed', this.onChange);
+		return course;
+	}.bind(this)).filter(identity);//strip falsy items
 }
 
 
@@ -37,26 +59,42 @@ merge(Library.prototype, EventEmitter.prototype, {
 });
 
 
+function get(s, url, cache, req) {
+	var cached = cache.get(url), result;
+	if (!cached) {
+		result = s._get(url, req)
+			.catch(function empty () { return {titles: [], Items: []}; })
+			.then(function(data) {
+				cache.set(url, data);
+				return data;
+			});
+	} else {
+		result = Promise.resolve(cached);
+	}
+
+	return result.then(function(data) {
+		return data.titles || data.Items;
+	});
+}
+
 
 Library.load = function(service, name, req) {
 	var svr = service.getServer();
-	var cacheKey = 'library-' + name;
 	var cache = DataCache.getForRequest(req);
-	var cached = cache.get(cacheKey);
 
-	function make (data) {
-		return new Library(service, name, data);
+	function make (contentPackages, contentBundles, enrolledCourses, administeredCourses) {
+		return new Library(service, name, contentPackages, contentBundles, enrolledCourses, administeredCourses);
 	}
 
-	if (cached) {
-		return Promise.resolve(make(cached));
-	}
-
-	return svr._get(service.getLibraryURL(), req)
-		.then(function(data) {
-			cache.set(cacheKey, data);
-			return make(data);
-		});
+	return Promise.all([
+		get(svr, service.getContentPackagesURL(), cache, req),
+		get(svr, service.getContentBundlesURL(), cache, req),
+		get(svr, service.getCoursesEnrolledURL(), cache, req),
+		get(svr, service.getCoursesAdministeringURL(), cache, req)
+	]).then(function(data) {
+		return make.apply({}, data);
+	});
 }
+
 
 module.exports = Library;

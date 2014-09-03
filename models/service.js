@@ -105,12 +105,12 @@ merge(ServiceDocument.prototype, {
 	},
 
 
-	getLibraryURL: function(name) {
+	getContentPackagesURL: function(name) {
 		return (this.getCollection(name || 'Main', 'Library') || {}).href;
 	},
 
 
-	getBundleCollectionURL: function () {
+	getContentBundlesURL: function () {
 		return (this.getCollection('VisibleContentBundles', 'ContentBundles') || {}).href;
 	},
 
