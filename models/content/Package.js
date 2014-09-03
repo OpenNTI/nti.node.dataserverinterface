@@ -4,7 +4,7 @@ var EventEmitter = require('events').EventEmitter;
 var merge = require('merge');
 var urlJoin = require('../../utils/urljoin');
 var withValue = require('../../utils/object-attribute-withvalue');
-var assets = require('./mixins/PresentationResources');
+var assets = require('../mixins/PresentationResources');
 
 function Package(service, data) {
 	Object.defineProperty(this, '_service', withValue(service));

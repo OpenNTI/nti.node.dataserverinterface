@@ -1,9 +1,9 @@
 'use strict';
 
 var merge = require('merge');
-var isBrowser = require('../../../utils/browser');
-var urlJoin = require('../../../utils/urljoin');
-var isEmpty = require('../../../utils/isempty');
+var isBrowser = require('../../utils/browser');
+var urlJoin = require('../../utils/urljoin');
+var isEmpty = require('../../utils/isempty');
 
 var ASSET_MAP = {
 	thumb: 'contentpackage-thumb-60x60.png',
