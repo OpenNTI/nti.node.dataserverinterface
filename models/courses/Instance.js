@@ -34,10 +34,16 @@ function Instance(service, data) {
 merge(Instance.prototype, EventEmitter.prototype, {
 
 	getPresentationProperties: function() {
-		//ProviderUniqueID
-		var cce = this.CatalogEntry;
+		var cce = this.CatalogEntry || {getAuthorLine: function(){}},
+			bundle = this.ContentPackageBundle;
 
-		return this.ContentPackageBundle;
+		return {
+			author: cce.getAuthorLine() || bundle.author,
+			title: cce.Title || bundle.title,
+			label: cce.ProviderUniqueID,
+			icon: cce.icon || bundle.icon,
+			thumb: cce.thumb || bundle.thumb
+		};
 	},
 
 

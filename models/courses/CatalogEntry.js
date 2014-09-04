@@ -43,6 +43,23 @@ merge(CourseCatalogEntry.prototype, assets, EventEmitter.prototype, {
 		}
 
 		return urlJoin(root, 'presentation-assets', 'webapp', 'v1');
+	},
+
+
+	getAuthorLine: function() {
+		function makeName(instructor) {
+			return instructor.Name;
+		}
+
+
+		function notTA(instructor) {
+			return !taRe.test(instructor.JobTitle);
+		}
+
+		var taRe = (/Teaching Assistant/i),
+			instructors = this.Instructors;
+
+		return (instructors && instructors.filter(notTA).map(makeName).join(', ')) || '';
 	}
 
 });
