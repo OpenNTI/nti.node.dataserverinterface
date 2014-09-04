@@ -10,9 +10,9 @@ var DataCache = require('../utils/datacache');
 var identity = require('../utils/identity');
 var waitFor = require('../utils/waitfor');
 
-var Package = require('../models/content/Package');
-var Bundle = require('../models/content/Bundle');
-var Course = require('../models/courses/Enrollment');
+var Package = require('./content/Package');
+var Bundle = require('./content/Bundle');
+var Course = require('./courses/Enrollment');
 
 function Library(service, name, contentPackages,
 								contentBundles,

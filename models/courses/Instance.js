@@ -9,6 +9,7 @@ var waitFor = require('../../utils/waitfor');
 var withValue = require('../../utils/object-attribute-withvalue');
 
 var Bundle = require('../content/Bundle');
+var CatalogEntry = require('./CatalogEntry');
 
 function Instance(service, data) {
 	Object.defineProperty(this, '_service', withValue(service));
@@ -18,15 +19,9 @@ function Instance(service, data) {
 
 	b.on('changed', this.onChange.bind(this));
 
-	function parseCCE(cce) {
-		cce = CatalogEntry.parse(service, cce);
-		this.CatalogEntry = cce;
-		return waitFor(cce.__pending);
-	}
-
 	this.__pending = [
 
-		service.get(getLink(this, 'CourseCatalogEntry')).then(parseCCE.bind(this))
+		this._resolveCatalogEntry()
 
 	].concat(b.__pending || []);
 }
@@ -44,6 +39,34 @@ merge(Instance.prototype, EventEmitter.prototype, {
 			icon: cce.icon || bundle.icon,
 			thumb: cce.thumb || bundle.thumb
 		};
+	},
+
+
+	_resolveCatalogEntry: function() {
+
+		function parseCCE(cce) {
+			cce = CatalogEntry.parse(service, cce);
+			this.CatalogEntry = cce;
+			return waitFor(cce.__pending);
+		}
+
+		function cacheIt(data) {
+			cache.set(url, data);
+			return data;
+		}
+
+		var service = this._service,
+			cache = service.getDataCache(),
+			url = getLink(this, 'CourseCatalogEntry'),
+			cached = cache.get(url), work;
+
+		if (cached) {
+			work = Promise.resolve(cached);
+		} else {
+			work = service.get(url).then(cacheIt);
+		}
+
+		return work.then(parseCCE.bind(this));
 	},
 
 

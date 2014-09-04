@@ -25,7 +25,6 @@ function CourseCatalogEntry(service, data) {
 }
 
 merge(CourseCatalogEntry.prototype, assets, EventEmitter.prototype, {
-	isBundle: true,
 
 
 	onChange: function(who) {
@@ -70,6 +69,6 @@ function parse(service, data) {
 	return new CourseCatalogEntry(service, data);
 }
 
-CourseCatalogEntry.parse = parse.bind(Bundle);
+CourseCatalogEntry.parse = parse.bind(CourseCatalogEntry);
 
 module.exports = CourseCatalogEntry;
