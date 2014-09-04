@@ -2,6 +2,7 @@
 
 var EventEmitter = require('events').EventEmitter;
 var merge = require('merge');
+var getLink = require('../../utils/getlink');
 var urlJoin = require('../../utils/urljoin');
 var withValue = require('../../utils/object-attribute-withvalue');
 
@@ -15,11 +16,18 @@ function Instance(service, data) {
 	var b = Bundle.parse(service, data.ContentPackageBundle);
 	this.ContentPackageBundle = b;
 	b.on('changed', this.onChange.bind(this));
+
+	service.get(getLink(this.Links, 'CourseCatalogEntry')).then(function(cce) {
+		console.log('Hi');
+	});
 }
 
 merge(Instance.prototype, EventEmitter.prototype, {
 
 	getPresentationProperties: function() {
+		//ProviderUniqueID
+		var cce = this.CourseCatalogEntry;
+
 		return this.ContentPackageBundle;
 	},
 
@@ -35,6 +43,7 @@ merge(Instance.prototype, EventEmitter.prototype, {
 function parse(service, data) {
 	return new Instance(service, data);
 }
+
 
 Instance.parse = parse.bind(Instance);
 
