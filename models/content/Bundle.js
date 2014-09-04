@@ -30,9 +30,17 @@ function Bundle(service, data) {
 		me.thumb = url;
 		me.emit('changed', me);
 	});
+
+
+	this.getAsset('background').then(function(url) {
+		me.background = url;
+		me.emit('changed', me);
+	});
 }
 
 merge(Bundle.prototype, assets, EventEmitter.prototype, {
+	isBundle: true,
+
 
 	onChange: function(who) {
 		this.emit('changed', this, who);
