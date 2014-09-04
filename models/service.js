@@ -43,6 +43,11 @@ merge(ServiceDocument.prototype, {
 	},
 
 
+	head: function(url) {
+		return this.get({method: 'HEAD', url: url});
+	},
+
+
 	getUserWorkspace: function() {
 		var workspace;
 		this.Items.every(function(o) {

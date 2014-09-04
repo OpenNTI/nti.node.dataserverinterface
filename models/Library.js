@@ -8,6 +8,7 @@ var EventEmitter = require('events').EventEmitter;
 var withValue = require('../utils/object-attribute-withvalue');
 var DataCache = require('../utils/datacache');
 var identity = require('../utils/identity');
+var waitFor = require('../utils/waitfor');
 
 var Package = require('../models/content/Package');
 var Bundle = require('../models/content/Bundle');
@@ -22,10 +23,17 @@ function Library(service, name, contentPackages,
 
 	this.onChange = this.onChange.bind(this);
 
+	var pending = this.__pending = [];
+
+	function queue(p) {
+		pending.push.apply(pending, p && p.__pending);
+	}
+
 	this.packages = contentPackages.map(function(pkg) {
 		if (pkg.isCourse) {return null;}
 
 		pkg = Package.parse(service, pkg);
+		queue(pkg);
 		pkg.on('changed', this.onChange);
 		return pkg;
 	}.bind(this)).filter(identity);//strip falsy items
@@ -33,6 +41,7 @@ function Library(service, name, contentPackages,
 
 	this.bundles = contentBundles.map(function(bdl) {
 		bdl = Bundle.parse(service, bdl);
+		queue(bdl);
 		bdl.on('changed', this.onChange);
 		return bdl;
 	}.bind(this)).filter(identity);//strip falsy items
@@ -40,6 +49,7 @@ function Library(service, name, contentPackages,
 
 	this.courses = enrolledCourses.map(function(course) {
 		course = Course.parse(service, course);
+		queue(course);
 		course.on('changed', this.onChange);
 		return course;
 	}.bind(this)).filter(identity);//strip falsy items
@@ -47,6 +57,7 @@ function Library(service, name, contentPackages,
 
 	this.coursesAdmin = administeredCourses.map(function(course) {
 		course = Course.parse(service, course, true);
+		queue(course);
 		course.on('changed', this.onChange);
 		return course;
 	}.bind(this)).filter(identity);//strip falsy items
@@ -87,7 +98,7 @@ Library.load = function(service, name) {
 		return new Library(service, name, contentPackages, contentBundles, enrolledCourses, administeredCourses);
 	}
 
-	var p = [];
+	var library;
 
 	return Promise.all([
 		get(service, service.getContentPackagesURL()),
@@ -95,7 +106,10 @@ Library.load = function(service, name) {
 		get(service, service.getCoursesEnrolledURL()),
 		get(service, service.getCoursesAdministeringURL())
 	]).then(function(data) {
-		return make.apply({}, data);
+		library = make.apply({}, data);
+		return waitFor(library.__pending);
+	}).then(function() {
+		return library;
 	});
 }
 

@@ -2,26 +2,21 @@
 
 var EventEmitter = require('events').EventEmitter;
 var merge = require('merge');
+var setAndEmit = require('../../utils/getsethandler');
 var urlJoin = require('../../utils/urljoin');
 var withValue = require('../../utils/object-attribute-withvalue');
 var assets = require('../mixins/PresentationResources');
 
 function Package(service, data) {
 	Object.defineProperty(this, '_service', withValue(service));
-	Object.defineProperty(this, '_server', withValue(service.getServer()));
 	merge(this, data);
 
 	this.author = (data.DCCreator || []).join(', ');
 
-	var me = this;
-	this.getAsset('landing').then(function(url) {
-		me.icon = url;
-		me.emit('changed', me);
-	});
-	this.getAsset('thumb').then(function(url) {
-		me.thumb = url;
-		me.emit('changed', me);
-	});
+	this.__pending = [
+		this.getAsset('landing').then(setAndEmit(this, 'icon')),
+		this.getAsset('thumb').then(setAndEmit(this, 'thumb'))
+	];
 }
 
 merge(Package.prototype, assets, EventEmitter.prototype, {

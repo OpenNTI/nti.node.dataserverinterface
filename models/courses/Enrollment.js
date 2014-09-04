@@ -9,15 +9,14 @@ var Instance = require('./Instance');
 
 function Enrollment(service, data, admin) {
 	Object.defineProperty(this, '_service', withValue(service));
-	Object.defineProperty(this, '_server', withValue(service.getServer()));
 
 	merge(this, data);
 
-	var i = Instance.parse(service, data.CourseInstance);
-
-	this.CourseInstance = i;
+	var i = this.CourseInstance = Instance.parse(service, data.CourseInstance);
 
 	i.on('changed', this.onChange.bind(this));
+
+	this.__pending = [].concat(i.__pending || []);
 }
 
 merge(Enrollment.prototype, EventEmitter.prototype, {

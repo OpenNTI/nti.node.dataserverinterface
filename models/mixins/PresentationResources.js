@@ -53,13 +53,30 @@ function getAssetRoot() {
 function getAsset(name) {
 	var assetPath = ASSET_MAP[name] || ('missing-' + name + '-asset.png'),
 		root = this.getAssetRoot(),
-		url = root && urlJoin(root, assetPath);
+		url = root && urlJoin(root, assetPath),
+		cache = this._service.getDataCache(),
+		cacheKey = 'asset-' + url;
 
 	if (isEmpty(root)) {
 		return Promise.reject('No root');
 	}
 
-	return this._server._request({ method: 'HEAD', url: url })
+	var p = cache.get(cacheKey);
+	if (p === undefined) {
+		p = this._service.head(url)
+			.then(
+				function() {
+					cache.set(cacheKey, true);
+				},
+				function(r) {
+					cache.set(cacheKey, false);
+					return Promise.reject(r);
+				});
+	} else {
+		p = Promise[p ? 'resolve' : 'reject']();
+	}
+
+	return p
 		.then(
 			function() { return url; },
 			function() { return Promise.reject(name + ' asset not found'); });

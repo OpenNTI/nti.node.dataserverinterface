@@ -1,32 +1,41 @@
 'use strict';
+var Promise = global.Promise || require('es6-promise').Promise;
 
 var EventEmitter = require('events').EventEmitter;
 var merge = require('merge');
 var getLink = require('../../utils/getlink');
 var urlJoin = require('../../utils/urljoin');
+var waitFor = require('../../utils/waitfor');
 var withValue = require('../../utils/object-attribute-withvalue');
 
 var Bundle = require('../content/Bundle');
 
 function Instance(service, data) {
 	Object.defineProperty(this, '_service', withValue(service));
-	Object.defineProperty(this, '_server', withValue(service.getServer()));
 	merge(this, data);
 
-	var b = Bundle.parse(service, data.ContentPackageBundle);
-	this.ContentPackageBundle = b;
+	var b = this.ContentPackageBundle = Bundle.parse(service, data.ContentPackageBundle);
+
 	b.on('changed', this.onChange.bind(this));
 
-	service.get(getLink(this.Links, 'CourseCatalogEntry')).then(function(cce) {
-		console.log('Hi');
-	});
+	function parseCCE(cce) {
+		cce = CatalogEntry.parse(service, cce);
+		this.CatalogEntry = cce;
+		return waitFor(cce.__pending);
+	}
+
+	this.__pending = [
+
+		service.get(getLink(this, 'CourseCatalogEntry')).then(parseCCE.bind(this))
+
+	].concat(b.__pending || []);
 }
 
 merge(Instance.prototype, EventEmitter.prototype, {
 
 	getPresentationProperties: function() {
 		//ProviderUniqueID
-		var cce = this.CourseCatalogEntry;
+		var cce = this.CatalogEntry;
 
 		return this.ContentPackageBundle;
 	},
