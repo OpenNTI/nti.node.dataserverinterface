@@ -15,9 +15,9 @@ var SessionManager = function (server) {
 
 merge(SessionManager.prototype, {
 
-	getUser: function(req) {
+	getUser: function(context) {
 
-		return this.getServiceDocument(req)
+		return this.getServiceDocument(context)
 			.then(function(doc) {
 					var w = doc.getUserWorkspace();
 					if (w) {
@@ -28,16 +28,16 @@ merge(SessionManager.prototype, {
 
 	},
 
-	getServiceDocument: function(req) {
+	getServiceDocument: function(context) {
 		var server = this.server;
-		return server.ping(req)
-			.then(server.getServiceDocument.bind(server, req));
+		return server.ping(context)
+			.then(server.getServiceDocument.bind(server, context));
 	},
 
 
 
-	setupIntitalData: function(req) {
-		return this.server.getServiceDocument(req)
+	setupIntitalData: function(context) {
+		return this.server.getServiceDocument(context)
 			.then(function(service) {
 
 				return Promise.all([

@@ -38,11 +38,11 @@ merge(DataServerInterface.prototype, {
 	 * @param {String} [options.method] - defaults to GET, and POST if `form` is set.
 	 * @param {Object} [options.data] - A dictionary of form values to send with the request.
 	 * @param {Object} [options.headers] - HTTP headers to add to the request.
-	 * @param {Object} [req] - An active request to the node's "express" http server.
+	 * @param {Object} [context] - An active request context to the node's "express" http server.
 	 * @returns {Promise}
 	 * @private
 	 */
-	_request: function(options, activeRequest) {
+	_request: function(options, context) {
 
 		var start = Date.now();
 		var url = (options || {}).url;
@@ -72,9 +72,9 @@ merge(DataServerInterface.prototype, {
 			'x-requested-with': 'XMLHttpRequest'
 		});
 
-		if(activeRequest) {
+		if(context) {
 			opts.headers = merge(true,
-				activeRequest.headers || {},
+				context.headers || {},
 				opts.headers,
 				{'accept-encoding': ''}
 				);
@@ -97,9 +97,9 @@ merge(DataServerInterface.prototype, {
 					return reject(error || res);
 				}
 
-				if (res.headers['set-cookie'] && activeRequest) {
-					activeRequest.responseHeaders = activeRequest.responseHeaders || {};
-					activeRequest.responseHeaders['set-cookie'] = res.headers['set-cookie'];
+				if (res.headers['set-cookie'] && context) {
+					context.responseHeaders = context.responseHeaders || {};
+					context.responseHeaders['set-cookie'] = res.headers['set-cookie'];
 				}
 
 				//If sent an explicit Accept header the server
@@ -120,47 +120,47 @@ merge(DataServerInterface.prototype, {
 	},
 
 
-	_get: function(url, req) {
-		return this._request(url, req);
+	_get: function(url, context) {
+		return this._request(url, context);
 	},
 
 
-	_post: function(url, data, req) {
+	_post: function(url, data, context) {
 		return this._request({
 			url: url,
 			method: 'POST',
 			data: data
-		}, req);
+		}, context);
 	},
 
 
-	_put: function(url, data, req) {
+	_put: function(url, data, context) {
 		return this._request({
 			url: url,
 			method: 'PUT',
 			data: data
-		}, req);
+		}, context);
 	},
 
 
-	_delete: function(url, req) {
+	_delete: function(url, context) {
 		return this._request({
 			url: url,
 			method: 'DELETE'
-		}, req);
+		}, context);
 	},
 
 
-	getServiceDocument: function(req) {
-		var cache = DataCache.getForRequest(req),
+	getServiceDocument: function(context) {
+		var cache = DataCache.getForContext(context),
 			cached = cache.get('service-doc');
 		if (cached) {
-			return Promise.resolve(new Service(cached, this, req));
+			return Promise.resolve(new Service(cached, this, context));
 		}
 
-		return this._get(null, req).then(function(json) {
+		return this._get(null, context).then(function(json) {
 			cache.set('service-doc', json);
-			return new Service(json, this, req);
+			return new Service(json, this, context);
 		}.bind(this));
 	},
 
@@ -186,10 +186,10 @@ merge(DataServerInterface.prototype, {
 		});
 	},
 
-	ping: function(req, username) {
-		username = username || (req && req.cookies && req.cookies.username);
+	ping: function(context, username) {
+		username = username || (context && context.cookies && context.cookies.username);
 
-		return this._get('logon.ping', null, req)//ping
+		return this._get('logon.ping', null, context)//ping
 			//pong
 			.then(function(data) {
 				var urls = getLink.asMap(data);
@@ -207,7 +207,7 @@ merge(DataServerInterface.prototype, {
 					return {links: urls};
 				}
 
-				return this._post(urls['logon.handshake'], {username: username}, req)
+				return this._post(urls['logon.handshake'], {username: username}, context)
 					.then(function(data) {
 						var result = {links: merge(true, urls, getLink.asMap(data))};
 						if (!getLink(data, 'logon.continue')) {
@@ -221,12 +221,12 @@ merge(DataServerInterface.prototype, {
 	},
 
 
-	getObject: function(ntiid, mime, req) {
+	getObject: function(ntiid, mime, context) {
 		if (!NTIIDs.isNTIID(ntiid)) {
 			return Promise.reject('Bad NTIID');
 		}
 
-		return this.getServiceDocument(req)
+		return this.getServiceDocument(context)
 			.then(function(doc) {
 				var query, headers = {},
 					url = doc.getObjectURL(ntiid);
@@ -242,12 +242,12 @@ merge(DataServerInterface.prototype, {
 					headers.accept = mime;
 				}
 
-				return this._request({url: url, headers: headers}, req);
+				return this._request({url: url, headers: headers}, context);
 			}.bind(this));
 	},
 
 
-	getObjects: function(ntiids, req) {
+	getObjects: function(ntiids, context) {
 		if (!Array.isArray(ntiids)) {
 			ntiids = [ntiids];
 		}
@@ -257,7 +257,7 @@ merge(DataServerInterface.prototype, {
 		}
 
 		return Promise.all(ntiids.map(function(n) {
-			return me.getObject(n, undefined, req); }))
+			return me.getObject(n, undefined, context); }))
 				.then(function(results) {
 					if (!Array.isArray(results)) {results = [results];}
 					return results.map(model);
@@ -266,7 +266,7 @@ merge(DataServerInterface.prototype, {
 	},
 
 
-	getPageInfo: function(ntiid, req) {
+	getPageInfo: function(ntiid, context) {
 		var url,
 			mime = 'application/vnd.nextthought.pageinfo+json';
 
@@ -274,7 +274,7 @@ merge(DataServerInterface.prototype, {
 			return Promise.reject('Bad NTIID');
 		}
 
-		return this.getObject(ntiid, mime, req)
+		return this.getObject(ntiid, mime, context)
 	}
 });
 

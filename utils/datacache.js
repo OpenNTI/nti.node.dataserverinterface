@@ -40,16 +40,16 @@ DataCache.prototype.serialize = function ToScriptTag() {
 };
 
 
-DataCache.getForRequest = function(req) {
+DataCache.getForContext = function(context) {
 	var cache;
-	if (req) {
-		cache = req[globalKey];
+	if (context) {
+		cache = context[globalKey];
 		if (!cache) {
-			cache = req[globalKey] = new DataCache();
+			cache = context[globalKey] = new DataCache();
 		}
 	} else {
 		if (!isBrowser) {
-			throw new Error('There must be an active request passed if we are called on the server');
+			throw new Error('There must be an active context passed if we are called on the server');
 		}
 
 		cache = this.globalInstance;
