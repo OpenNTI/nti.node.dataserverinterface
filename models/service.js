@@ -6,7 +6,7 @@ var merge = require('merge');
 
 var Capabilities = require('./Capabilities');
 
-var datacache = require('../utils/datacache');
+var DataCache = require('../utils/datacache');
 
 var constants = require('../constants');
 var getLink = require('../utils/getlink');
@@ -14,8 +14,9 @@ var deepFreeze = require('../utils/object-deepfreeze');
 var withValue = require('../utils/object-attribute-withvalue');
 var joinWithURL = require('../utils/urljoin');
 
-var ServiceDocument = function (json, server) {
+var ServiceDocument = function (json, server, activeRequest) {
 	Object.defineProperty(this, '_server', withValue(server));
+	Object.defineProperty(this, '_activeRequest', withValue(activeRequest));
 	var caps = json.CapabilityList || [];
 
 	deepFreeze(json); //make the data immutable
@@ -29,6 +30,16 @@ merge(ServiceDocument.prototype, {
 
 	getServer: function() {
 		return this._server;
+	},
+
+
+	getDataCache: function() {
+		return DataCache.getForRequest(this._activeRequest);
+	},
+
+
+	get: function(url) {
+		return this.getServer()._get(url, this._activeRequest);
 	},
 
 

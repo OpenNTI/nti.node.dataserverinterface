@@ -155,12 +155,12 @@ merge(DataServerInterface.prototype, {
 		var cache = DataCache.getForRequest(req),
 			cached = cache.get('service-doc');
 		if (cached) {
-			return Promise.resolve(new Service(cached, this));
+			return Promise.resolve(new Service(cached, this, req));
 		}
 
 		return this._get(null, req).then(function(json) {
 			cache.set('service-doc', json);
-			return new Service(json, this);
+			return new Service(json, this, req);
 		}.bind(this));
 	},
 

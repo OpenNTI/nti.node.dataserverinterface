@@ -41,8 +41,7 @@ merge(SessionManager.prototype, {
 			.then(function(service) {
 
 				return Promise.all([
-
-					Library.load(service, 'Main', req)
+					Library.load(service, 'Main')
 				]);
 
 			});

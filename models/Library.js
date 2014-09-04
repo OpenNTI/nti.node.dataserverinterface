@@ -1,5 +1,7 @@
 'use strict';
 
+var Promise = global.Promise || require('es6-promise').Promise;
+
 var merge = require('merge');
 var EventEmitter = require('events').EventEmitter;
 
@@ -59,10 +61,12 @@ merge(Library.prototype, EventEmitter.prototype, {
 });
 
 
-function get(s, url, cache, req) {
+function get(s, url) {
+	var cache = s.getDataCache();
+
 	var cached = cache.get(url), result;
 	if (!cached) {
-		result = s._get(url, req)
+		result = s.get(url)
 			.catch(function empty () { return {titles: [], Items: []}; })
 			.then(function(data) {
 				cache.set(url, data);
@@ -78,19 +82,18 @@ function get(s, url, cache, req) {
 }
 
 
-Library.load = function(service, name, req) {
-	var svr = service.getServer();
-	var cache = DataCache.getForRequest(req);
-
+Library.load = function(service, name) {
 	function make (contentPackages, contentBundles, enrolledCourses, administeredCourses) {
 		return new Library(service, name, contentPackages, contentBundles, enrolledCourses, administeredCourses);
 	}
 
+	var p = [];
+
 	return Promise.all([
-		get(svr, service.getContentPackagesURL(), cache, req),
-		get(svr, service.getContentBundlesURL(), cache, req),
-		get(svr, service.getCoursesEnrolledURL(), cache, req),
-		get(svr, service.getCoursesAdministeringURL(), cache, req)
+		get(service, service.getContentPackagesURL()),
+		get(service, service.getContentBundlesURL()),
+		get(service, service.getCoursesEnrolledURL()),
+		get(service, service.getCoursesAdministeringURL())
 	]).then(function(data) {
 		return make.apply({}, data);
 	});
