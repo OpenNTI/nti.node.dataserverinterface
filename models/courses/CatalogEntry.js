@@ -25,6 +25,7 @@ function CourseCatalogEntry(service, data) {
 }
 
 merge(CourseCatalogEntry.prototype, assets, EventEmitter.prototype, {
+	isCourse: true,
 
 
 	onChange: function(who) {

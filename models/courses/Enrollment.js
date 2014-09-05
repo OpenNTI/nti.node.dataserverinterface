@@ -15,11 +15,12 @@ function Enrollment(service, data, admin) {
 	var i = this.CourseInstance = Instance.parse(service, data.CourseInstance);
 
 	i.on('changed', this.onChange.bind(this));
-	
+
 	this.__pending = [].concat(i.__pending || []);
 }
 
 merge(Enrollment.prototype, EventEmitter.prototype, {
+	isCourse: true,
 
 	getPresentationProperties: function() {
 		return this.CourseInstance.getPresentationProperties();

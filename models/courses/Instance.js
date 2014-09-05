@@ -27,6 +27,7 @@ function Instance(service, data) {
 }
 
 merge(Instance.prototype, EventEmitter.prototype, {
+	isCourse: true,
 
 	getPresentationProperties: function() {
 		var cce = this.CatalogEntry || {getAuthorLine: function(){}},
