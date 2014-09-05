@@ -40,6 +40,11 @@ function Library(service, name, contentPackages,
 
 
 	this.bundles = contentBundles.map(function(bdl) {
+		if (!bdl.ContentPackages || !bdl.ContentPackages.length) {
+			console.warn('Bundle is empty. Missing packages.')
+			return null;
+		}
+
 		bdl = Bundle.parse(service, bdl);
 		queue(bdl);
 		bdl.on('changed', this.onChange);
