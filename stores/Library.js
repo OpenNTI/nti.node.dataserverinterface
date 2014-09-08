@@ -73,6 +73,21 @@ merge(Library.prototype, EventEmitter.prototype, {
 
 	onChange: function() {
 		this.emit('changed', this);
+	},
+
+
+	findCourse: function(courseInstanceId) {
+		var courses = [].concat(this.coursesAdmin || []).concat(this.courses || []);
+		var found;
+		courses.every(function(course, index) {
+			if (course.getCourseID() === courseInstanceId) {
+				found = course;
+			}
+
+			return !found;
+		});
+
+		return found;
 	}
 });
 
