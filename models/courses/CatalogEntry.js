@@ -27,6 +27,10 @@ function CourseCatalogEntry(service, data) {
 merge(CourseCatalogEntry.prototype, assets, EventEmitter.prototype, {
 	isCourse: true,
 
+	getID: function() {
+		return this.NTIID;
+	},
+
 
 	onChange: function(who) {
 		this.emit('changed', this, who);

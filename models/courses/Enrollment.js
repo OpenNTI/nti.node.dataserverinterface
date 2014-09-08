@@ -22,6 +22,15 @@ function Enrollment(service, data, admin) {
 merge(Enrollment.prototype, EventEmitter.prototype, {
 	isCourse: true,
 
+	getID: function() {
+		return this.NTIID;
+	},
+
+
+	getCourseID: function() {
+		return this.CourseInstance.getID();
+	},
+
 	getPresentationProperties: function() {
 		return this.CourseInstance.getPresentationProperties();
 	},

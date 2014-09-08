@@ -30,6 +30,11 @@ function Instance(service, data) {
 merge(Instance.prototype, EventEmitter.prototype, {
 	isCourse: true,
 
+	getID: function() {
+		return this.NTIID;
+	},
+
+
 	getPresentationProperties: function() {
 		var cce = this.CatalogEntry || {getAuthorLine: function(){}},
 			bundle = this.ContentPackageBundle;

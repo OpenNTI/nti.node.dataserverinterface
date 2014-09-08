@@ -32,6 +32,10 @@ function Bundle(service, data) {
 merge(Bundle.prototype, assets, EventEmitter.prototype, {
 	isBundle: true,
 
+	getID: function() {
+		return this.NTIID;
+	},
+	
 
 	onChange: function(who) {
 		this.emit('changed', this, who);

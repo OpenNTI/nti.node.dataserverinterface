@@ -21,6 +21,12 @@ function Package(service, data) {
 
 merge(Package.prototype, assets, EventEmitter.prototype, {
 
+
+	getID: function() {
+		return this.NTIID;
+	},
+
+
 	getDefaultAssetRoot: function() {
 		var root = this.root;
 

@@ -17,6 +17,10 @@ function OutlineNode(service, parent, data) {
 
 merge(OutlineNode.prototype, {
 
+	getID: function() {
+		return this.NTIID;
+	}
+	
 });
 
 
