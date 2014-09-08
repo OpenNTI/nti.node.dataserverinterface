@@ -10,6 +10,7 @@ var withValue = require('../../utils/object-attribute-withvalue');
 
 var Bundle = require('../content/Bundle');
 var CatalogEntry = require('./CatalogEntry');
+var Outline = require('./OutlineNode');
 
 function Instance(service, data) {
 	Object.defineProperty(this, '_service', withValue(service));
@@ -73,8 +74,18 @@ merge(Instance.prototype, EventEmitter.prototype, {
 
 	onChange: function(who) {
 		this.emit('changed', this, who);
-	}
+	},
 
+
+	getOutline: function() {
+		var link = getLink(this.Outline || {}, 'contents');
+		if (!link) {
+			return Promise.reject('No Outline or content link');
+		}
+
+		return this._service.get(link)
+			.then(Outline.parse.bind(Outline, this._service, this));
+	}
 });
 
 
