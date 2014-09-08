@@ -14,7 +14,7 @@ var getLink = require('../utils/getlink');
 var clean = require('../utils/object-clean');
 var NTIIDs = require('../utils/ntiids');
 
-var Service = require('../models/Service');
+var Service = require('../stores/Service');
 
 
 var DataServerInterface = function (config) {

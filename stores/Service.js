@@ -4,7 +4,7 @@ var Path = require('path');
 var Url = require('url');
 var merge = require('merge');
 
-var Capabilities = require('./Capabilities');
+var Capabilities = require('../models/Capabilities');
 
 var DataCache = require('../utils/datacache');
 

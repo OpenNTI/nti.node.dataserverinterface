@@ -10,9 +10,9 @@ var DataCache = require('../utils/datacache');
 var identity = require('../utils/identity');
 var waitFor = require('../utils/waitfor');
 
-var Package = require('./content/Package');
-var Bundle = require('./content/Bundle');
-var Course = require('./courses/Enrollment');
+var Package = require('../models/content/Package');
+var Bundle = require('../models/content/Bundle');
+var Course = require('../models/courses/Enrollment');
 
 function Library(service, name, contentPackages,
 								contentBundles,
@@ -77,11 +77,11 @@ merge(Library.prototype, EventEmitter.prototype, {
 });
 
 
-function get(s, url) {
+function get(s, url, ignoreCache) {
 	var cache = s.getDataCache();
 
 	var cached = cache.get(url), result;
-	if (!cached) {
+	if (!cached || ignoreCache) {
 		result = s.get(url)
 			.catch(function empty () { return {titles: [], Items: []}; })
 			.then(function(data) {
@@ -98,7 +98,7 @@ function get(s, url) {
 }
 
 
-Library.load = function(service, name) {
+Library.load = function(service, name, reload) {
 	function make (contentPackages, contentBundles, enrolledCourses, administeredCourses) {
 		return new Library(service, name, contentPackages, contentBundles, enrolledCourses, administeredCourses);
 	}
@@ -106,10 +106,10 @@ Library.load = function(service, name) {
 	var library;
 
 	return Promise.all([
-		get(service, service.getContentPackagesURL()),
-		get(service, service.getContentBundlesURL()),
-		get(service, service.getCoursesEnrolledURL()),
-		get(service, service.getCoursesAdministeringURL())
+		get(service, service.getContentPackagesURL(), reload),
+		get(service, service.getContentBundlesURL(), reload),
+		get(service, service.getCoursesEnrolledURL(), reload),
+		get(service, service.getCoursesAdministeringURL(), reload)
 	]).then(function(data) {
 		library = make.apply({}, data);
 		return waitFor(library.__pending);

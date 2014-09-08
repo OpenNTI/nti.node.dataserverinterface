@@ -3,7 +3,7 @@
 var Promise = global.Promise || require('es6-promise').Promise;
 var merge = require('merge');
 
-var Library = require('../models/Library');
+var Library = require('../stores/Library');
 
 var SessionManager = function (server) {
 	if (!server) {
