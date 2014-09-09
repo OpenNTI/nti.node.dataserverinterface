@@ -50,8 +50,22 @@ merge(ServiceDocument.prototype, {
 
 
 	getPageInfo: function(ntiid) {
-		return this.getServer().getPageInfo(ntiid, this._context)
-			.then(function(data) {
+		var key = 'pageinfo-' + ntiid;
+		var cache = this.getDataCache();
+		var cached = cache.get(key);
+		var result;
+		
+		if (cached) {
+			result = Promise.resolve(cached);
+		} else {
+			result = this.getServer().getPageInfo(ntiid, this._context)
+				.then(function(json) {
+					cache.set(key, json);
+					return json;
+				});
+		}
+
+		return result.then(function(data) {
 				return PageInfo.parse(this, data);
 			}.bind(this));
 	},

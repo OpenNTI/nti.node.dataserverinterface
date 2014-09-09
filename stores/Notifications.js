@@ -62,6 +62,8 @@ function get(s, url, ignoreCache) {
 
 
 Notifications.load = function(service, reload) {
+	var cache = service.getDataCache();
+
 	//We need some links...
 	return service.getPageInfo(constants.ROOT_NTIID)
 		//Find our url to fetch notifications from...
@@ -74,7 +76,18 @@ Notifications.load = function(service, reload) {
 		})
 
 		//Load the notifications...
-		.then(function(url) { return get(service, url, reload); })
+		.then(function(url) {
+			var cached = cache.get(url);
+			if (cached) {
+				return cached;
+			}
+
+			return get(service, url, reload)
+				.then(function(data) {
+					cache.set(url, data);
+					return data;
+				});
+		})
 		.catch(function(reason) {
 			console.warn(reason);
 			return {};
