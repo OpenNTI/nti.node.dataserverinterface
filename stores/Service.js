@@ -4,6 +4,7 @@ var Path = require('path');
 var Url = require('url');
 var merge = require('merge');
 
+var PageInfo = require('../models/PageInfo');
 var Capabilities = require('../models/Capabilities');
 
 var DataCache = require('../utils/datacache');
@@ -45,6 +46,24 @@ merge(ServiceDocument.prototype, {
 
 	head: function(url) {
 		return this.get({method: 'HEAD', url: url});
+	},
+
+
+	getPageInfo: function(ntiid) {
+		return this.getServer().getPageInfo(ntiid, this._context)
+			.then(function(data) {
+				return PageInfo.parse(this, data);
+			}.bind(this));
+	},
+
+
+	getObjects: function(ntiids) {
+		return this.getServer().getObjects(ntiids, this._context);
+	},
+
+
+	getObject: function(ntiid, mime) {
+		return this.getServer().getObject(ntiid, mime, this._context);
 	},
 
 

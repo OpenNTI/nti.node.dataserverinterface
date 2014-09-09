@@ -1,10 +1,10 @@
 'use strict';
 
-var EventEmitter = require('events').EventEmitter;
 var merge = require('merge');
 var setAndEmit = require('../../utils/getsethandler');
 var urlJoin = require('../../utils/urljoin');
 var withValue = require('../../utils/object-attribute-withvalue');
+var base = require('../mixins/Base');
 var assets = require('../mixins/PresentationResources');
 var Package = require('./Package');
 
@@ -29,18 +29,8 @@ function Bundle(service, data) {
 		this.getAsset('background').then(setAndEmit(this, 'background')));
 }
 
-merge(Bundle.prototype, assets, EventEmitter.prototype, {
+merge(Bundle.prototype, base, assets, {
 	isBundle: true,
-
-	getID: function() {
-		return this.NTIID;
-	},
-	
-
-	onChange: function(who) {
-		this.emit('changed', this, who);
-	},
-
 
 	getDefaultAssetRoot: function() {
 		var root = ([this].concat(this.ContentPackages))

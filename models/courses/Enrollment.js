@@ -1,9 +1,9 @@
 'use strict';
 
-var EventEmitter = require('events').EventEmitter;
 var merge = require('merge');
 var urlJoin = require('../../utils/urljoin');
 var withValue = require('../../utils/object-attribute-withvalue');
+var base = require('../mixins/Base');
 
 var Instance = require('./Instance');
 
@@ -19,12 +19,8 @@ function Enrollment(service, data, admin) {
 	this.__pending = [].concat(i.__pending || []);
 }
 
-merge(Enrollment.prototype, EventEmitter.prototype, {
+merge(Enrollment.prototype, base, {
 	isCourse: true,
-
-	getID: function() {
-		return this.NTIID;
-	},
 
 
 	getCourseID: function() {
@@ -33,11 +29,6 @@ merge(Enrollment.prototype, EventEmitter.prototype, {
 
 	getPresentationProperties: function() {
 		return this.CourseInstance.getPresentationProperties();
-	},
-
-
-	onChange: function(who) {
-		this.emit('changed', this, who);
 	}
 
 });

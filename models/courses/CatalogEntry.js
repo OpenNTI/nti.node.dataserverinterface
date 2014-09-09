@@ -1,11 +1,11 @@
 'use strict';
 
-var EventEmitter = require('events').EventEmitter;
 var merge = require('merge');
 var setAndEmit = require('../../utils/getsethandler');
 var urlJoin = require('../../utils/urljoin');
 var withValue = require('../../utils/object-attribute-withvalue');
 var assets = require('../mixins/PresentationResources');
+var base = require('../mixins/Base');
 
 function CourseCatalogEntry(service, data) {
 	Object.defineProperty(this, '_service', withValue(service));
@@ -24,17 +24,8 @@ function CourseCatalogEntry(service, data) {
 	];
 }
 
-merge(CourseCatalogEntry.prototype, assets, EventEmitter.prototype, {
+merge(CourseCatalogEntry.prototype, base, assets, {
 	isCourse: true,
-
-	getID: function() {
-		return this.NTIID;
-	},
-
-
-	onChange: function(who) {
-		this.emit('changed', this, who);
-	},
 
 
 	getDefaultAssetRoot: function() {

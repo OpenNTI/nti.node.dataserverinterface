@@ -5,6 +5,7 @@ var Promise = global.Promise || require('es6-promise').Promise;
 
 
 var Url = require('url');
+var QueryString = require('query-string');
 var request = require('../utils/request');
 var merge = require('merge');
 
@@ -153,15 +154,33 @@ merge(DataServerInterface.prototype, {
 
 	getServiceDocument: function(context) {
 		var cache = DataCache.getForContext(context),
-			cached = cache.get('service-doc');
+			cached = cache.get('service-doc-instance'),
+			promise;
+
+		//Do we have an instance?
 		if (cached) {
-			return Promise.resolve(new Service(cached, this, context));
+			return Promise.resolve(cached);
 		}
 
-		return this._get(null, context).then(function(json) {
-			cache.set('service-doc', json);
-			return new Service(json, this, context);
-		}.bind(this));
+		//Do we have the data to build an instance?
+		cached = cache.get('service-doc');
+		if (cached) {
+			promise = Promise.resolve(new Service(cached, this, context));
+		//No? okay... get the data and build and instance
+		} else {
+			promise = this._get(null, context).then(function(json) {
+				cache.set('service-doc', json);
+				return new Service(json, this, context);
+			}.bind(this));
+		}
+
+		//once we have an instance, stuff it in the cache so we don't keep building it.
+		promise.then(function(instance) {
+			cache.setVolatile('service-doc-instance', instance);
+		});
+
+		//Return a promise that will fulfill with the instance...
+		return promise;
 	},
 
 
@@ -180,11 +199,13 @@ merge(DataServerInterface.prototype, {
 		return this._request(options);
 	},
 
+
 	logInOAuth: function(url) {
 		return this._request({
 			url: url
 		});
 	},
+
 
 	ping: function(context, username) {
 		username = username || (context && context.cookies && context.cookies.username);
@@ -228,13 +249,13 @@ merge(DataServerInterface.prototype, {
 
 		return this.getServiceDocument(context)
 			.then(function(doc) {
-				var query, headers = {},
+				var headers = {},
 					url = doc.getObjectURL(ntiid);
 
 				if (mime) {
 					url = Url.parse(url);
-					url.search = queryString.stringify(merge(
-						queryString.parse(url.query), {
+					url.search = QueryString.stringify(merge(
+						QueryString.parse(url.query), {
 							type: mime
 						}));
 
@@ -274,7 +295,7 @@ merge(DataServerInterface.prototype, {
 			return Promise.reject('Bad NTIID');
 		}
 
-		return this.getObject(ntiid, mime, context)
+		return this.getObject(ntiid, mime, context);
 	}
 });
 

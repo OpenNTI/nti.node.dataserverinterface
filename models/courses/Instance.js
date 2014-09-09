@@ -1,12 +1,13 @@
 'use strict';
 var Promise = global.Promise || require('es6-promise').Promise;
 
-var EventEmitter = require('events').EventEmitter;
 var merge = require('merge');
 var getLink = require('../../utils/getlink');
 var urlJoin = require('../../utils/urljoin');
 var waitFor = require('../../utils/waitfor');
 var withValue = require('../../utils/object-attribute-withvalue');
+
+var base = require('../mixins/Base');
 
 var Bundle = require('../content/Bundle');
 var CatalogEntry = require('./CatalogEntry');
@@ -27,12 +28,8 @@ function Instance(service, data) {
 	].concat(b.__pending || []);
 }
 
-merge(Instance.prototype, EventEmitter.prototype, {
+merge(Instance.prototype, base, {
 	isCourse: true,
-
-	getID: function() {
-		return this.NTIID;
-	},
 
 
 	getPresentationProperties: function() {
@@ -74,11 +71,6 @@ merge(Instance.prototype, EventEmitter.prototype, {
 		}
 
 		return work.then(parseCCE.bind(this));
-	},
-
-
-	onChange: function(who) {
-		this.emit('changed', this, who);
 	},
 
 

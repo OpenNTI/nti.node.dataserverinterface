@@ -1,10 +1,10 @@
 'use strict';
 
-var EventEmitter = require('events').EventEmitter;
 var merge = require('merge');
 var setAndEmit = require('../../utils/getsethandler');
 var urlJoin = require('../../utils/urljoin');
 var withValue = require('../../utils/object-attribute-withvalue');
+var base = require('../mixins/Base');
 var assets = require('../mixins/PresentationResources');
 
 function Package(service, data) {
@@ -19,13 +19,7 @@ function Package(service, data) {
 	];
 }
 
-merge(Package.prototype, assets, EventEmitter.prototype, {
-
-
-	getID: function() {
-		return this.NTIID;
-	},
-
+merge(Package.prototype, base, assets, {
 
 	getDefaultAssetRoot: function() {
 		var root = this.root;

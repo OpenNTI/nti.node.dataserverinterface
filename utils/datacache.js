@@ -10,12 +10,12 @@ function DataCache() {
 }
 
 
-DataCache.prototype.get = function(key) {
+DataCache.prototype.get = function get(key) {
 	return this.data[key];
 };
 
 
-DataCache.prototype.set = function(key, value) {
+DataCache.prototype.set = function set(key, value) {
 	var o;
 	if (typeof key === 'object') {
 		o = key;
@@ -24,11 +24,43 @@ DataCache.prototype.set = function(key, value) {
 				this.set(key, o[key]);
 			}
 		}
-		return;
+	} else {
+		//throw if it can't be serialized, and ensure we have our own clone.
+		this.data[key] = JSON.parse(JSON.stringify(value));
 	}
 
-	//throw if it can't be serialized, and ensure we have our own clone.
-	this.data[key] = JSON.parse(JSON.stringify(value));
+	return this;
+};
+
+
+/**
+ * Sets a "volatile" value into the cache. The value will be ignored when the
+ * cache is serialized.  This allows for caching instances of objects that
+ * should not be serialized but need to be cached.
+ *
+ * @param {String/Object} key   The key to assign the value to. Optionally this
+ *                              can be an Object of keys and values.
+ * @param {*} value A value to cache. If `key` is an object, this paramater is
+ *                  ignored.
+ */
+DataCache.prototype.setVolatile = function setVolatile(key, value) {
+	var o;
+	if (typeof key === 'object') {
+		o = key;
+		for (key in o) {
+			if (o.hasOwnProperty(key)) {
+				this.setVolatile(key, o[key]);
+			}
+		}
+	} else {
+		Object.defineProperty(this.data, key, {
+			enumerable: false,
+			writable: true,
+			configurable: true,
+			value: value
+		});
+	}
+
 	return this;
 };
 
@@ -40,7 +72,7 @@ DataCache.prototype.serialize = function ToScriptTag() {
 };
 
 
-DataCache.getForContext = function(context) {
+DataCache.getForContext = function getForContext(context) {
 	var cache;
 	if (context) {
 		cache = context[globalKey];

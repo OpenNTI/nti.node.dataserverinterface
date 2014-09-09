@@ -6,7 +6,6 @@ var merge = require('merge');
 var EventEmitter = require('events').EventEmitter;
 
 var withValue = require('../utils/object-attribute-withvalue');
-var DataCache = require('../utils/datacache');
 var identity = require('../utils/identity');
 var waitFor = require('../utils/waitfor');
 
