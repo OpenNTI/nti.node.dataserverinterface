@@ -6,18 +6,35 @@ var merge = require('merge');
 var EventEmitter = require('events').EventEmitter;
 
 var constants = require('../constants');
+var forwardFunctions = require('../utils/function-forwarding');
 var withValue = require('../utils/object-attribute-withvalue');
+var defineProperties = require('../utils/object-define-properties');
 
 
-function Notifications(service) {
+function Notifications(service, data) {
+	defineProperties(this, {
+		_service: withValue(service),
+		length: {
+			get: this.getLength,
+			set: function() {}
+		}
+	});
 
-	Object.defineProperty(this, '_service', withValue(service));
+	merge(this, data);
+
+	this.lastViewed = new Date(parseFloat(data.lastViewed || 0) * 1000);
 
 	this.onChange = this.onChange.bind(this);
 }
 
 
-merge(Notifications.prototype, EventEmitter.prototype, {
+merge(Notifications.prototype, EventEmitter.prototype,
+	forwardFunctions(['every','forEach','map','reduce'], 'Items'), {
+
+	getLength: function() {
+		return (this.Items || []).length;
+	},
+
 
 	onChange: function() {
 		this.emit('changed', this);
@@ -40,53 +57,33 @@ function get(s, url, ignoreCache) {
 		result = Promise.resolve(cached);
 	}
 
-	return result.then(function(data) {
-		debugger;
-		return data;
-	});
+	return result;
 }
 
 
 Notifications.load = function(service, reload) {
-	//get(service, url)
+	//We need some links...
 	return service.getPageInfo(constants.ROOT_NTIID)
+		//Find our url to fetch notifications from...
+		.then(function(pageInfo) {
+			var url = pageInfo.getLink(constants.REL_MESSAGE_INBOX);
+			if (!url) {
+				return Promise.reject('No Notifications url');
+			}
+			return url;
+		})
+
+		//Load the notifications...
+		.then(function(url) { return get(service, url, reload); })
+		.catch(function(reason) {
+			console.warn(reason);
+			return {};
+		})
+		//Now we can build the Notifications store object.
 		.then(function(data) {
-			
+			return new Notifications(service, data);
 		});
 }
 
 
 module.exports = Notifications;
-/*
-Service.getPageInfo(Globals.CONTENT_ROOT,
-	//success:
-	function(pageInfo) {
-		var url = pageInfo.getLink(Globals.MESSAGE_INBOX);
-		if (!url) {
-			console.error('No Notifications url');
-			url = 'bad-notifications-url';
-		}
-
-		store.lastViewed = new Date(0);
-
-		Service.request(url + '/lastViewed')
-				.then(function(lastViewed) {
-					store.lastViewed = new Date(parseFloat(lastViewed) * 1000);
-				})
-				.fail(function() {
-					console.warn('Could not resolve notification`s lastViewed');
-				})
-				.then(function() {
-					store.proxy.proxyConfig.url = url;
-					store.url = store.proxy.url = url;
-
-					console.debug('Loading notifications: ' + url);
-					store.load();
-				});
-	},
-	//failure:
-	function() {
-		console.error('Could not setup notifications!');
-	},
-	this);
-*/

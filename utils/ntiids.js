@@ -1,6 +1,6 @@
 'use strict';
 var isEmpty = require('./isempty');
-var defineAttributes = require('./object-define-attributes');
+var defineProperties = require('./object-define-properties');
 
 /**
  * Parses an id and returns an object containing the split portions
@@ -45,10 +45,10 @@ function parseNTIID(id) {
 	};
 
 	//Define a setter on provider property so we can match the ds escaping of '-' to '_'
-	defineAttributes(result.specific, {
+	defineProperties(result.specific, {
 		provider: {
-			getter: function() {return this.$$provider;},
-			setter: function(p) {
+			get: function() {return this.$$provider;},
+			set: function(p) {
 				if (p && p.replace) {
 					p = p.replace(/-/g, '_');
 				}
