@@ -76,7 +76,11 @@ merge(SessionManager.prototype, {
 					reason = reason.statusCode;
 				}
 
-				console.error('CATCH: ', reason);
+				console.error('CATCH: ', reason.stack || reason);
+				if (reason instanceof Error) {
+					return next(reason);
+				}
+
 				if (!/\/login/.test(req.url)) {
 					console.log('SESSION -> [%s] %s %s REDIRECT %slogin/ (User: annonymous, %dms)',
 						new Date().toUTCString(), req.method, url, basepath, Date.now() - start);
