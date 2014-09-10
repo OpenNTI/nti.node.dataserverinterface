@@ -3,6 +3,7 @@
 var Promise = global.Promise || require('es6-promise').Promise;
 var merge = require('merge');
 
+var Catalog = require('../stores/Catalog');
 var Library = require('../stores/Library');
 var Notifications = require('../stores/Notifications');
 
@@ -42,6 +43,7 @@ merge(SessionManager.prototype, {
 			.then(function(service) {
 
 				return Promise.all([
+					Catalog.load(service),
 					Library.load(service, 'Main'),
 					Notifications.load(service)
 				]);
