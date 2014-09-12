@@ -6,6 +6,7 @@ var Path = require('path');
 var Url = require('url');
 var merge = require('merge');
 
+var User = require('../models/User');
 var PageInfo = require('../models/PageInfo');
 var Capabilities = require('../models/Capabilities');
 
@@ -80,6 +81,43 @@ merge(ServiceDocument.prototype, {
 
 	getObject: function(ntiid, mime) {
 		return this.getServer().getObject(ntiid, mime, this._context);
+	},
+
+
+	getAppUser: function() {
+		var key = 'appuser';
+		var cache = this.getDataCache();
+		var cached = cache.get(key);
+		var result;
+
+		if (cached) {
+			result = Promise.resolve(cached);
+		}
+		else {
+			result = this.get(this.getResolveAppUserURL())
+				.then(function(json) {
+					cache.set(key, json);
+					return json;
+				});
+		}
+
+		return result.then(function(data) {
+			return User.parse(this, data);
+		}.bind(this));
+	},
+
+
+	resolveUser: function(username) {
+		return this.get(this.getResolveUserURL(username))
+			.then(function(data) {
+				var user = data.Items.reduce(function(user, data) {
+					return user || (data.Username === username && data);
+				}, null);
+				return user || Promise.reject('Username "'+ username +'" could not resolve.');
+			})
+			.then(function(user) {
+				return User.parse(this, user);
+			}.bind(this));
 	},
 
 
@@ -217,8 +255,13 @@ merge(ServiceDocument.prototype, {
 	},
 
 
+	getResolveAppUserURL: function() {
+		return getLink(this.getUserWorkspace(), 'ResolveSelf');
+	},
+
+
 	getResolveUserURL: function(username) {
-		var l = this.getLinkFrom(
+		var l = getLink(
 			(this.getWorkspace('Global') || {}).Links || [],
 			constants.REL_USER_RESOLVE);
 
