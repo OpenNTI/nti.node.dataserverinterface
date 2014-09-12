@@ -1,5 +1,7 @@
 'use strict';
 
+var Promise = global.Promise || require('es6-promise').Promise;
+
 var Path = require('path');
 var Url = require('url');
 var merge = require('merge');
@@ -54,7 +56,7 @@ merge(ServiceDocument.prototype, {
 		var cache = this.getDataCache();
 		var cached = cache.get(key);
 		var result;
-		
+
 		if (cached) {
 			result = Promise.resolve(cached);
 		} else {
