@@ -3,7 +3,7 @@
 var merge = require('merge');
 var urlJoin = require('../../utils/urljoin');
 var withValue = require('../../utils/object-attribute-withvalue');
-var forwardFunctions = require('../utils/function-forwarding');
+var forwardFunctions = require('../../utils/function-forwarding');
 var base = require('../mixins/Base');
 
 var Instance = require('./Instance');
