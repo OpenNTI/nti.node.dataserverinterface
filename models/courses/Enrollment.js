@@ -1,6 +1,7 @@
 'use strict';
 
 var merge = require('merge');
+var unique = require('../../utils/array-unique');
 var urlJoin = require('../../utils/urljoin');
 var withValue = require('../../utils/object-attribute-withvalue');
 var forwardFunctions = require('../../utils/function-forwarding');
@@ -13,7 +14,7 @@ function Enrollment(service, data, admin) {
 
 	merge(this, data);
 
-	var i = this.CourseInstance = Instance.parse(service, data.CourseInstance);
+	var i = this.CourseInstance = Instance.parse(service, data.CourseInstance, this);
 
 	i.on('changed', this.onChange.bind(this));
 
@@ -33,6 +34,43 @@ merge(Enrollment.prototype, base,
 
 	getCourseID: function() {
 		return this.CourseInstance.getID();
+	},
+
+
+	__cleanToCNodes: function(toc, remove) {
+		var status = this.LegacyEnrollmentStatus;
+
+
+		toc.findall('*[@visibility]')
+			.forEach(function (e) {
+				if (/everyone/i.test(e.get('visibility'))) {
+					return;
+				}
+
+				if (!hasVisibility(e, status)) {
+					this.__getToCNodesReferencing(e.get('target-ntiid'), toc)
+						.forEach(remove);
+				}
+			}.bind(this));
+	},
+
+
+	__getToCNodesReferencing: function (ntiid, toc) {
+		if (!toc || !ntiid) {
+			return [];
+		}
+
+		function getNodesForKey(keys) {
+			var nodes = [];
+
+			keys.forEach(function(k) {
+				nodes = unique(nodes.concat(toc.findall('*[@' + k + '="' + ntiid + '"]')));
+			});
+
+			return nodes;
+		}
+
+		return getNodesForKey(['ntiid', 'target-ntiid']);
 	}
 
 });

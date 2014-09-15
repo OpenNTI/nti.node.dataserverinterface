@@ -27,6 +27,13 @@ var ServiceDocument = function (json, server, context) {
 	merge(this, json);
 
 	this.capabilities = new Capabilities(this, caps);
+
+	this.__pending = [
+		this.getAppUser().then(function(u) {
+			//Ignore this...handwavey magic here.
+			this.__$user = u;
+			}.bind(this))
+	];
 };
 
 

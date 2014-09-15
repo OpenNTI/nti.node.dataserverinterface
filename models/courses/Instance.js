@@ -13,11 +13,12 @@ var Bundle = require('../content/Bundle');
 var CatalogEntry = require('./CatalogEntry');
 var Outline = require('./OutlineNode');
 
-function Instance(service, data) {
+function Instance(service, data, parent) {
 	Object.defineProperty(this, '_service', withValue(service));
+	Object.defineProperty(this, '_parent', withValue(parent));
 	merge(this, data);
 
-	var b = this.ContentPackageBundle = Bundle.parse(service, data.ContentPackageBundle);
+	var b = this.ContentPackageBundle = Bundle.parse(service, data.ContentPackageBundle, this);
 
 	b.on('changed', this.onChange.bind(this));
 
@@ -87,8 +88,8 @@ merge(Instance.prototype, base, {
 
 
 
-function parse(service, data) {
-	return new Instance(service, data);
+function parse(service, data, parent) {
+	return new Instance(service, data, parent);
 }
 
 

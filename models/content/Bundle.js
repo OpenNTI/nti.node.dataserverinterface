@@ -8,8 +8,9 @@ var base = require('../mixins/Base');
 var assets = require('../mixins/PresentationResources');
 var Package = require('./Package');
 
-function Bundle(service, data) {
+function Bundle(service, data, parent) {
 	Object.defineProperty(this, '_service', withValue(service));
+	Object.defineProperty(this, '_parent', withValue(parent));
 	merge(this, data);
 
 	this.author = (data.DCCreator || []).join(', ');
@@ -17,7 +18,7 @@ function Bundle(service, data) {
 	var pending = this.__pending = [];
 
 	this.ContentPackages = this.ContentPackages.map(function(pkg) {
-		pkg = Package.parse(service, pkg);
+		pkg = Package.parse(service, pkg, this);
 		pkg.on('changed', this.onChange.bind(this));
 		pending.push.apply(pending, pkg.__pending || []);
 		return pkg;
@@ -48,8 +49,8 @@ merge(Bundle.prototype, base, assets, {
 
 
 
-function parse(service, data) {
-	return new Bundle(service, data);
+function parse(service, data, parent) {
+	return new Bundle(service, data, parent);
 }
 
 Bundle.parse = parse.bind(Bundle);

@@ -14,6 +14,7 @@ var DataCache = require('../utils/datacache');
 var getLink = require('../utils/getlink');
 var clean = require('../utils/object-clean');
 var NTIIDs = require('../utils/ntiids');
+var waitFor = require('../utils/waitfor');
 
 var Service = require('../stores/Service');
 
@@ -180,7 +181,13 @@ merge(DataServerInterface.prototype, {
 			promise = this._get(null, context).then(function(json) {
 				cache.set('service-doc', json);
 				return new Service(json, this, context);
-			}.bind(this));
+			}.bind(this))
+			.then(function(doc) {
+				return waitFor(doc.__pending)
+					.then(function() {
+						return Promise.resolve(doc);
+					})
+			});
 		}
 
 		//once we have an instance, stuff it in the cache so we don't keep building it.

@@ -4,15 +4,15 @@ var merge = require('merge');
 var et = require('elementtree');
 
 var setAndEmit = require('../../utils/getsethandler');
-var unique = require('../../utils/array-unique');
 var urlJoin = require('../../utils/urljoin');
 var withValue = require('../../utils/object-attribute-withvalue');
 
 var base = require('../mixins/Base');
 var assets = require('../mixins/PresentationResources');
 
-function Package(service, data) {
+function Package(service, data, parent) {
 	Object.defineProperty(this, '_service', withValue(service));
+	Object.defineProperty(this, '_parent', withValue(parent));
 	merge(this, data);
 
 	this.author = (data.DCCreator || []).join(', ');
@@ -67,7 +67,7 @@ merge(Package.prototype, base, assets, {
 
 
 	__cleanToCNodes: function(x) {
-		function strip(e) {
+		function remove(e) {
 			var p = getParent(e);
 			if (p) {
 				p.remove(e);
@@ -86,36 +86,11 @@ merge(Package.prototype, base, assets, {
 			return x.find('*[@' + key + '="' + id + '"]/..');
 		}
 
-		function getAllNodesReferencingContentID(ntiid, xml) {
-			if (!xml || !ntiid) {
-				return [];
-			}
+		var p = this.up('__cleanToCNodes');
 
-			function getNodesForKey(keys) {
-				var nodes = [];
-
-				keys.forEach(function(k) {
-					nodes = unique(nodes.concat(xml.findall('*[@' + k + '="' + ntiid + '"]')));
-				});
-
-				return nodes;
-			}
-
-			return getNodesForKey(['ntiid', 'target-ntiid']);
+		if (p) {
+			p.__cleanToCNodes(x, remove);
 		}
-
-		function permitOrRemove(e) {
-			console.debug('TODO:... filter TOC')
-			/*var status = CourseWareUtils.getEnrollmentStatus(ntiid);
-			if (!ContentUtils.hasVisibilityForContent(e, status)) {
-				getAllNodesReferencingContentID(e.get('target-ntiid'), x).forEach(strip);
-			}*/
-		}
-
-		var ntiid = this.NTIID;
-		x.findall('*[@visibility]')
-			.forEach(permitOrRemove);
-
 
 		return x;
 	}
@@ -124,8 +99,8 @@ merge(Package.prototype, base, assets, {
 
 
 
-function parse(service, data) {
-	return new Package(service, data);
+function parse(service, data, parent) {
+	return new Package(service, data, parent);
 }
 
 Package.parse = parse.bind(Package);
