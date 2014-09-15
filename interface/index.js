@@ -45,6 +45,8 @@ merge(DataServerInterface.prototype, {
 	 */
 	_request: function(options, context) {
 
+		var result;
+		var pending = context ? (context.__pendingServerRequests = (context.__pendingServerRequests || [])) : [];
 		var start = Date.now();
 		var url = (options || {}).url;
 
@@ -85,7 +87,7 @@ merge(DataServerInterface.prototype, {
 			opts.form = data;
 		}
 
-		return new Promise(function(fulfill, reject) {
+		result = new Promise(function(fulfill, reject) {
 			console.log('DATASERVER <- [%s] %s %s', new Date().toUTCString(), opts.method, url);
 
 			request(opts, function(error, res, body) {
@@ -118,6 +120,9 @@ merge(DataServerInterface.prototype, {
 				fulfill(body && JSON.parse(body));
 			});
 		});
+
+		pending.push(result)
+		return result;
 	},
 
 
