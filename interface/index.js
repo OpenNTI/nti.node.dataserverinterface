@@ -117,7 +117,11 @@ merge(DataServerInterface.prototype, {
 					}
 				}
 
-				fulfill(body && JSON.parse(body));
+				try {
+					fulfill(body && JSON.parse(body));
+				} catch (e) {
+					fulfill(body);
+				}
 			});
 		});
 
