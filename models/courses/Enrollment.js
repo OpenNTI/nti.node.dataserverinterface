@@ -3,6 +3,7 @@
 var merge = require('merge');
 var urlJoin = require('../../utils/urljoin');
 var withValue = require('../../utils/object-attribute-withvalue');
+var forwardFunctions = require('../utils/function-forwarding');
 var base = require('../mixins/Base');
 
 var Instance = require('./Instance');
@@ -19,16 +20,19 @@ function Enrollment(service, data, admin) {
 	this.__pending = [].concat(i.__pending || []);
 }
 
-merge(Enrollment.prototype, base, {
+merge(Enrollment.prototype, base,
+	forwardFunctions([
+		'getPresentationProperties',
+		'getOutline'
+
+		//From:
+	], 'CourseInstance'), {
+
 	isCourse: true,
 
 
 	getCourseID: function() {
 		return this.CourseInstance.getID();
-	},
-
-	getPresentationProperties: function() {
-		return this.CourseInstance.getPresentationProperties();
 	}
 
 });
