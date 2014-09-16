@@ -47,7 +47,7 @@ merge(Enrollment.prototype, base,
 					return;
 				}
 
-				if (!hasVisibility(e, status)) {
+				if (!this.hasVisibility(e, status)) {
 					this.__getToCNodesReferencing(e.get('target-ntiid'), toc)
 						.forEach(remove);
 				}
