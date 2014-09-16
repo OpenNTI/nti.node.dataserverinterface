@@ -20,6 +20,50 @@ function OutlineNode(service, parent, data) {
 
 merge(OutlineNode.prototype, base, {
 
+	__getRoot: function() {
+
+		function up(o) {
+			var p = o && o._parent;
+			if (!p || !(p instanceof OutlineNode)) {
+				return o;
+			}
+
+			return up(p);
+		}
+
+		return up(this);
+	},
+
+
+	__getMaxDepthFromHere: function() {
+		return this.contents.map(function(item) {
+			return item.__getMaxDepthFromHere() + 1;
+		}).reduce(function(agg, item) {
+			return Math.max(agg, item);
+		}, 0);
+	},
+
+
+	getMaxDepth: function() {
+		return this.__getRoot()
+			.__getMaxDepthFromHere();
+	},
+
+
+	getDepth: function() {
+
+		var level = 0;//lvl 0 = root
+		var p = this._parent;
+		while (p) {
+			level++;
+			p = p._parent;
+			if (p && !(p instanceof OutlineNode)) {
+				p = null;
+			}
+		}
+
+		return level;
+	},
 
 });
 
