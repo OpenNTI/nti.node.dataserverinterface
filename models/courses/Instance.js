@@ -81,8 +81,15 @@ merge(Instance.prototype, base, {
 			return Promise.reject('No Outline or content link');
 		}
 
-		return this._service.get(link)
-			.then(Outline.parse.bind(Outline, this._service, this));
+		if (!this.__outline) {
+			this.__outline = this._service.get(link)
+				.then(function(contents) {
+					var o = Outline.parse(this._service, this, this.Outline);
+					o.contents = Outline.parse(this._service, o, contents);
+					return o;
+				}.bind(this));
+		}
+		return this.__outline;
 	}
 });
 

@@ -14,7 +14,8 @@ function OutlineNode(service, parent, data) {
 	Object.defineProperty(this, '_parent', withValue(parent));
 	merge(this, data);
 
-	this.contents = this.contents.map(parse.bind(this, service, this));
+	var c = this.contents;
+	this.contents = (c && c.map(parse.bind(this, service, this))) || [];
 }
 
 merge(OutlineNode.prototype, base, {
