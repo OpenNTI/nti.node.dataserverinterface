@@ -121,7 +121,9 @@ merge(OutlineNode.prototype, base, {
 
 
 	getContent: function() {
-		return this.src ? this._service.get(this.src) : getContentFallback.call(this);
+		var src = getSrc(this);
+
+		return src ? this._service.get(src) : getContentFallback(this);
 	}
 });
 
@@ -144,7 +146,30 @@ module.exports = OutlineNode;
  * FALLBACK TEMPORARY STUFF BELOW THIS POINT
  */
 
-//This function is called with a set scope (as if it were part of the class)
-function getContentFallback() {
-	var c = this.__getCourse();
+function getSrc(node) {
+	var course = node.__getCourse();
+	var bundle = course && course.ContentPackageBundle;
+	var firstPackage = ((bundle && bundle.ContentPackages) || [])[0];
+	var root = firstPackage && firstPackage.root;
+
+	if (node.src) {
+		if (node.src.split('/').length === 1) {
+			return path.join(root || '', node.src);
+		}
+		return node.src;
+	}
+
+	return undefined;
+}
+
+
+function getContentFallback(node) {
+	var course = node.__getCourse();
+	var bundle = course && course.ContentPackageBundle;
+	var pkg = ((bundle && bundle.ContentPackages) || [])[0];
+
+	var p = pkg ? pkg.getTableOfContents() : Promise.reject('No Content Package');
+
+	return p.then(function(toc) {
+	});
 }
