@@ -1,13 +1,10 @@
 'use strict';
 
 module.exports = function withValue(value) {
-	var d = withValue.d || (
-	withValue.d = {
+	return {
 		enumerable: false,
 		writable: false,
 		configurable: false,
-		value: null
-	});
-	d.value = value;
-	return d;
+		value: value
+	};
 };
