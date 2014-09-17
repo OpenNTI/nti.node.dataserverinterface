@@ -11,6 +11,7 @@ module.exports = function defineProperties(obj, props) {
 			cfg = props[property];
 
 			if (hasDefineProp) {
+				cfg.__proto__ = null;
 				Object.defineProperty(obj, property, cfg);
 			}
 			else {

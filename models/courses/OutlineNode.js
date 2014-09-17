@@ -2,16 +2,25 @@
 
 var Promise = global.Promise || require('es6-promise').Promise;
 
+var path = require('path');
 var merge = require('merge');
 
 var base = require('../mixins/Base');
 
+var define = require('../../utils/object-define-properties');
 var withValue = require('../../utils/object-attribute-withvalue');
 
 
 function OutlineNode(service, parent, data) {
-	Object.defineProperty(this, '_service', withValue(service));
-	Object.defineProperty(this, '_parent', withValue(parent));
+	define(this,{
+		_service: withValue(service),
+		_parent: withValue(parent),
+		href: {
+			enumerable: true,
+			configurable: false,
+			get: this.__getHref.bind(this)
+		}
+	});
 	merge(this, data);
 
 	var c = this.contents;
@@ -19,6 +28,24 @@ function OutlineNode(service, parent, data) {
 }
 
 merge(OutlineNode.prototype, base, {
+
+
+	__getHref: function() {
+		var courseId = (this.__getCourse() || {getID:function(){}}).getID();
+
+		if (!this.ContentNTIID) {
+			return undefined;
+		}
+
+		return path.join(	'course', encodeURIComponent(courseId),
+							'o', encodeURIComponent(this.ContentNTIID));
+	},
+
+
+	__getCourse: function() {
+		return this.__getRoot()._parent;
+	},
+
 
 	__getRoot: function() {
 
