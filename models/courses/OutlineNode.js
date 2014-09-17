@@ -29,16 +29,31 @@ function OutlineNode(service, parent, data) {
 
 merge(OutlineNode.prototype, base, {
 
+	getID: function() {
+		return this.ContentNTIID;
+	},
+
+
+	__getNode: function (id) {
+		if (this.getID() === id) {
+			return this;
+		}
+
+		return this.contents.reduce(function (item, potential) {
+			return item || potential.__getNode(id); }, null);
+	},
+
 
 	__getHref: function() {
 		var courseId = (this.__getCourse() || {getID:function(){}}).getID();
+		var id = this.getID();
 
-		if (!this.ContentNTIID) {
+		if (!id) {
 			return undefined;
 		}
 
 		return path.join(	'course', encodeURIComponent(courseId),
-							'o', encodeURIComponent(this.ContentNTIID));
+							'o', encodeURIComponent(id));
 	},
 
 
@@ -71,6 +86,18 @@ merge(OutlineNode.prototype, base, {
 	},
 
 
+	isOpen: function() {},
+
+
+	isLeaf: function() {},
+
+
+	isHeading: function() {},
+
+
+	isSection: function() {},
+
+
 	getMaxDepth: function() {
 		return this.__getRoot()
 			.__getMaxDepthFromHere();
@@ -92,6 +119,10 @@ merge(OutlineNode.prototype, base, {
 		return level;
 	},
 
+
+	getContent: function() {
+		return this.src ? this._service.get(this.src) : getContentFallback.call(this);
+	}
 });
 
 
@@ -106,3 +137,14 @@ function parse(service, parent, data) {
 OutlineNode.parse = parse.bind(OutlineNode);
 
 module.exports = OutlineNode;
+
+
+
+/*******************************************************************************
+ * FALLBACK TEMPORARY STUFF BELOW THIS POINT
+ */
+
+//This function is called with a set scope (as if it were part of the class)
+function getContentFallback() {
+	var c = this.__getCourse();
+}

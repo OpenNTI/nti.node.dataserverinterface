@@ -90,6 +90,15 @@ merge(Instance.prototype, base, {
 				}.bind(this));
 		}
 		return this.__outline;
+	},
+
+
+	getOutlineNode: function (id) {
+		return this.getOutline()
+			.then(function(outline) {
+				return outline.__getNode(id) ||
+						Promise.reject('Outline Node not found');
+			});
 	}
 });
 
