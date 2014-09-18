@@ -3,7 +3,10 @@
 var merge = require('merge');
 var setAndEmit = require('../../utils/getsethandler');
 var urlJoin = require('../../utils/urljoin');
+
+var forwardFunctions = require('../../utils/function-forwarding');
 var withValue = require('../../utils/object-attribute-withvalue');
+
 var base = require('../mixins/Base');
 var assets = require('../mixins/PresentationResources');
 var Package = require('./Package');
@@ -30,7 +33,8 @@ function Bundle(service, data, parent) {
 		this.getAsset('background').then(setAndEmit(this, 'background')));
 }
 
-merge(Bundle.prototype, base, assets, {
+merge(Bundle.prototype, base, assets,
+	forwardFunctions(['every','forEach','map','reduce'], 'ContentPackages'), {
 	isBundle: true,
 
 	getDefaultAssetRoot: function() {
