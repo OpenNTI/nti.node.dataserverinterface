@@ -1,6 +1,7 @@
 'use strict';
 var Promise = global.Promise || require('es6-promise').Promise;
 
+var Url = require('url');
 var merge = require('merge');
 var getLink = require('../../utils/getlink');
 var urlJoin = require('../../utils/urljoin');
@@ -119,6 +120,16 @@ merge(Instance.prototype, base, {
 		}
 
 		return Promise.all(this.ContentPackageBundle.map(get)).then(combine);
+	},
+
+
+	resolveContentURL: function(url) {
+		var bundle = this.ContentPackageBundle;
+		var pkg = ((bundle && bundle.ContentPackages) || [])[0];//probably should search all packages...
+
+		var root = Url.parse(pkg.root);
+
+		return Promise.resolve(root.resolve(url));
 	}
 });
 
