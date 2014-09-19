@@ -20,9 +20,7 @@ function Package(service, data, parent) {
 
 	this.__pending = [
 		this.getAsset('landing').then(setAndEmit(this, 'icon')),
-		this.getAsset('thumb').then(setAndEmit(this, 'thumb')),
-		this.getTableOfContents(),
-		this.getVideoIndex()
+		this.getAsset('thumb').then(setAndEmit(this, 'thumb'))
 	];
 }
 
