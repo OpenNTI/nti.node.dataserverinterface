@@ -4,7 +4,7 @@ var cache = {};
 
 function getPlucker(i) {
 	if (!cache[i]) {
-		cache[i] = new Function('function(o) {debugger;return o["'+i+'"];}');
+		cache[i] = new Function('o','return o["'+i+'"];');
 	}
 	return cache[i];
 }
