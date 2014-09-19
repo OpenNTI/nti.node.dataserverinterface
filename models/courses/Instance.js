@@ -5,6 +5,7 @@ var merge = require('merge');
 var getLink = require('../../utils/getlink');
 var urlJoin = require('../../utils/urljoin');
 var waitFor = require('../../utils/waitfor');
+var pluck = require('../../utils/array-pluck');
 var withValue = require('../../utils/object-attribute-withvalue');
 
 var base = require('../mixins/Base');
@@ -99,6 +100,25 @@ merge(Instance.prototype, base, {
 				return outline.__getNode(id) ||
 						Promise.reject('Outline Node not found');
 			});
+	},
+
+
+	getVideoIndex: function() {
+		function get(pkg) {
+			return pkg.getVideoIndex();
+		}
+
+		function flattenMap(o, i) {return merge(o, i);}
+		function flattenList(o, i) {return o.concat(i);}
+
+		function combine(indices) {
+			var orders = pluck(indices, '_order');
+			var out = indices.reduce(flattenMap, {});
+			out._order = orders.reduce(flattenList, []);
+			return out;
+		}
+
+		return Promise.all(this.ContentPackageBundle.map(get)).then(combine);
 	}
 });
 
