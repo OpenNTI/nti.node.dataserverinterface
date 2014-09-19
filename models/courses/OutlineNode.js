@@ -121,7 +121,7 @@ merge(OutlineNode.prototype, base, {
 
 
 	getContent: function() {
-		var src = this.getLink('overview-content');
+		var src = this.getLink('overview-content') || getSrc(this);
 		return src ? this._service.get(src) : getContentFallback(this);
 	}
 });
@@ -144,6 +144,22 @@ module.exports = OutlineNode;
 /*******************************************************************************
  * FALLBACK TEMPORARY STUFF BELOW THIS POINT
  */
+
+function getSrc(node) {
+	var course = node.__getCourse();
+	var bundle = course && course.ContentPackageBundle;
+	var firstPackage = ((bundle && bundle.ContentPackages) || [])[0];
+	var root = firstPackage && firstPackage.root;
+
+	if (node.src) {
+		if (node.src.split('/').length === 1) {
+			return path.join(root || '', node.src);
+		}
+		return node.src;
+	}
+
+	return undefined;
+}
 
 
 function getContentFallback(node) {
