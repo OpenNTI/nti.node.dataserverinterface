@@ -146,7 +146,7 @@ merge(Package.prototype, base, assets, {
 
 		vi._order = keyOrder;
 
-		return VideoIndex.parse(this._service, vi);
+		return VideoIndex.parse(this._service, vi, this);
 	},
 
 

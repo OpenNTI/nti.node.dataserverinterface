@@ -106,7 +106,7 @@ merge(Instance.prototype, base, {
 
 	getVideoIndex: function() {
 		var service = this._service;
-		
+
 		function get(pkg) {
 			return pkg.getVideoIndex().then(function(ix) {return ix.asJSON();});
 		}
@@ -118,9 +118,10 @@ merge(Instance.prototype, base, {
 			var orders = pluck(indices, '_order');
 			var out = indices.reduce(flattenMap, {});
 			out._order = orders.reduce(flattenList, []);
-			return VideoIndex.parse(service, out);
+			return VideoIndex.parse(service, out, this);
 		}
-		return Promise.all(this.ContentPackageBundle.map(get)).then(combine);
+		
+		return Promise.all(this.ContentPackageBundle.map(get)).then(combine.bind(this));
 	},
 
 

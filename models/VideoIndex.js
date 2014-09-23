@@ -4,11 +4,18 @@ var merge = require('merge');
 var withValue = require('../utils/object-attribute-withvalue');
 
 
-function VideoIndex(service, data) {
+function VideoIndex(service, data, parent) {
 	Object.defineProperty(this, '_service', withValue(service));
+	Object.defineProperty(this, '_parent', withValue(parent));
 	Object.defineProperty(this, '_order', withValue(data._order || []));
+
 	delete data._order;
-	this.data = data;
+
+	this.data = {};
+
+	for(var index in data) {
+		this.data = Video.parse(service, data[index], parent);
+	}
 }
 
 merge(VideoIndex.prototype, {
