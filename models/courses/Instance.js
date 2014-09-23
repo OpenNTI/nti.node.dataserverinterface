@@ -10,7 +10,7 @@ var pluck = require('../../utils/array-pluck');
 var withValue = require('../../utils/object-attribute-withvalue');
 
 var base = require('../mixins/Base');
-
+var VideoIndex = require('../VideoIndex');
 var Bundle = require('../content/Bundle');
 var CatalogEntry = require('./CatalogEntry');
 var Outline = require('./OutlineNode');
@@ -105,8 +105,10 @@ merge(Instance.prototype, base, {
 
 
 	getVideoIndex: function() {
+		var service = this._service;
+		
 		function get(pkg) {
-			return pkg.getVideoIndex();
+			return pkg.getVideoIndex().then(function(ix) {return ix.asJSON();});
 		}
 
 		function flattenMap(o, i) {return merge(o, i);}
@@ -116,9 +118,8 @@ merge(Instance.prototype, base, {
 			var orders = pluck(indices, '_order');
 			var out = indices.reduce(flattenMap, {});
 			out._order = orders.reduce(flattenList, []);
-			return out;
+			return VideoIndex.parse(service, out);
 		}
-
 		return Promise.all(this.ContentPackageBundle.map(get)).then(combine);
 	},
 

@@ -11,6 +11,8 @@ var withValue = require('../../utils/object-attribute-withvalue');
 var base = require('../mixins/Base');
 var assets = require('../mixins/PresentationResources');
 
+var VideoIndex = require('../VideoIndex');
+
 function Package(service, data, parent) {
 	Object.defineProperty(this, '_service', withValue(service));
 	Object.defineProperty(this, '_parent', withValue(parent));
@@ -144,7 +146,7 @@ merge(Package.prototype, base, assets, {
 
 		vi._order = keyOrder;
 
-		return vi;
+		return VideoIndex.parse(this._service, vi);
 	},
 
 
