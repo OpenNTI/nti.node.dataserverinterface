@@ -258,6 +258,33 @@ merge(DataServerInterface.prototype, {
 	},
 
 
+
+	recoverUsername: function(email, context) {
+		return this.ping(context)
+			.then(function(links) {
+
+				return this._post(getLink(links,'logon.forgot.username'), {
+					email: email
+				}, context);
+
+			}.bind(this));
+	},
+
+
+	recoverPassword: function(email, username, returnURL, context) {
+		return this.ping(context)
+			.then(function(links) {
+
+				return this._post(getLink(links,'logon.forgot.passcode'), {
+					email: email,
+					username: username,
+					success: returnURL
+				}, context);
+
+			}.bind(this));
+	},
+
+
 	getObject: function(ntiid, mime, context) {
 		if (!NTIIDs.isNTIID(ntiid)) {
 			return Promise.reject('Bad NTIID');
