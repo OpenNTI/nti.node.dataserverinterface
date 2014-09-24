@@ -261,9 +261,9 @@ merge(DataServerInterface.prototype, {
 
 	recoverUsername: function(email, context) {
 		return this.ping(context)
-			.then(function(links) {
+			.then(function(result) {
 
-				return this._post(getLink(links,'logon.forgot.username'), {
+				return this._post(result.links['logon.forgot.username'], {
 					email: email
 				}, context);
 
@@ -273,9 +273,9 @@ merge(DataServerInterface.prototype, {
 
 	recoverPassword: function(email, username, returnURL, context) {
 		return this.ping(context)
-			.then(function(links) {
+			.then(function(result) {
 
-				return this._post(getLink(links,'logon.forgot.passcode'), {
+				return this._post(result.links['logon.forgot.passcode'], {
 					email: email,
 					username: username,
 					success: returnURL
