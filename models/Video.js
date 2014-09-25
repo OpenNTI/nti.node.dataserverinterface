@@ -6,6 +6,8 @@ var merge = require('merge');
 var withValue = require('../utils/object-attribute-withvalue');
 var isEmpty = require('../utils/isempty');
 
+var MediaSource = require('./MediaSource');
+
 var NO_TRANSCRIPT = 'No Transcript';
 var NO_TRANSCRIPT_LANG = 'No Transcript for the requested language.';
 
@@ -13,7 +15,13 @@ function Video(service, data, parent) {
 	Object.defineProperty(this, '_service', withValue(service));
 	Object.defineProperty(this, '_parent', withValue(parent));
 
+	var sources = data.sources;
+	
 	merge(this, data);
+
+	this.sources = sources.map(function(item) {
+		return MediaSource.parse(service, item, this);
+	}.bind(this));
 }
 
 merge(Video.prototype, {
