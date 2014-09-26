@@ -106,6 +106,35 @@ merge(ServiceDocument.prototype, {
 					cache.set(key, json);
 					return json;
 				});
+			cache.setVolatile(key, result);//if this is asked for again before we resolve, reuse this promise.
+		}
+
+		return result.then(function(data) {
+			return User.parse(this, data);
+		}.bind(this));
+	},
+
+
+	__requestUserResolve: function(username) {
+		var key = 'user-'+username;
+		var cache = this.getDataCache();
+		var cached = cache.get(key);
+		var result;
+
+		if (cached) {
+			result = Promise.resolve(cached);
+		}
+		else {
+			result = this.get(this.getResolveUserURL(username))
+				.then(function(data) {
+					var user = data.Items.reduce(function(user, data) {
+						return user || (data.Username === username && data);
+					}, null);
+
+					cache.set(key, user);
+					return user || Promise.reject('Username "'+ username +'" could not resolve.');
+				});
+			cache.setVolatile(key, result);//if this is asked for again before we resolve, reuse this promise.
 		}
 
 		return result.then(function(data) {
@@ -115,16 +144,26 @@ merge(ServiceDocument.prototype, {
 
 
 	resolveUser: function(username) {
-		return this.get(this.getResolveUserURL(username))
-			.then(function(data) {
-				var user = data.Items.reduce(function(user, data) {
-					return user || (data.Username === username && data);
-				}, null);
-				return user || Promise.reject('Username "'+ username +'" could not resolve.');
-			})
-			.then(function(user) {
-				return User.parse(this, user);
-			}.bind(this));
+		var key = 'user-respository';
+		var cache = this.getDataCache();
+		var repo = cache.get(key) || {};
+		cache.setVolatile(key, repo);
+
+		if (repo[username]) {
+			return Promise.resolve(repo[username]);
+		}
+
+		var req = repo[username] = this.__requestUserResolve(username);
+
+		req.then(
+			function(user){
+				repo[username] = user;
+			},
+			function() {
+				delete repo[username];
+			});
+
+		return req;
 	},
 
 
