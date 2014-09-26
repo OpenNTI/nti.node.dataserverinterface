@@ -26,6 +26,11 @@ merge(PageInfo.prototype, base, {
 
 				return fixRefs(html, url.format());
 			});
+	},
+
+
+	getResource: function(url) {
+		return this._service.get(url);
 	}
 
 });
