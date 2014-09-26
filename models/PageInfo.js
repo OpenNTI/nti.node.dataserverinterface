@@ -13,6 +13,9 @@ function PageInfo(service, data) {
 
 merge(PageInfo.prototype, base, {
 
+	getContent: function() {
+		return this._service.get(this.getLink('content'));
+	}
 
 });
 
