@@ -6,6 +6,7 @@ var merge = require('merge');
 var isBrowser = require('../../utils/browser');
 var urlJoin = require('../../utils/urljoin');
 var isEmpty = require('../../utils/isempty');
+var isThenable = require('../../utils/isthenable');
 
 var ASSET_MAP = {
 	thumb: 'contentpackage-thumb-60x60.png',
@@ -74,8 +75,14 @@ function getAsset(name) {
 					cache.set(cacheKey, false);
 					return Promise.reject(r);
 				});
+		cache.setVolatile(cacheKey, p);
 	} else {
-		p = Promise[p ? 'resolve' : 'reject']();
+
+		if (isThenable(p)) {
+			p = Promise.resolve(p);
+		} else {
+			p = Promise[p ? 'resolve' : 'reject']();
+		}
 	}
 
 	return p
