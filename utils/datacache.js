@@ -16,7 +16,7 @@ DataCache.prototype.get = function get(key) {
 
 
 DataCache.prototype.set = function set(key, value) {
-	var o;
+	var o, data = this.data;
 	if (typeof key === 'object') {
 		o = key;
 		for (key in o) {
@@ -25,8 +25,9 @@ DataCache.prototype.set = function set(key, value) {
 			}
 		}
 	} else {
+		delete data[key];//make sure to reset its configuration
 		//throw if it can't be serialized, and ensure we have our own clone.
-		this.data[key] = JSON.parse(JSON.stringify(value));
+		data[key] = JSON.parse(JSON.stringify(value));
 	}
 
 	return this;
