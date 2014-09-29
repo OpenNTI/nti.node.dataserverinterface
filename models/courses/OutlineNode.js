@@ -170,6 +170,8 @@ function getContentFallback(node) {
 	var p = pkg ? pkg.getTableOfContents() : Promise.reject('No Content Package');
 
 	return p.then(function(toc) {
-		debugger;
+		console.debug(toc);
+
+		return Promise.reject('TODO: No overview JSON file');
 	});
 }
