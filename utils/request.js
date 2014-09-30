@@ -29,8 +29,8 @@ function copy(dest, src, keys) {
 	});
 }
 
-
-if (typeof net.connect === 'function') {
+//SERVER is declared in th WebPack config file
+if (SERVER) {
 	//in node.js land...
 	result = require('request');
 } else {
@@ -103,7 +103,7 @@ if (typeof net.connect === 'function') {
 						'status',
 						'statusText'
 					]);
-					
+
 					headers.forEach(function(i) {
 						response.headers[i] = req.getResponseHeader(i); });
 
