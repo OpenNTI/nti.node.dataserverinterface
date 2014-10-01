@@ -1,7 +1,4 @@
 'use strict';
-var result;
-var net = require('net');
-
 
 var XMLHttpFactories = [
 	function() {return new XMLHttpRequest();},
@@ -29,13 +26,13 @@ function copy(dest, src, keys) {
 	});
 }
 
-//SERVER is declared in th WebPack config file
-if (SERVER) {
+
+module.exports = exports = SERVER ? //SERVER is declared in th WebPack config file
 	//in node.js land...
-	result = require('request');
-} else {
+	require('request') :
+
 	//Mimic request() node package in the browser...
-	result = function (options, callback) {
+	function (options, callback) {
 		try {
 			var headers,
 				req = createXMLHTTPObject();
@@ -129,7 +126,3 @@ if (SERVER) {
 			callback(e, null, e.message);
 		}
 	};
-}
-
-
-module.exports = result;
