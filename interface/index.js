@@ -11,6 +11,7 @@ var merge = require('merge');
 
 var DataCache = require('../utils/datacache');
 
+var isBrowser = require('../utils/browser');
 var getLink = require('../utils/getlink');
 var clean = require('../utils/object-clean');
 var NTIIDs = require('../utils/ntiids');
@@ -25,6 +26,7 @@ var DataServerInterface = function (config) {
 	}
 	this.config = config;
 };
+
 
 merge(DataServerInterface.prototype, {
 
@@ -89,12 +91,16 @@ merge(DataServerInterface.prototype, {
 		}
 
 		result = new Promise(function(fulfill, reject) {
+			if(!isBrowser) {
 			console.log('DATASERVER <- [%s] %s %s', new Date().toUTCString(), opts.method, url);
+			}
 
 			request(opts, function(error, res, body) {
 				var contentType;
+				if(!isBrowser) {
 				console.log('DATASERVER -> [%s] %s %s %s %dms',
 					new Date().toUTCString(), opts.method, url, error || res.statusCode, Date.now() - start);
+				}
 
 				if (error || res.statusCode >= 300) {
 					if(res) {res.___isResponse = true;}
