@@ -9,8 +9,7 @@ var base = require('../mixins/Base');
 
 var define = require('../../utils/object-define-properties');
 var withValue = require('../../utils/object-attribute-withvalue');
-
-var encodeForURI = require('dataserverinterface/utils/ntiids').encodeForURI;
+var encodeForURI = require('../utils/ntiids').encodeForURI;
 
 function OutlineNode(service, parent, data) {
 	define(this,{
