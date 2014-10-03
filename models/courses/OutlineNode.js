@@ -10,6 +10,7 @@ var base = require('../mixins/Base');
 var define = require('../../utils/object-define-properties');
 var withValue = require('../../utils/object-attribute-withvalue');
 
+var encodeForURI = require('dataserverinterface/utils/ntiids').encodeForURI;
 
 function OutlineNode(service, parent, data) {
 	define(this,{
@@ -52,8 +53,8 @@ merge(OutlineNode.prototype, base, {
 			return undefined;
 		}
 
-		return path.join(	'course', encodeURIComponent(courseId),
-							'o', encodeURIComponent(id));
+		return path.join(	'course', encodeForURI(courseId),
+							'o', encodeForURI(id)) + '/';//end in a separator
 	},
 
 

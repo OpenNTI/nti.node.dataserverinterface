@@ -2,6 +2,9 @@
 var isEmpty = require('./isempty');
 var defineProperties = require('./object-define-properties');
 
+
+var COMMON_PREFIX = 'tag:nextthought.com,2011-10:';
+
 /**
  * Parses an id and returns an object containing the split portions
  * See http://excelsior.nextthought.com/server-docs/ntiid-structure/
@@ -156,10 +159,33 @@ function parseFragment(fragment) {
 }
 
 
+
+function encodeForURI(ntiid) {
+	var cut = COMMON_PREFIX.length;
+	if (ntiid && ntiid.substr(0, cut)=== COMMON_PREFIX) {
+		ntiid = ntiid.substr(cut);
+	}
+
+	return encodeURIComponent(ntiid);
+}
+
+function decodeFromURI(component) {
+	var ntiid = decodeURIComponent(component);
+
+	if (!isNTIID(ntiid) && ntiid.substr(0,3) !== 'tag') {
+		ntiid = COMMON_PREFIX + ntiid;
+	}
+
+	return ntiid;
+}
+
+
 module.exports = {
 	parseNTIID: parseNTIID,
 	isNTIID: isNTIID,
 	escapeId: escapeId,
 	ntiidPrefix: ntiidPrefix,
-	parseFragment: parseFragment
+	parseFragment: parseFragment,
+	encodeForURI: encodeForURI,
+	decodeFromURI: decodeFromURI
 };
