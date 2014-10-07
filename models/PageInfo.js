@@ -7,6 +7,7 @@ var path = require('path');
 
 var withValue = require('../utils/object-attribute-withvalue');
 var fixRefs = require('../utils/rebase-references');
+var NTIIDs = require('../utils/ntiids');
 
 function PageInfo(service, data) {
 	Object.defineProperty(this, '_service', withValue(service));
@@ -31,8 +32,16 @@ merge(PageInfo.prototype, base, {
 
 	getResource: function(url) {
 		return this._service.get(url);
-	}
+	},
 
+
+	getPackageID: function () {
+		function bestGuess(p) {
+			return NTIIDs.ntiidPrefix(p.getID());
+		}
+
+		return this.ContentPackageNTIID || bestGuess(this);
+	}
 });
 
 
