@@ -1,14 +1,9 @@
 'use strict';
 
-module.exports = function unique(array) {
-    var a = array.slice();
-	var i, j;
-    for(i = 0; i < a.length; ++i) {
-        for(j = i + 1; j < a.length; ++j) {
-            if(a[i] === a[j])
-                a.splice(j--, 1);
-        }
-    }
+var args = 'value, index, self';
+var filter = new Function(args, 'return self.indexOf(value) === index');
+var filterLast = new Function(args, 'return self.lastIndexOf(value) === index');
 
-    return a;
+module.exports = function unique(array, keepLastOccurance) {
+    return array.filter(keepLastOccurance ? filterLast : filter);
 };
