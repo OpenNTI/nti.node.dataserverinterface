@@ -8,6 +8,7 @@ var EventEmitter = require('events').EventEmitter;
 var withValue = require('../utils/object-attribute-withvalue');
 var identity = require('../utils/identity');
 var waitFor = require('../utils/waitfor');
+var unique = require('../utils/array-unique');
 
 var Package = require('../models/content/Package');
 var Bundle = require('../models/content/Bundle');
@@ -87,6 +88,28 @@ merge(Library.prototype, EventEmitter.prototype, {
 		});
 
 		return found;
+	},
+
+
+	findPackage: function(packageId, treatAsPrefix) {
+
+		var packs = unique(this.packages.concat(
+
+			this.bundles.concat(
+					this.courses.concat(this.coursesAdmin).map(function(course) {
+						return course.CourseInstance.ContentPackageBundle;}))
+
+				.reduce(function(set, bundle) {
+					return set.concat(bundle.ContentPackages); }, [])
+			));
+
+		function exact(found, pkg) {
+			return found || pkg.getID() === packageId && pkg; }
+
+		function prefixed(found, pkg) {
+			return found || pkg.getID().indexOf(packageId) === 0 && pkg; }
+
+		return packs.reduce(treatAsPrefix ? prefixed : exact, null)
 	}
 });
 
