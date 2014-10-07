@@ -124,7 +124,7 @@ function ntiidPrefix(id) {
 	var ntiid = parseNTIID(id);
 	if (ntiid) {
 		ntiid.specific.type = 'HTML';
-		ntiid.specific.typeSpecific = ntiid.specific.typeSpecific.split('.').first();
+		ntiid.specific.typeSpecific = ntiid.specific.typeSpecific.split('.')[0];
 	}
 	return ntiid && ntiid.toString();
 }
