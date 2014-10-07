@@ -5,6 +5,7 @@ var Promise = global.Promise || require('es6-promise').Promise;
 
 
 var Url = require('url');
+var btoa = global.bota || require('btoa');//If the login method is invoked on the NodeJS side, we will need this function...
 var QueryString = require('query-string');
 var request = require('../utils/request');
 var merge = require('merge');
@@ -132,7 +133,7 @@ merge(DataServerInterface.prototype, {
 			});
 		});
 
-		pending.push(result)
+		pending.push(result);
 		return result;
 	},
 
@@ -192,7 +193,7 @@ merge(DataServerInterface.prototype, {
 				return waitFor(doc.__pending)
 					.then(function() {
 						return Promise.resolve(doc);
-					})
+					});
 			});
 		}
 
@@ -209,7 +210,7 @@ merge(DataServerInterface.prototype, {
 	logInPassword: function(url,credentials) {
 		var username = credentials ? credentials.username : undefined;
 		var password = credentials ? credentials.password : undefined;
-		var auth = password ? ('Basic '+btoa(username+':'+password)) : undefined;
+		var auth = password ? ('Basic ' + btoa(username+':'+password)) : undefined;
 		var options = {
 			url: url,
 			method: 'GET',
@@ -325,6 +326,8 @@ merge(DataServerInterface.prototype, {
 		function model(o) {
 			return o && o.MimeType ? o : null;
 		}
+
+		var me = this;
 
 		return Promise.all(ntiids.map(function(n) {
 			return me.getObject(n, undefined, context); }))

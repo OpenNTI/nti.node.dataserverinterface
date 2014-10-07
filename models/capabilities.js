@@ -66,7 +66,7 @@ function Capabilities(service, list) {
 
 merge(Capabilities.prototype, {
 	hasCapability: function(c) {
-		return this._list.indexOf(c) >= 0
+		return this._list.indexOf(c) >= 0;
 	}
 });
 

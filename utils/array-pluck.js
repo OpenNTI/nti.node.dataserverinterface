@@ -2,6 +2,7 @@
 
 var cache = {};
 
+/*jshint -W054*/
 function getPlucker(i) {
 	if (!cache[i]) {
 		cache[i] = new Function('o','return o["'+i+'"];');

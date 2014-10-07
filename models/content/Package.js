@@ -68,6 +68,7 @@ merge(Package.prototype, base, assets, {
 	getVideoIndex: function() {
 		var cache = this._service.getDataCache();
 		var promise = this.__videoIndex;
+		var service = this._service;
 
 		function find(toc) {
 			var ref = toc.find('.//reference[@type="application/vnd.nextthought.videoindex"]');
@@ -80,7 +81,7 @@ merge(Package.prototype, base, assets, {
 				return cached;
 			}
 
-			return this._service.get(url)
+			return service.get(url)
 				.then(function (data) {
 					cache.set(url, data);
 					return data;
@@ -105,12 +106,17 @@ merge(Package.prototype, base, assets, {
 
 	__parseVideoIndex: function(toc, json) {
 		var vi, n, keys, keyOrder = [],
-			containers;
+			containers, root = this.root;
 
 		function query(tag, id) {
 			return './/' + tag + '[@ntiid="' + id + '"]';
 		}
 
+		function prefix(o) {
+			o.src = urlJoin(root, o.src);
+			o.srcjsonp = urlJoin(root, o.srcjsonp);
+			return o;
+		}
 
 		containers = (json && json.Containers) || {};
 		keys = Object.keys(containers);
@@ -135,11 +141,7 @@ merge(Package.prototype, base, assets, {
 			if (vi.hasOwnProperty(n)) {
 				n = vi[n];
 				if (n && !isEmpty(n.transcripts)) {
-					n.transcripts = n.transcripts.map(function (o) {
-						o.src = urlJoin(this.root, o.src);
-						o.srcjsonp = urlJoin(this.root, o.srcjsonp);
-						return o;
-					}.bind(this));
+					n.transcripts = n.transcripts.map(prefix);
 				}
 			}
 		}

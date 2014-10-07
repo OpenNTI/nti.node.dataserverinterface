@@ -1,3 +1,4 @@
+/* global SERVER, ActiveXObject, XMLHttpRequest */
 'use strict';
 
 var XMLHttpFactories = [
@@ -25,7 +26,6 @@ function copy(dest, src, keys) {
 		}
 	});
 }
-
 
 module.exports = exports = SERVER ? //SERVER is declared in th WebPack config file
 	//in node.js land...

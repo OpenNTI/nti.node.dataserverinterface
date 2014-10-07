@@ -89,7 +89,7 @@ Catalog.load = function(service, reload) {
 					return catalog;
 				});
 			});
-}
+};
 
 
 module.exports = Catalog;

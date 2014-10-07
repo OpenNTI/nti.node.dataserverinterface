@@ -12,4 +12,4 @@ module.exports = exports = function guidGenerator() {
         d = Math.floor(d/16);
         return (c=='x' ? r : (r&0x7|0x8)).toString(16);
     });
-}
+};

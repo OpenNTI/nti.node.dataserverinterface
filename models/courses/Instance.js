@@ -53,7 +53,7 @@ merge(Instance.prototype, base, {
 
 		function parseCCE(cce) {
 			cce = CatalogEntry.parse(service, cce);
-			this.CatalogEntry = cce;
+			me.CatalogEntry = cce;
 			return waitFor(cce.__pending);
 		}
 
@@ -62,9 +62,10 @@ merge(Instance.prototype, base, {
 			return data;
 		}
 
-		var service = this._service,
+		var me = this,
+			service = me._service,
 			cache = service.getDataCache(),
-			url = getLink(this, 'CourseCatalogEntry'),
+			url = getLink(me, 'CourseCatalogEntry'),
 			cached = cache.get(url), work;
 
 		if (cached) {
@@ -73,7 +74,7 @@ merge(Instance.prototype, base, {
 			work = service.get(url).then(cacheIt);
 		}
 
-		return work.then(parseCCE.bind(this));
+		return work.then(parseCCE);
 	},
 
 
@@ -106,6 +107,7 @@ merge(Instance.prototype, base, {
 
 	getVideoIndex: function() {
 		var service = this._service;
+		var me = this;
 
 		function get(pkg) {
 			return pkg.getVideoIndex().then(function(ix) {return ix.asJSON();});
@@ -118,10 +120,10 @@ merge(Instance.prototype, base, {
 			var orders = pluck(indices, '_order');
 			var out = indices.reduce(flattenMap, {});
 			out._order = orders.reduce(flattenList, []);
-			return VideoIndex.parse(service, out, this);
+			return VideoIndex.parse(service, out, me);
 		}
-		
-		return Promise.all(this.ContentPackageBundle.map(get)).then(combine.bind(this));
+
+		return Promise.all(this.ContentPackageBundle.map(get)).then(combine);
 	},
 
 

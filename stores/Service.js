@@ -322,7 +322,7 @@ merge(ServiceDocument.prototype, {
 	getBulkResolveUserURL: function() {
 		var l = getLink(
 			(this.getWorkspace('Global') || {}).Links || [],
-			Globals.BULK_USER_RESOLVE_REL);
+			constants.REL_BULK_USER_RESOLVE);
 
 		return l || null;
 	},

@@ -130,7 +130,7 @@ merge(OutlineNode.prototype, base, {
 
 function parse(service, parent, data) {
 	if (Array.isArray(data)) {
-		return data.map(parse.bind(this, service, parent));
+		return data.map(parse.bind(OutlineNode, service, parent));
 	}
 	return new OutlineNode(service, parent, data);
 }

@@ -28,71 +28,69 @@ function getDefaultAssetRoot(scope) {
 	return '';
 }
 
-
-function getAssetRoot() {
-	if (this.presentationroot) { return this.presentationroot; }
-
-	var resources = this.PlatformPresentationResources || [],
-		root;
-
-	resources.every(function(resource) {
-		if (resource.PlatformName === 'webapp') {
-			root = resource.href;
-		}
-		return !root;
-	});
-
-	this.presentationroot = root || getDefaultAssetRoot(this);
-
-	return this.presentationroot;
-}
-
-
-/**
- * builds the url for the asset and returns a promise that fulfills if the img loads or rejects if it fails.
- * @param  {string} name asset name to load
- * @return {Promise} whether or not the asset exists
- */
-function getAsset(name) {
-	var assetPath = ASSET_MAP[name] || ('missing-' + name + '-asset.png'),
-		root = this.getAssetRoot(),
-		url = root && urlJoin(root, assetPath),
-		cache = this._service.getDataCache(),
-		cacheKey = 'asset-' + url;
-
-	if (isEmpty(root)) {
-		return Promise.reject('No root');
-	}
-
-	var p = cache.get(cacheKey);
-	if (p === undefined) {
-		p = this._service.head(url)
-			.then(
-				function() {
-					cache.set(cacheKey, true);
-				},
-				function(r) {
-					cache.set(cacheKey, false);
-					return Promise.reject(r);
-				});
-		cache.setVolatile(cacheKey, p);
-	} else {
-
-		if (isThenable(p)) {
-			p = Promise.resolve(p);
-		} else {
-			p = Promise[p ? 'resolve' : 'reject']();
-		}
-	}
-
-	return p
-		.then(
-			function() { return url; },
-			function() { return Promise.reject(name + ' asset not found'); });
-}
-
-
 merge(exports, {
-	getAsset: getAsset,
-	getAssetRoot: getAssetRoot
+
+
+	getAssetRoot: function getAssetRoot() {
+		if (this.presentationroot) { return this.presentationroot; }
+
+		var resources = this.PlatformPresentationResources || [],
+			root;
+
+		resources.every(function(resource) {
+			if (resource.PlatformName === 'webapp') {
+				root = resource.href;
+			}
+			return !root;
+		});
+
+		this.presentationroot = root || getDefaultAssetRoot(this);
+
+		return this.presentationroot;
+	},
+
+
+	/**
+	 * builds the url for the asset and returns a promise that fulfills if the img loads or rejects if it fails.
+	 * @param  {string} name asset name to load
+	 * @return {Promise} whether or not the asset exists
+	 */
+	getAsset: function getAsset(name) {
+		var assetPath = ASSET_MAP[name] || ('missing-' + name + '-asset.png'),
+			root = this.getAssetRoot(),
+			url = root && urlJoin(root, assetPath),
+			cache = this._service.getDataCache(),
+			cacheKey = 'asset-' + url;
+
+		if (isEmpty(root)) {
+			return Promise.reject('No root');
+		}
+
+		var p = cache.get(cacheKey);
+		if (p === undefined) {
+			p = this._service.head(url)
+				.then(
+					function() {
+						cache.set(cacheKey, true);
+					},
+					function(r) {
+						cache.set(cacheKey, false);
+						return Promise.reject(r);
+					});
+			cache.setVolatile(cacheKey, p);
+		} else {
+
+			if (isThenable(p)) {
+				p = Promise.resolve(p);
+			} else {
+				p = Promise[p ? 'resolve' : 'reject']();
+			}
+		}
+
+		return p
+			.then(
+				function() { return url; },
+				function() { return Promise.reject(name + ' asset not found'); });
+	}
+
 });

@@ -22,7 +22,7 @@ module.exports = function forwardFunctions(fns, key) {
 
 	fns.forEach(function(fn) {
 		result[fn] = reflect(fn, key);
-	})
+	});
 
 	return result;
 };

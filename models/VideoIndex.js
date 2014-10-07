@@ -34,10 +34,13 @@ merge(VideoIndex.prototype, {
 
 
 	reduce: function(fn, initial) {
+		var data = this.data;
+
 		function reducer(agg, v, i, a) {
-			return fn(agg, this.data[v], i, a);
+			return fn(agg, data[v], i, a);
 		}
-		return this._order.reduce(reducer.bind(this), initial);
+
+		return this._order.reduce(reducer, initial);
 	},
 
 

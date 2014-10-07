@@ -14,6 +14,7 @@ var Package = require('../models/content/Package');
 var Bundle = require('../models/content/Bundle');
 var Course = require('../models/courses/Enrollment');
 
+
 function Library(service, name, contentPackages,
 								contentBundles,
 								enrolledCourses,
@@ -41,7 +42,7 @@ function Library(service, name, contentPackages,
 
 	this.bundles = contentBundles.map(function(bdl) {
 		if (!bdl.ContentPackages || !bdl.ContentPackages.length) {
-			console.warn('Bundle is empty. Missing packages.')
+			console.warn('Bundle is empty. Missing packages.');
 			return null;
 		}
 
@@ -109,7 +110,7 @@ merge(Library.prototype, EventEmitter.prototype, {
 		function prefixed(found, pkg) {
 			return found || pkg.getID().indexOf(packageId) === 0 && pkg; }
 
-		return packs.reduce(treatAsPrefix ? prefixed : exact, null)
+		return packs.reduce(treatAsPrefix ? prefixed : exact, null);
 	}
 });
 
@@ -153,7 +154,7 @@ Library.load = function(service, name, reload) {
 	}).then(function() {
 		return library;
 	});
-}
+};
 
 
 module.exports = Library;

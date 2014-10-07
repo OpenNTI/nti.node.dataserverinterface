@@ -60,8 +60,7 @@ function rebase(string, basePath) {
 			original : attr + '="' + host + url + '"';
 	}
 
-	var me = this,
-		envSalt = '',
+	var envSalt = '',
 		locationHash = stringHash(location.hostname + envSalt);
 
 	string = bustCorsForResources(string, 'h', locationHash);

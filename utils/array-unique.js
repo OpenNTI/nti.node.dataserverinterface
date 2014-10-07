@@ -1,5 +1,6 @@
 'use strict';
 
+/*jshint -W054*/
 var args = 'value, index, self';
 var filter = new Function(args, 'return self.indexOf(value) === index');
 var filterLast = new Function(args, 'return self.lastIndexOf(value) === index');

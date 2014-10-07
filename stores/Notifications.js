@@ -96,7 +96,7 @@ Notifications.load = function(service, reload) {
 		.then(function(data) {
 			return new Notifications(service, data);
 		});
-}
+};
 
 
 module.exports = Notifications;
