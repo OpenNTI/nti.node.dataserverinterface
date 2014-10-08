@@ -4,6 +4,8 @@ var et = require('elementtree');
 var merge = require('merge');
 var base = require('./mixins/Base');
 
+var PageSource = require('./TableOfContentsBackedPageSource');
+
 var forwardFunctions = require('../utils/function-forwarding');
 var defineProperties = require('../utils/object-define-properties');
 var withValue = require('../utils/object-attribute-withvalue');
@@ -29,9 +31,19 @@ merge(TableOfContents.prototype, base,
 	},
 
 
+	getNode: function(id) {
+		return this._root.find('.//*[@ntiid="' + id + '"]');
+	},
+
+
 	getSortPosition: function(id) {
-		var node = this._root.find('.//*[@ntiid="' + id + '"]');
+		var node = this.getNode(id);
 		return (node && node._id) || -1;
+	},
+
+
+	getPageSource: function(rootId) {
+		return new PageSource(this, rootId);
 	}
 
 });
