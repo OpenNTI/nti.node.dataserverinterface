@@ -1,14 +1,17 @@
 'use strict';
 
 var merge = require('merge');
+var defineProperties = require('../utils/object-define-properties');
 var withValue = require('../utils/object-attribute-withvalue');
 
 var Video = require('./Video');
 
 function VideoIndex(service, data, parent) {
-	Object.defineProperty(this, '_service', withValue(service));
-	Object.defineProperty(this, '_parent', withValue(parent));
-	Object.defineProperty(this, '_order', withValue(data._order || []));
+	defineProperties(this, {
+		_service: withValue(service),
+		_parent: withValue(parent),
+		_order: withValue(data._order || [])
+	});
 
 	delete data._order;
 
@@ -23,6 +26,23 @@ merge(VideoIndex.prototype, {
 
 	asJSON: function() {
 		return merge({}, this.data, {_order: this._order});
+	},
+
+
+	filter: function(fn) {
+		var data = {};
+		var order = this._order.filter(function(v, i, a) {
+			var o = this.data[v];
+			var pass = fn(o, i, a);
+			if (pass) {
+				data[v] = o;
+			}
+			return pass;
+		}.bind(this));
+
+		data._order = order;
+		
+		return new VideoIndex(this._service, data, this._parent);
 	},
 
 

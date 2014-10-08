@@ -34,7 +34,7 @@ function Bundle(service, data, parent) {
 }
 
 merge(Bundle.prototype, base, assets,
-	forwardFunctions(['every','forEach','map','reduce'], 'ContentPackages'), {
+	forwardFunctions(['every','filter','forEach','map','reduce'], 'ContentPackages'), {
 	isBundle: true,
 
 	getDefaultAssetRoot: function() {

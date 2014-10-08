@@ -29,7 +29,7 @@ function Notifications(service, data) {
 
 
 merge(Notifications.prototype, EventEmitter.prototype,
-	forwardFunctions(['every','forEach','map','reduce'], 'Items'), {
+	forwardFunctions(['every','filter','forEach','map','reduce'], 'Items'), {
 
 	getLength: function() {
 		return (this.Items || []).length;

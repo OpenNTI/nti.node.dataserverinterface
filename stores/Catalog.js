@@ -37,7 +37,7 @@ function Catalog(service, data) {
 
 
 merge(Catalog.prototype, EventEmitter.prototype,
-	forwardFunctions(['every','forEach','map','reduce'], 'Items'), {
+	forwardFunctions(['every','filter','forEach','map','reduce'], 'Items'), {
 
 
 	onChange: function() {
