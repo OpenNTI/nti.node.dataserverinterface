@@ -1,7 +1,7 @@
 'use strict';
 
 var merge = require('merge');
-var et = require('elementtree');
+
 
 var isEmpty = require('../../utils/isempty');
 var setAndEmit = require('../../utils/getsethandler');
@@ -12,6 +12,7 @@ var base = require('../mixins/Base');
 var assets = require('../mixins/PresentationResources');
 
 var VideoIndex = require('../VideoIndex');
+var ToC = require('../XMLBasedTableOfContents');
 
 function Package(service, data, parent) {
 	Object.defineProperty(this, '_service', withValue(service));
@@ -41,23 +42,23 @@ merge(Package.prototype, base, assets, {
 
 
 	getTableOfContents: function() {
-		var toc = this.__toc;
-		var cache = this._service.getDataCache();
-		var cached = cache.get(this.index);
+		var me = this;
+		var toc = me.__toc;
+		var cache = me._service.getDataCache();
+		var cached = cache.get(me.index);
 
 		if (!toc) {
 			toc = cached ?
 				Promise.resolve(cached) :
-				this._service.get(this.index)
+				me._service.get(me.index)
 					.then(function(data) {
-						cache.set(this.index, data);
+						cache.set(me.index, data);
 						return data;
-						}.bind(this));
+					});
 
-			toc = toc.then(this.__parseXML.bind(this))
-				.then(this.__cleanToCNodes.bind(this));
+			toc = toc.then(function(o){return ToC.parse(me._service, o, me);});
 
-			this.__toc = toc;
+			me.__toc = toc;
 		}
 
 
@@ -71,8 +72,7 @@ merge(Package.prototype, base, assets, {
 		var service = this._service;
 
 		function find(toc) {
-			var ref = toc.find('.//reference[@type="application/vnd.nextthought.videoindex"]');
-			return (ref && ref.get('href')) || Promise.reject('No Video Index');
+			return toc.getVideoIndexRef() || Promise.reject('No Video Index');
 		}
 
 		function get(url) {
@@ -95,7 +95,7 @@ merge(Package.prototype, base, assets, {
 					return Promise.resolve(toc)
 						.then(find)
 						.then(urlJoin.bind(this, this.root))
-						.then(get.bind(this))
+						.then(get)
 						.then(this.__parseVideoIndex.bind(this, toc));
 				}.bind(this));
 		}
@@ -108,10 +108,6 @@ merge(Package.prototype, base, assets, {
 		var vi, n, keys, keyOrder = [],
 			containers, root = this.root;
 
-		function query(tag, id) {
-			return './/' + tag + '[@ntiid="' + id + '"]';
-		}
-
 		function prefix(o) {
 			o.src = urlJoin(root, o.src);
 			o.srcjsonp = urlJoin(root, o.srcjsonp);
@@ -123,9 +119,9 @@ merge(Package.prototype, base, assets, {
 
 		try {
 			keys.sort(function(a, b) {
-				var c = toc.find(query('topic', a)) || toc.find(query('toc', a)),
-					d = toc.find(query('topic', b)),
-					p = ((c && c._id) || 0) > ((d && d._id) || 0);
+				var c = toc.getSortPosition(a),
+					d = toc.getSortPosition(b),
+					p = c > d;
 				return p ? 1 : -1;
 			});
 		} catch (e) {
@@ -149,42 +145,8 @@ merge(Package.prototype, base, assets, {
 		vi._order = keyOrder;
 
 		return VideoIndex.parse(this._service, vi, this);
-	},
-
-
-	__parseXML: function(string) {
-		return et.parse(string);
-	},
-
-
-	__cleanToCNodes: function(x) {
-		function remove(e) {
-			var p = getParent(e);
-			if (p) {
-				p.remove(e);
-			}
-		}
-
-		function getParent(e) {
-			var key = 'ntiid',
-				id = e.get(key);
-
-			if (!id) {
-				key = 'target-ntiid';
-				id = e.get(key);
-			}
-
-			return x.find('*[@' + key + '="' + id + '"]/..');
-		}
-
-		var p = this.up('__cleanToCNodes');
-
-		if (p) {
-			p.__cleanToCNodes(x, remove);
-		}
-
-		return x;
 	}
+
 
 });
 
