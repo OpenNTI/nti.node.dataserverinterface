@@ -92,7 +92,7 @@ merge(Library.prototype, EventEmitter.prototype, {
 	},
 
 
-	findPackage: function(packageId, treatAsPrefix) {
+	findPackage: function(packageId) {
 
 		var packs = unique(this.packages.concat(
 
@@ -107,10 +107,7 @@ merge(Library.prototype, EventEmitter.prototype, {
 		function exact(found, pkg) {
 			return found || pkg.getID() === packageId && pkg; }
 
-		function prefixed(found, pkg) {
-			return found || pkg.getID().indexOf(packageId) === 0 && pkg; }
-
-		return packs.reduce(treatAsPrefix ? prefixed : exact, null);
+		return packs.reduce(exact, null);
 	}
 });
 
