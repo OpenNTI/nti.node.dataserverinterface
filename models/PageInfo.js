@@ -37,7 +37,7 @@ merge(PageInfo.prototype, base, {
 
 	getPackageID: function () {
 		function bestGuess(p) {
-			return NTIIDs.ntiidPrefix(p.getID());
+			throw new Error('PageInfo does not declare the package ID.');
 		}
 
 		return this.ContentPackageNTIID || bestGuess(this);
