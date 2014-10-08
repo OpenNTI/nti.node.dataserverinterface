@@ -77,7 +77,7 @@ merge(Library.prototype, EventEmitter.prototype, {
 	},
 
 
-	findCourse: function(courseInstanceId) {
+	getCourse: function(courseInstanceId) {
 		var courses = [].concat(this.coursesAdmin || []).concat(this.courses || []);
 		var found;
 		courses.every(function(course, index) {
@@ -92,7 +92,7 @@ merge(Library.prototype, EventEmitter.prototype, {
 	},
 
 
-	findPackage: function(packageId) {
+	getPackage: function(packageId) {
 
 		var packs = unique(this.packages.concat(
 
