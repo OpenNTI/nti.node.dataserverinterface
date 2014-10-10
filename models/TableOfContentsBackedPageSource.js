@@ -37,6 +37,8 @@ merge(TableOfContentsBackedPageSource.prototype, base, {
 		var prev = nodes[index - 1];
 
 		return {
+			total: nodes.length,
+			index: index,
 			next: buildRef(next, root),
 			prev: buildRef(prev, root)
 		};
