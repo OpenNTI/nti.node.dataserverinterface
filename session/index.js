@@ -41,6 +41,7 @@ merge(SessionManager.prototype, {
 	setupIntitalData: function(context) {
 		return this.server.getServiceDocument(context)
 			.then(function(service) {
+				context.__nti_service = service;
 
 				return Promise.all([
 					service.getAppUser(),
