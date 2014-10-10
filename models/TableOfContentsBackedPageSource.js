@@ -3,6 +3,7 @@
 var merge = require('merge');
 var base = require('./mixins/Base');
 
+var NTIIDs = require('../utils/ntiids');
 var defineProperties = require('../utils/object-define-properties');
 var withValue = require('../utils/object-attribute-withvalue');
 
@@ -36,8 +37,8 @@ merge(TableOfContentsBackedPageSource.prototype, base, {
 		var prev = nodes[index - 1];
 
 		return {
-			next: buildRef(next),
-			prev: buildRef(prev)
+			next: buildRef(next, root),
+			prev: buildRef(prev, root)
 		};
 	}
 
@@ -47,10 +48,16 @@ merge(TableOfContentsBackedPageSource.prototype, base, {
 module.exports = TableOfContentsBackedPageSource;
 
 
-function buildRef(node) {
+function buildRef(node, root) {
 	return node && {
 		ntiid: node.get('ntiid'),
-		title: node.get('label')
+		title: node.get('label'),
+		// Lets not make paths longer than they have to...
+		// The pattern will be the view is prefixed with the root in the slug.
+		// Adding a page id at the end would be redundant. The "Root" is the
+		// "default" pageId.
+		ref: node === root ?
+			'/' : NTIIDs.encodeForURI(node.get('ntiid'))
 	};
 }
 
