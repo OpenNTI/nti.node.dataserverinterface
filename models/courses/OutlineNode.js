@@ -168,11 +168,14 @@ function getContentFallback(node) {
 	var course = node.__getCourse();
 	var bundle = course && course.ContentPackageBundle;
 	var pkg = ((bundle && bundle.ContentPackages) || [])[0];
+	var contentId = node.getID();
 
 	var p = pkg ? pkg.getTableOfContents() : Promise.reject('No Content Package');
 
 	return p.then(function(toc) {
-		console.debug(toc);
+		var node = toc.getNode(contentId);
+		console.debug(toc, node);
+
 
 		return Promise.reject('TODO: No overview JSON file');
 	});
