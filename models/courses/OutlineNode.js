@@ -152,6 +152,7 @@ function getSrc(node) {
 	var root = firstPackage && firstPackage.root;
 
 	if (node.src) {
+		console.debug('[FALLBACK] Deriving outline node src path');
 		if (node.src.split('/').length === 1) {
 			return path.join(root || '', node.src);
 		}
@@ -163,6 +164,7 @@ function getSrc(node) {
 
 
 function getContentFallback(node) {
+	console.debug('[FALLBACK] Deriving outline node src content');
 	var course = node.__getCourse();
 	var bundle = course && course.ContentPackageBundle;
 	var pkg = ((bundle && bundle.ContentPackages) || [])[0];
