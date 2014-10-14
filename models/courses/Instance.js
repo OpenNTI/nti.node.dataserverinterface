@@ -113,12 +113,11 @@ merge(Instance.prototype, base, {
 			return pkg.getVideoIndex().then(function(ix) {return ix.asJSON();});
 		}
 
-		function flattenMap(o, i) {return merge(o, i);}
 		function flattenList(o, i) {return o.concat(i);}
 
 		function combine(indices) {
 			var orders = pluck(indices, '_order');
-			var out = indices.reduce(flattenMap, {});
+			var out = indices.reduce(merge, {});
 			out._order = orders.reduce(flattenList, []);
 			return VideoIndex.parse(service, out, me);
 		}
