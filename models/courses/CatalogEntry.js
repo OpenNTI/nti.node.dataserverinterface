@@ -29,15 +29,8 @@ merge(CourseCatalogEntry.prototype, base, assets, {
 
 
 	getDefaultAssetRoot: function() {
-		var root = ([this].concat(this.ContentPackages))
-				.reduce(function(agg, o) { return agg || o.root; }, null);
-
-		if (!root) {
-			console.error('No root for bundle: ', this);
-			return '';
-		}
-
-		return urlJoin(root, 'presentation-assets', 'webapp', 'v1');
+		console.log('Legacy Course Catalog Entry: (No Presentation Asset Data)', this.getID());
+		return '';
 	},
 
 

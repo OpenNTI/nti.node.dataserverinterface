@@ -42,7 +42,10 @@ merge(Bundle.prototype, base, assets,
 				.reduce(function(agg, o) { return agg || o.root; }, null);
 
 		if (!root) {
-			console.error('No root for bundle: ', this);
+			console.error('No root for bundle: ',
+				this.getID(),
+				this.ContentPackages.map(function(o){return o.getID();})
+				);
 			return '';
 		}
 
