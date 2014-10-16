@@ -2,6 +2,7 @@
 
 var merge = require('merge');
 
+var Promise = global.Promise || require('es6-promise').Promise;
 
 var isEmpty = require('../../utils/isempty');
 var setAndEmit = require('../../utils/getsethandler');
