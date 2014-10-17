@@ -58,39 +58,40 @@ merge(exports, {
 	getAsset: function getAsset(name) {
 		var assetPath = ASSET_MAP[name] || ('missing-' + name + '-asset.png'),
 			root = this.getAssetRoot(),
-			url = root && urlJoin(root, assetPath),
-			cache = this._service.getDataCache(),
-			cacheKey = 'asset-' + url;
+			url = root && urlJoin(root, assetPath);
+			// cache = this._service.getDataCache(),
+			// cacheKey = 'asset-' + url;
 
 		if (isEmpty(root)) {
 			return Promise.reject('No root');
 		}
 
-		var p = cache.get(cacheKey);
-		if (p === undefined) {
-			p = this._service.head(url)
-				.then(
-					function() {
-						cache.set(cacheKey, true);
-					},
-					function(r) {
-						cache.set(cacheKey, false);
-						return Promise.reject(r);
-					});
-			cache.setVolatile(cacheKey, p);
-		} else {
-
-			if (isThenable(p)) {
-				p = Promise.resolve(p);
-			} else {
-				p = Promise[p ? 'resolve' : 'reject']();
-			}
-		}
-
-		return p
-			.then(
-				function() { return url; },
-				function() { return Promise.reject(name + ' asset not found'); });
+		return Promise.resolve(url);
+		// var p = cache.get(cacheKey);
+		// if (p === undefined) {
+		// 	p = this._service.head(url)
+		// 		.then(
+		// 			function() {
+		// 				cache.set(cacheKey, true);
+		// 			},
+		// 			function(r) {
+		// 				cache.set(cacheKey, false);
+		// 				return Promise.reject(r);
+		// 			});
+		// 	cache.setVolatile(cacheKey, p);
+		// } else {
+		//
+		// 	if (isThenable(p)) {
+		// 		p = Promise.resolve(p);
+		// 	} else {
+		// 		p = Promise[p ? 'resolve' : 'reject']();
+		// 	}
+		// }
+		//
+		// return p
+		// 	.then(
+		// 		function() { return url; },
+		// 		function() { return Promise.reject(name + ' asset not found'); });
 	}
 
 });
