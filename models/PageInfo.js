@@ -1,11 +1,16 @@
 'use strict';
 
+var Promise = global.Promise || require('es6-promise').Promise;
+
 var merge = require('merge');
 var base = require('./mixins/Base');
 var Url = require('url');
 var path = require('path');
 
+var constants = require('../constants');
+
 var withValue = require('../utils/object-attribute-withvalue');
+var toQueryString = require('../utils/object-to-querystring');
 var fixRefs = require('../utils/rebase-references');
 var NTIIDs = require('../utils/ntiids');
 
@@ -41,6 +46,27 @@ merge(PageInfo.prototype, base, {
 		}
 
 		return this.ContentPackageNTIID || bestGuess(this);
+	},
+
+
+	getUserDataLastOfType: function (mimeType) {
+		var link = this.getLink(constants.REL_USER_GENERATED_DATA);
+		var url = link && Url.parse(link);
+		var o = {
+			accept: mimeType,
+			batchStart: 0, batchSize: 1,
+			sortOn: 'lastModified',
+			sortOrder: 'descending',
+			filter: 'TopLevel'
+		};
+
+		if (!url) {
+			return Promise.reject('No Link');
+		}
+
+		url.search = toQueryString(o);
+
+		return this.getResource(url.format());
 	}
 });
 
