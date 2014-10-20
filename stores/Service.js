@@ -240,6 +240,14 @@ merge(ServiceDocument.prototype, {
 	},
 
 
+	getContainerURL: function(ntiid) {
+		var base = this.getResolveAppUserURL();
+		var pageURI = encodeURIComponent('Pages('+ntiid+')');
+		
+		return joinWithURL(base, pageURI);
+	},
+
+
 	getContentPackagesURL: function(name) {
 		return (this.getCollection(name || 'Main', 'Library') || {}).href;
 	},
