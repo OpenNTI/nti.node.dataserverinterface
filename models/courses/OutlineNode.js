@@ -122,7 +122,7 @@ merge(OutlineNode.prototype, base, {
 
 	getContent: function() {
 		var src = this.getLink('overview-content') || getSrc(this);
-		return src ? this._service.get(src) : getContentFallback(this);
+		return src ? this._service.get(src).then(collateVideo) : getContentFallback(this);
 	}
 });
 
@@ -139,6 +139,38 @@ OutlineNode.parse = parse.bind(OutlineNode);
 
 module.exports = OutlineNode;
 
+
+function collateVideo(json) {
+	var re = /ntivideo$/;
+	function collagte(list, current, index, items) {
+		var last = list[list.length - 1];
+		if (re.test(current.MimeType)) {
+			//last was a video...
+			if (last && re.test(last.MimeType)){
+				last = list[list.length - 1] = {
+					MimeType: 'application/vnd.nextthought.ntivideoset',
+					Items: [last]
+				};
+			}
+
+			//The previous item is a video set...(or we just created it)
+			if (last && /ntivideoset$/.test(last.MimeType)) {
+				last.Items.push(current);
+				return list;
+			}
+
+		} else if (current.Items) {
+			current = collateVideo(current);
+		}
+
+		list.push(current);
+		return list;
+	}
+
+	json.Items = json.Items.reduce(collagte, []);
+
+	return json;
+}
 
 
 /*******************************************************************************
