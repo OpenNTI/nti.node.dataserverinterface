@@ -32,7 +32,9 @@ merge(TableOfContents.prototype, base,
 
 
 	getNode: function(id) {
-		return this._root.find('.//*[@ntiid="' + id + '"]');
+		var n = this._root,
+			r = n._root;
+		return r.get('ntiid') === id ? r : n.find('.//*[@ntiid="' + id + '"]');
 	},
 
 
