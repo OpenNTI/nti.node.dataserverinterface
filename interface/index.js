@@ -305,9 +305,15 @@ merge(DataServerInterface.prototype, {
 	},
 
 	createAccount: function(fields, context) {
-		return this.ping(conext)
+		return this.ping(context)
 			.then(function(result) {
-				return this._post(result.links['account.create'], fields, context);
+				return this._request({
+					url: result.links['account.create'],
+					headers: {
+						'Content-type':'application/json'
+					},
+					data: JSON.stringify(fields)
+				}, context);
 			}.bind(this));
 	},
 
