@@ -93,7 +93,7 @@ merge(DataServerInterface.prototype, {
 
 		result = new Promise(function(fulfill, reject) {
 			if(!isBrowser) {
-			console.log('DATASERVER <- [%s] %s %s', new Date().toUTCString(), opts.method, url);
+				console.log('DATASERVER <- [%s] %s %s', new Date().toUTCString(), opts.method, url);
 			}
 
 			request(opts, function(error, res, body) {
@@ -291,6 +291,25 @@ merge(DataServerInterface.prototype, {
 			}.bind(this));
 	},
 
+	preflightAccountCreate: function(fields, context) {
+		return this.ping(context)
+			.then(function(result) {
+				return this._request({
+					url: result.links['account.preflight.create'],
+					headers: {
+						'Content-type':'application/json'
+					},
+					data: JSON.stringify(fields)
+				}, context);
+			}.bind(this));
+	},
+
+	createAccount: function(fields, context) {
+		return this.ping(conext)
+			.then(function(result) {
+				return this._post(result.links['account.create'], fields, context);
+			}.bind(this));
+	},
 
 	getObject: function(ntiid, mime, context) {
 		if (!NTIIDs.isNTIID(ntiid)) {
