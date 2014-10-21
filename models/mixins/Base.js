@@ -50,8 +50,15 @@ merge(exports, {
 
 
 	hasVisibility: function(el, status) {
+		function getProp(p) {
+			var fn = ['getAttribute', 'get']
+				.reduce(function(f, n) { return f || el[n] && n; }, 0);
+			return (fn && el[fn](p)) || el[p];
+		}
+
+
 		var u = this._service.__$user || {},//pretend you did not read this line.
-			visibilityKey = el.get('visibility'),
+			visibilityKey = getProp('visibility'),
 			attr = CONTENT_VISIBILITY_MAP[visibilityKey] || visibilityKey;
 
 		// NOTE: Some pieces of content within a course may have limited access (mainly on Copyright issues).
