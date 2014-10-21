@@ -30,10 +30,16 @@ merge(Enrollment.prototype, base,
 	], 'CourseInstance'), {
 
 	isCourse: true,
+	isEnrollment: true,
 
 
 	getCourseID: function() {
 		return this.CourseInstance.getID();
+	},
+
+
+	getStatus: function() {
+		return this.LegacyEnrollmentStatus;
 	},
 
 
