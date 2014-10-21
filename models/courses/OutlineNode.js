@@ -6,6 +6,7 @@ var path = require('path');
 var merge = require('merge');
 
 var base = require('../mixins/Base');
+var makeFallbackOverview = require('./_fallbacks.OverviewFromToC');
 
 var define = require('../../utils/object-define-properties');
 var withValue = require('../../utils/object-attribute-withvalue');
@@ -206,9 +207,9 @@ function getContentFallback(node) {
 
 	return p.then(function(toc) {
 		var node = toc.getNode(contentId);
-		console.debug(toc, node);
+		//console.debug(toc, node);
 
-
-		return Promise.reject('TODO: No overview JSON file');
+		return makeFallbackOverview(node);
+		//return Promise.reject('TODO: No overview JSON file');
 	});
 }
