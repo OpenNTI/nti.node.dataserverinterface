@@ -42,6 +42,19 @@ merge(AssessedQuestionSet.prototype, base, {
 		return (this.questions || []).reduce(addCorrect, 0);
 	},
 
+
+	getIncorrect: function () {
+		return this.getTotal() - this.getCorrect();
+	},
+
+
+	getScore: function() {
+		try {
+			return 100 * (this.getCorrect() / this.getTotal());
+		} catch (e) {
+			return 0;
+		}
+	}
 });
 
 
