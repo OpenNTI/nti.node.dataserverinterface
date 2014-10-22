@@ -14,6 +14,7 @@ var VideoIndex = require('../VideoIndex');
 var Bundle = require('../content/Bundle');
 var CatalogEntry = require('./CatalogEntry');
 var Outline = require('./OutlineNode');
+var AssessmentCollection = require('./assessment/Collection');
 
 function Instance(service, data, parent) {
 	Object.defineProperty(this, '_service', withValue(service));
@@ -26,7 +27,8 @@ function Instance(service, data, parent) {
 
 	this.__pending = [
 
-		this._resolveCatalogEntry()
+		this._resolveCatalogEntry(),
+		this.getAssignments()
 
 	].concat(b.__pending || []);
 }
@@ -78,6 +80,41 @@ merge(Instance.prototype, base, {
 	},
 
 
+	//Should only show assignments if there is an AssignmentsByOutlineNode link
+	shouldShowAssignments: function() {
+		return !!this.getLink('AssignmentsByOutlineNode');
+	},
+
+
+	getAssignments: function() {
+		var toc;
+		var key = '__getAssignments';
+		var me = this;
+		var i = me._service;
+		var p = me[key];
+
+
+		// A/B sets... Assignments are the Universe-Set minus the B set.
+		// The A set is the assignmetns you can see.
+		var A = me.getLink('AssignmentsByOutlineNode');
+		var B = me.getLink('NonAssignmentAssessmentItemsByOutlineNode');
+
+		if (!me.shouldShowAssignments()) {
+			return Promise.reject('No Assignments');
+		}
+
+		if (!p) {
+			toc = this.ContentPackageBundle.getTablesOfContents();
+			p = me[key] = Promise.all([ i.get(A), i.get(B), toc ])
+				.then(function(a) {
+					return AssessmentCollection.parse(i, me, a[0], a[1], a[2]);
+				});
+		}
+
+		return p;
+	},
+
+
 	getOutline: function() {
 		var link = getLink(this.Outline || {}, 'contents');
 		if (!link) {
@@ -85,10 +122,16 @@ merge(Instance.prototype, base, {
 		}
 
 		if (!this.__outline) {
-			this.__outline = this._service.get(link)
+			this.__outline = Promise.all([
+					this._service.get(link),
+					this.getAssignments().catch(function(){})
+				])
 				.then(function(contents) {
 					var o = Outline.parse(this._service, this, this.Outline);
-					o.contents = Outline.parse(this._service, o, contents);
+
+					Object.defineProperty(o, '_assignments', withValue(contents[1]));
+
+					o.contents = Outline.parse(this._service, o, contents[0]);
 					return o;
 				}.bind(this));
 		}
