@@ -11,6 +11,8 @@ var base = require('../mixins/Base');
 var assets = require('../mixins/PresentationResources');
 var Package = require('./Package');
 
+var TablesOfContents = require('../TablesOfContents');
+
 function Bundle(service, data, parent) {
 	Object.defineProperty(this, '_service', withValue(service));
 	Object.defineProperty(this, '_parent', withValue(parent));
@@ -50,6 +52,23 @@ merge(Bundle.prototype, base, assets,
 		}
 
 		return urlJoin(root, 'presentation-assets', 'webapp', 'v1');
+	},
+
+
+	getTablesOfContents: function() {
+		var me = this;
+		return Promise.all(this.ContentPackages.map(function(p) {
+			return p.getTableOfContents().then(function(t){
+				return { id: p.getID(), toc: t }; });
+		}))
+			.then(function (tables){
+				var result = tables.slice();
+
+				tables.forEach(function(v, i, a) {
+					result[v.id] = result[i] = v.toc; });
+
+				return new TablesOfContents(me._service, me, result);
+			});
 	}
 
 });
