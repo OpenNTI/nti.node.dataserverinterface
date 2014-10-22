@@ -76,6 +76,6 @@ function parse(service, parent, data) {
 	return new VideoIndex(service, parent, data);
 }
 
-VideoIndex.parse = parse.bind(VideoIndex);
+VideoIndex.parse = parse;
 
 module.exports = VideoIndex;

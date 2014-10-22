@@ -91,6 +91,6 @@ function parse(service, data) {
 	return new PageInfo(service, data);
 }
 
-PageInfo.parse = parse.bind(PageInfo);
+PageInfo.parse = parse;
 
 module.exports = PageInfo;

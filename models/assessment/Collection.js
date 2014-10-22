@@ -31,6 +31,19 @@ function f(Cls, service, parent) {
 	};
 }
 
+/**
+ * @class
+ * Build the Assessment Collection.
+ *
+ * @param  {ServiceDocument} service     Service descriptor/interface.
+ * @param  {Model} parent                Parent model.
+ * @param  {Object} assignments          Object of keys where each key is an
+ *                                       array of Assignments that are visible
+ *                                       to the current user.
+ * @param  {Object} assessments          Object of keys where each key is an
+ *                                       array of Non-Assignment assessments
+ *                                       visible to the current user.
+ */
 function Collection(service, parent, assignments, assessments, tables) {
 	define(this,{
 		_service: withValue(service),
@@ -66,24 +79,6 @@ merge(Collection.prototype, base, {
 });
 
 
-/**
- * Build the Assessment Collection.
- *
- * @param  {ServiceDocument} service     Service descriptor/interface.
- * @param  {Model} parent                Parent model.
- * @param  {Object} assignments          Object of keys where each key is an
- *                                       array of Assignments that are visible
- *                                       to the current user.
- * @param  {Object} assessments          Object of keys where each key is an
- *                                       array of Non-Assignment assessments
- *                                       visible to the current user.
- * @return {Collection}                  The Assessment Collection.
- */
-function parse(service, parent, assignments, assessments, tables) {
-	return new Collection(service, parent, assignments, assessments, tables);
-}
-
-Collection.parse = parse.bind(Collection);
 
 module.exports = Collection;
 

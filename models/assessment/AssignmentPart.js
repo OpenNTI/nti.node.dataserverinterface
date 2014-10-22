@@ -32,6 +32,6 @@ function parse(service, parent, data) {
 	return new AssignmentPart(service, parent, data);
 }
 
-AssignmentPart.parse = parse.bind(AssignmentPart);
+AssignmentPart.parse = parse;
 
 module.exports = AssignmentPart;

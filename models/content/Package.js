@@ -157,6 +157,6 @@ function parse(service, parent, data) {
 	return new Package(service, parent, data);
 }
 
-Package.parse = parse.bind(Package);
+Package.parse = parse;
 
 module.exports = Package;

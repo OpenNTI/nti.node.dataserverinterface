@@ -58,6 +58,6 @@ function parse(service, data) {
 	return new CourseCatalogEntry(service, data);
 }
 
-CourseCatalogEntry.parse = parse.bind(CourseCatalogEntry);
+CourseCatalogEntry.parse = parse;
 
 module.exports = CourseCatalogEntry;

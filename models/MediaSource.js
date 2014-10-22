@@ -25,6 +25,6 @@ function parse(service, parent, data) {
 
 
 //Static defs
-MediaSource.parse = parse.bind(MediaSource);
+MediaSource.parse = parse;
 
 module.exports = MediaSource;

@@ -31,6 +31,6 @@ function parse(service, parent, data) {
 	return new Assessment(service, parent, data);
 }
 
-Assessment.parse = parse.bind(Assessment);
+Assessment.parse = parse;
 
 module.exports = Assessment;

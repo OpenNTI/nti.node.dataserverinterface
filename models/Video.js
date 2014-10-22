@@ -66,6 +66,6 @@ function parse(service, parent, data) {
 //Static defs
 Video.NO_TRANSCRIPT = NO_TRANSCRIPT;
 Video.NO_TRANSCRIPT_LANG = NO_TRANSCRIPT_LANG;
-Video.parse = parse.bind(Video);
+Video.parse = parse;
 
 module.exports = Video;

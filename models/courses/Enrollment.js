@@ -87,6 +87,6 @@ function parse(service, data, admin) {
 	return new Enrollment(service, data, admin);
 }
 
-Enrollment.parse = parse.bind(Enrollment);
+Enrollment.parse = parse;
 
 module.exports = Enrollment;

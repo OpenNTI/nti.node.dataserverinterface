@@ -36,6 +36,6 @@ function parse(service, parent, data) {
 	return new AssessedQuestionSet(service, parent, data);
 }
 
-AssessedQuestionSet.parse = parse.bind(AssessedQuestionSet);
+AssessedQuestionSet.parse = parse;
 
 module.exports = AssessedQuestionSet;

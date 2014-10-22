@@ -151,7 +151,7 @@ function parse(service, parent, data) {
 	return new OutlineNode(service, parent, data);
 }
 
-OutlineNode.parse = parse.bind(OutlineNode);
+OutlineNode.parse = parse;
 
 module.exports = OutlineNode;
 

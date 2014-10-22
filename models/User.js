@@ -34,6 +34,6 @@ function parse(service, data) {
 	return new User(service, data);
 }
 
-User.parse = parse.bind(User);
+User.parse = parse;
 
 module.exports = User;

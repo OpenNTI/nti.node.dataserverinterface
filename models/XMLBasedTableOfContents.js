@@ -55,7 +55,7 @@ function parse(service, parent, data) {
 	return new TableOfContents(service, parent, data);
 }
 
-TableOfContents.parse = parse.bind(TableOfContents);
+TableOfContents.parse = parse;
 
 module.exports = TableOfContents;
 

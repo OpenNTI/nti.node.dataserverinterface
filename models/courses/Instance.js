@@ -107,7 +107,7 @@ merge(Instance.prototype, base, {
 			toc = this.ContentPackageBundle.getTablesOfContents();
 			p = me[key] = Promise.all([ i.get(A), i.get(B), toc ])
 				.then(function(a) {
-					return AssessmentCollection.parse(i, me, a[0], a[1], a[2]);
+					return new AssessmentCollection(i, me, a[0], a[1], a[2]);
 				});
 		}
 
@@ -186,6 +186,6 @@ function parse(service, parent, data) {
 }
 
 
-Instance.parse = parse.bind(Instance);
+Instance.parse = parse;
 
 module.exports = Instance;

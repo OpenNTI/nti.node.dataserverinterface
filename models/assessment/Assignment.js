@@ -48,6 +48,6 @@ function parse(service, parent, data) {
 	return new Assignment(service, parent, data);
 }
 
-Assignment.parse = parse.bind(Assignment);
+Assignment.parse = parse;
 
 module.exports = Assignment;

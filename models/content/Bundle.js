@@ -79,6 +79,6 @@ function parse(service, parent, data) {
 	return new Bundle(service, parent, data);
 }
 
-Bundle.parse = parse.bind(Bundle);
+Bundle.parse = parse;
 
 module.exports = Bundle;

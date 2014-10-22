@@ -29,6 +29,6 @@ function parse(service, parent, data) {
 	return new QuestionSet(service, parent, data);
 }
 
-QuestionSet.parse = parse.bind(QuestionSet);
+QuestionSet.parse = parse;
 
 module.exports = QuestionSet;
