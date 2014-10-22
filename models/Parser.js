@@ -14,13 +14,20 @@ var PARSERS = {
 
 
 
-module.exports = function parser(service, obj) {
+module.exports = function parser(service, parent, obj) {
 	if (Array.isArray(obj)) {
 		return obj.map(parser.bind(this, service));
 	}
 	var Cls = PARSERS[obj.MimeType];
+	var args = [service];
 
-	return Cls && Cls.parse(service, obj) || error(obj);
+	if (Cls.parse.length >= 2) {
+		args.push(parent);
+	}
+
+	args.push(obj);
+
+	return Cls && Cls.parse.apply(Cls, args) || error(obj);
 };
 
 
