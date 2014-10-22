@@ -121,6 +121,21 @@ merge(OutlineNode.prototype, base, {
 	},
 
 
+	getAssignments: function () {
+		var collection = this.__getRoot()._assignments;
+		if (collection) {
+			return collection.getAssignments(this.getID());
+		}
+		return [];
+	},
+
+
+	getAssignment: function (assignmentId) {
+		var collection = this.__getRoot()._assignments;
+		return collection && collection.getAssignment(this.getID(), assignmentId);
+	},
+
+
 	getContent: function() {
 		var src = this.getLink('overview-content') || getSrc(this);
 		return src ? this._service.get(src).then(collateVideo) : getContentFallback(this);
@@ -196,20 +211,20 @@ function getSrc(node) {
 }
 
 
-function getContentFallback(node) {
-	console.debug('[FALLBACK] Deriving outline node src content');
-	var course = node.__getCourse();
+function getContentFallback(outlineNode) {
+	console.debug('[FALLBACK] Deriving outline outlineNode src content');
+	var course = outlineNode.__getCourse();
 	var bundle = course && course.ContentPackageBundle;
 	var pkg = ((bundle && bundle.ContentPackages) || [])[0];
-	var contentId = node.getID();
+	var contentId = outlineNode.getID();
 
 	var p = pkg ? pkg.getTableOfContents() : Promise.reject('No Content Package');
 
 	return p.then(function(toc) {
-		var node = toc.getNode(contentId);
+		var tocNode = toc.getNode(contentId);
 		//console.debug(toc, node);
 
-		return makeFallbackOverview(node);
+		return makeFallbackOverview(tocNode, outlineNode);
 		//return Promise.reject('TODO: No overview JSON file');
 	});
 }

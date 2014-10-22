@@ -8,7 +8,8 @@ var SECTION_TYPE_MAP = {
 	'application/vnd.nextthought.discussion': 'discussions',
 	'application/vnd.nextthought.externallink': 'additional',
 	'application/vnd.nextthought.naquestionset': 'assessments',
-	'application/vnd.nextthought.assignment': 'assignments'
+	'application/vnd.nextthought.assignment': 'assignments',
+	'application/vnd.nextthought.nanosubmitassignment': 'assignments'
 };
 
 var SECTION_TITLE_MAP = {
@@ -40,7 +41,8 @@ var MIME_PARSER = {
 	'application/vnd.nextthought.externallink': getRelatedWorkProps,
 	'application/vnd.nextthought.relatedworkref': getRelatedWorkProps,
 	//'application/vnd.nextthought.naquestionset': getAssessment,
-	'application/vnd.nextthought.naquestionset': getAssessment
+	'application/vnd.nextthought.naquestionset': getAssessment,
+	'application/vnd.nextthought.nanosubmitassignment': getAssessment
 };
 
 
@@ -52,6 +54,7 @@ function getForumProps(node) {
 		title: node.get('title'),
 		icon: node.get('icon')
 	}; }
+
 
 function getVideoProps(node) {
 	return { poster: node.get('poster') }; }
@@ -70,8 +73,12 @@ function getRelatedWorkProps(node) {
 }
 
 
-function getAssessment(node) {
+function getAssessment(node, fallbackMime, outlineNode) {
+	var ntiid = node.get('ntiid') || node.get('target-ntiid');
+	var assignment = outlineNode.getAssignment(ntiid);
+
 	return {
+		MimeType: assignment ? 'application/vnd.nextthought.assignment' : fallbackMime,
 		'question-count': node.get('question-count'),
 		'Target-NTIID': node.get('target-ntiid')
 	};
@@ -85,7 +92,7 @@ function notAThing(node) {
 }
 
 
-function getConfigForNode(node) {
+function getConfigForNode(node, outlineNode) {
 	if (notAThing(node)) {
 		return;
 	}
@@ -100,16 +107,16 @@ function getConfigForNode(node) {
 
 	var parser = MIME_PARSER[obj.MimeType] || noOp;
 
-	return merge(obj, parser(node));
+	return merge(obj, parser(node, obj.MimeType, outlineNode));
 }
 
 
-module.exports = function buildFromToc (node) {
+module.exports = function buildFromToc (element, outlineNode) {
 	var sections = {},
 		items = [];
 
-	node.getchildren().forEach(function(node) {
-		var obj = getConfigForNode(node);
+	element.getchildren().forEach(function(node) {
+		var obj = getConfigForNode(node, outlineNode);
 		var type = obj && (obj.section || SECTION_TYPE_MAP[obj.MimeType] || 'Unknown');
 		var grouping;
 
@@ -148,8 +155,8 @@ module.exports = function buildFromToc (node) {
 
 	return {
 	    MimeType: 'application/vnd.nextthought.ntilessonoverview',
-	    NTIID: node.get('ntiid'),
+	    NTIID: element.get('ntiid'),
 		Items: items,
-		title: node.get('label')
+		title: element.get('label')
 	};
 };
