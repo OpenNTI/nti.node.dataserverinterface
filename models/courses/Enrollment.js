@@ -14,7 +14,7 @@ function Enrollment(service, data, admin) {
 
 	merge(this, data);
 
-	var i = this.CourseInstance = Instance.parse(service, data.CourseInstance, this);
+	var i = this.CourseInstance = Instance.parse(service, this, data.CourseInstance);
 
 	i.on('changed', this.onChange.bind(this));
 

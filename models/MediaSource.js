@@ -7,7 +7,7 @@ var withValue = require('../utils/object-attribute-withvalue');
 var isEmpty = require('../utils/isempty');
 
 
-function MediaSource(service, data, parent) {
+function MediaSource(service, parent, data) {
 	Object.defineProperty(this, '_service', withValue(service));
 	Object.defineProperty(this, '_parent', withValue(parent));
 
@@ -19,8 +19,8 @@ merge(MediaSource.prototype, {
 });
 
 
-function parse(service, data, parent) {
-	return new MediaSource(service, data, parent);
+function parse(service, parent, data) {
+	return new MediaSource(service, parent, data);
 }
 
 

@@ -15,7 +15,7 @@ var assets = require('../mixins/PresentationResources');
 var VideoIndex = require('../VideoIndex');
 var ToC = require('../XMLBasedTableOfContents');
 
-function Package(service, data, parent) {
+function Package(service, parent, data) {
 	Object.defineProperty(this, '_service', withValue(service));
 	Object.defineProperty(this, '_parent', withValue(parent));
 	merge(this, data);
@@ -57,7 +57,7 @@ merge(Package.prototype, base, assets, {
 						return data;
 					});
 
-			toc = toc.then(function(o){return ToC.parse(me._service, o, me);});
+			toc = toc.then(function(o){return ToC.parse(me._service, me, o);});
 
 			me.__toc = toc;
 		}
@@ -145,7 +145,7 @@ merge(Package.prototype, base, assets, {
 
 		vi._order = keyOrder;
 
-		return VideoIndex.parse(this._service, vi, this);
+		return VideoIndex.parse(this._service, this, vi);
 	}
 
 
@@ -153,8 +153,8 @@ merge(Package.prototype, base, assets, {
 
 
 
-function parse(service, data, parent) {
-	return new Package(service, data, parent);
+function parse(service, parent, data) {
+	return new Package(service, parent, data);
 }
 
 Package.parse = parse.bind(Package);

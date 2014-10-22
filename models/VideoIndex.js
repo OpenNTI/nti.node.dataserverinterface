@@ -6,7 +6,7 @@ var withValue = require('../utils/object-attribute-withvalue');
 
 var Video = require('./Video');
 
-function VideoIndex(service, data, parent) {
+function VideoIndex(service, parent, data) {
 	defineProperties(this, {
 		_service: withValue(service),
 		_parent: withValue(parent),
@@ -18,7 +18,7 @@ function VideoIndex(service, data, parent) {
 	this.data = {};
 
 	for(var index in data) {
-		this.data[index] = Video.parse(service, data[index], parent);
+		this.data[index] = Video.parse(service, parent, data[index]);
 	}
 }
 
@@ -41,7 +41,7 @@ merge(VideoIndex.prototype, {
 		}.bind(this));
 
 		data._order = order;
-		
+
 		return new VideoIndex(this._service, data, this._parent);
 	},
 
@@ -72,8 +72,8 @@ merge(VideoIndex.prototype, {
 
 
 
-function parse(service, data, parent) {
-	return new VideoIndex(service, data, parent);
+function parse(service, parent, data) {
+	return new VideoIndex(service, parent, data);
 }
 
 VideoIndex.parse = parse.bind(VideoIndex);

@@ -13,7 +13,7 @@ var Package = require('./Package');
 
 var TablesOfContents = require('../TablesOfContents');
 
-function Bundle(service, data, parent) {
+function Bundle(service, parent, data) {
 	Object.defineProperty(this, '_service', withValue(service));
 	Object.defineProperty(this, '_parent', withValue(parent));
 	merge(this, data);
@@ -23,7 +23,7 @@ function Bundle(service, data, parent) {
 	var pending = this.__pending = [];
 
 	this.ContentPackages = this.ContentPackages.map(function(pkg) {
-		pkg = Package.parse(service, pkg, this);
+		pkg = Package.parse(service, this, pkg);
 		pkg.on('changed', this.onChange.bind(this));
 		pending.push.apply(pending, pkg.__pending || []);
 		return pkg;
@@ -75,8 +75,8 @@ merge(Bundle.prototype, base, assets,
 
 
 
-function parse(service, data, parent) {
-	return new Bundle(service, data, parent);
+function parse(service, parent, data) {
+	return new Bundle(service, parent, data);
 }
 
 Bundle.parse = parse.bind(Bundle);

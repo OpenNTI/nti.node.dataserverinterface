@@ -10,7 +10,7 @@ var forwardFunctions = require('../utils/function-forwarding');
 var defineProperties = require('../utils/object-define-properties');
 var withValue = require('../utils/object-attribute-withvalue');
 
-function TableOfContents(service, data, parent) {
+function TableOfContents(service, parent, data) {
 	defineProperties(this, {
 		_service: withValue(service),
 		_parent: withValue(parent),
@@ -51,8 +51,8 @@ merge(TableOfContents.prototype, base,
 });
 
 
-function parse(service, data, parent) {
-	return new TableOfContents(service, data, parent);
+function parse(service, parent, data) {
+	return new TableOfContents(service, parent, data);
 }
 
 TableOfContents.parse = parse.bind(TableOfContents);

@@ -5,10 +5,10 @@ var Promise = global.Promise || require('es6-promise').Promise;
 var path = require('path');
 var merge = require('merge');
 
-var base = require('../../mixins/Base');
+var base = require('../mixins/Base');
 
-var define = require('../../../utils/object-define-properties');
-var withValue = require('../../../utils/object-attribute-withvalue');
+var define = require('../../utils/object-define-properties');
+var withValue = require('../../utils/object-attribute-withvalue');
 
 var QuestionSet = require('./QuestionSet');
 

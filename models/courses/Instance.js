@@ -14,14 +14,14 @@ var VideoIndex = require('../VideoIndex');
 var Bundle = require('../content/Bundle');
 var CatalogEntry = require('./CatalogEntry');
 var Outline = require('./OutlineNode');
-var AssessmentCollection = require('./assessment/Collection');
+var AssessmentCollection = require('../assessment/Collection');
 
-function Instance(service, data, parent) {
+function Instance(service, parent, data) {
 	Object.defineProperty(this, '_service', withValue(service));
 	Object.defineProperty(this, '_parent', withValue(parent));
 	merge(this, data);
 
-	var b = this.ContentPackageBundle = Bundle.parse(service, data.ContentPackageBundle, this);
+	var b = this.ContentPackageBundle = Bundle.parse(service, this, data.ContentPackageBundle);
 
 	b.on('changed', this.onChange.bind(this));
 
@@ -162,7 +162,7 @@ merge(Instance.prototype, base, {
 			var orders = pluck(indices, '_order');
 			var out = indices.reduce(merge, {});
 			out._order = orders.reduce(flattenList, []);
-			return VideoIndex.parse(service, out, me);
+			return VideoIndex.parse(service, me, out);
 		}
 
 		return Promise.all(this.ContentPackageBundle.map(get)).then(combine);
@@ -181,8 +181,8 @@ merge(Instance.prototype, base, {
 
 
 
-function parse(service, data, parent) {
-	return new Instance(service, data, parent);
+function parse(service, parent, data) {
+	return new Instance(service, parent, data);
 }
 
 

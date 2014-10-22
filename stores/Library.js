@@ -33,7 +33,7 @@ function Library(service, name, contentPackages,
 	this.packages = contentPackages.map(function(pkg) {
 		if (pkg.isCourse) {return null;}
 
-		pkg = Package.parse(service, pkg);
+		pkg = Package.parse(service, null, pkg);
 		queue(pkg);
 		pkg.on('changed', this.onChange);
 		return pkg;
@@ -46,7 +46,7 @@ function Library(service, name, contentPackages,
 			return null;
 		}
 
-		bdl = Bundle.parse(service, bdl);
+		bdl = Bundle.parse(service, null, bdl);
 		queue(bdl);
 		bdl.on('changed', this.onChange);
 		return bdl;

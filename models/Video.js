@@ -11,16 +11,16 @@ var MediaSource = require('./MediaSource');
 var NO_TRANSCRIPT = 'No Transcript';
 var NO_TRANSCRIPT_LANG = 'No Transcript for the requested language.';
 
-function Video(service, data, parent) {
+function Video(service, parent, data) {
 	Object.defineProperty(this, '_service', withValue(service));
 	Object.defineProperty(this, '_parent', withValue(parent));
 
 	var sources = data.sources;
-	
+
 	merge(this, data);
 
 	this.sources = sources.map(function(item) {
-		return MediaSource.parse(service, item, this);
+		return MediaSource.parse(service, this, item);
 	}.bind(this));
 }
 
@@ -54,12 +54,12 @@ merge(Video.prototype, {
 });
 
 
-function parse(service, data, parent) {
+function parse(service, parent, data) {
 	if (data instanceof Video) {
 		return data;
 	}
 
-	return new Video(service, data, parent);
+	return new Video(service, parent, data);
 }
 
 
