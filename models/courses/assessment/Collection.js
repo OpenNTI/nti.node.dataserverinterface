@@ -24,7 +24,9 @@ var Assessment = require('./Assignment');
 function f(Cls, service, parent) {
 	return function (v, k, o) {
 		if (Array.isArray(v)) {
-			o[k] = v.map(Cls.parse.bind(Cls, service, parent));
+			o[k] = v.map(function(p){
+				return Cls.parse(service, parent, p);
+			});
 		}
 	};
 }
@@ -37,8 +39,8 @@ function Collection(service, parent, assignments, assessments, tables) {
 	});
 
 
-	this._visibleAssignments = objectEach(assignments, f(Assignment));
-	this._notAssignments = objectEach(assessments, f(Assessment));
+	this._visibleAssignments = objectEach(assignments, f(Assignment, service, this));
+	//this._notAssignments = objectEach(assessments, f(Assessment, service, this));
 }
 
 merge(Collection.prototype, base, {
@@ -58,7 +60,7 @@ merge(Collection.prototype, base, {
 	getAssignment: function(outlineNodeID, assignmentId) {
 		var maybe = this.getAssignments(outlineNodeID);
 		return maybe && maybe.reduce(function(found, assignment){
-				return found || (assignment.getID() === assignmentId && assignment);
+				return found || (assignment.is(assignmentId) && assignment);
 			}, null);
 	}
 });

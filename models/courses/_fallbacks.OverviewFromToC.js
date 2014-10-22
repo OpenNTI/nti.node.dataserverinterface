@@ -74,13 +74,13 @@ function getRelatedWorkProps(node) {
 
 
 function getAssessment(node, fallbackMime, outlineNode) {
-	var ntiid = node.get('ntiid') || node.get('target-ntiid');
+	var ntiid = node.get('target-ntiid');
 	var assignment = outlineNode.getAssignment(ntiid);
 
 	return {
 		MimeType: assignment ? 'application/vnd.nextthought.assignment' : fallbackMime,
 		'question-count': node.get('question-count'),
-		'Target-NTIID': node.get('target-ntiid')
+		'Target-NTIID': ntiid
 	};
 }
 
