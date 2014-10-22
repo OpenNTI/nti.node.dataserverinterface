@@ -8,6 +8,7 @@ var Url = require('url');
 var path = require('path');
 
 var constants = require('../constants');
+var parser = null;//see parseObject below
 
 var withValue = require('../utils/object-attribute-withvalue');
 var toQueryString = require('../utils/object-to-querystring');
@@ -17,6 +18,16 @@ var NTIIDs = require('../utils/ntiids');
 function PageInfo(service, data) {
 	Object.defineProperty(this, '_service', withValue(service));
 	merge(this, data);
+}
+
+
+function parseObject(pi, data) {
+	//because Parser requires this model (PageInfo), we can't put this ref
+	//at the top... build will fail. So we will pull the ref on demand
+	if(!parser) {
+		parser = require('./Parser');
+	}
+	return parser(pi._service, pi, data);
 }
 
 
@@ -66,7 +77,11 @@ merge(PageInfo.prototype, base, {
 
 		url.search = toQueryString(o);
 
-		return this.getResource(url.format());
+		return this.getResource(url.format())
+			.then(function(objects) {
+				var item = objects.Items[0];
+				return parseObject(this, item);
+			}.bind(this));
 	}
 });
 
