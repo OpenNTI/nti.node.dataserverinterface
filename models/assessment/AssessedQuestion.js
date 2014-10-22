@@ -28,7 +28,19 @@ function AssessedQuestion(service, parent, data) {
 
 merge(AssessedQuestion.prototype, base, {
 
+	isCorrect: function() {
+		var p = this.parts || [],
+			i = p.length - 1, v;
 
+		for (i; i >= 0; i--) {
+			v = p[i].isCorrect();
+			if (!v) {
+				return v;
+			}
+		}
+
+		return true;
+	},
 });
 
 

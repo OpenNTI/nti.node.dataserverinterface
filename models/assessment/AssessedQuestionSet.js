@@ -28,6 +28,19 @@ function AssessedQuestionSet(service, parent, data) {
 
 merge(AssessedQuestionSet.prototype, base, {
 
+	getTotal: function () {
+		return (this.questions || []).length;
+	},
+
+	getCorrect: function() {
+		function addCorrect(sum, question) {
+			if (question.isCorrect()) {
+				sum++;
+			}
+			return sum;
+		}
+		return (this.questions || []).reduce(addCorrect, 0);
+	},
 
 });
 

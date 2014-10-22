@@ -23,7 +23,11 @@ function AssessedPart(service, parent, data) {
 
 merge(AssessedPart.prototype, base, {
 
-
+	isCorrect: function() {
+		var a = this.assessedValue;
+		//true, false, or null (if the assessedValue is not a number, return null)
+		return typeof a === 'number' ? a === 1 : null;
+	}
 });
 
 
