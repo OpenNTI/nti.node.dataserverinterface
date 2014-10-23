@@ -97,14 +97,21 @@ merge(DataServerInterface.prototype, {
 			}
 
 			request(opts, function(error, res, body) {
-				var contentType;
+				var contentType = res.headers['Content-Type'];
+				if (contentType && contentType.indexOf('application/') === 0) {
+					body = body && JSON.parse(body);
+				}
+
 				if(!isBrowser) {
-				console.log('DATASERVER -> [%s] %s %s %s %dms',
-					new Date().toUTCString(), opts.method, url, error || res.statusCode, Date.now() - start);
+					console.log('DATASERVER -> [%s] %s %s %s %dms',
+						new Date().toUTCString(), opts.method, url, error || res.statusCode, Date.now() - start);
 				}
 
 				if (error || res.statusCode >= 300) {
-					if(res) {res.___isResponse = true;}
+					if(res) {
+						res.___isResponse = true;
+						res.responseJSON = typeof body === 'object' ? body : null;
+					}
 					return reject(error || res);
 				}
 
@@ -119,17 +126,13 @@ merge(DataServerInterface.prototype, {
 				//Accept we check the Content-Type to see if that is what
 				//we get back.  If it's not we reject.
 				if (mime) {
-					contentType = res['Content-Type'];
 					if (contentType && contentType.indexOf(mime) < 0) {
 						return reject('Requested with an explicit accept value of ' + mime + ' but got ' + contentType + '.  Rejecting.');
 					}
 				}
 
-				try {
-					fulfill(body && JSON.parse(body));
-				} catch (e) {
-					fulfill(body);
-				}
+
+				fulfill(body);
 			});
 		});
 
