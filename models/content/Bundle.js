@@ -3,6 +3,7 @@
 var merge = require('merge');
 var setAndEmit = require('../../utils/getsethandler');
 var urlJoin = require('../../utils/urljoin');
+var Promise = global.Promise || require('es6-promise').Promise;
 
 var forwardFunctions = require('../../utils/function-forwarding');
 var withValue = require('../../utils/object-attribute-withvalue');
