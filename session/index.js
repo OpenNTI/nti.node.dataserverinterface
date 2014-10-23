@@ -46,8 +46,8 @@ merge(SessionManager.prototype, {
 				return Promise.all([
 					service.getAppUser(),
 					Catalog.load(service),
-					Library.load(service, 'Main'),
-					Notifications.load(service)
+					Library.load(service, 'Main')//,
+					//Notifications.load(service)
 				]);
 
 			});
