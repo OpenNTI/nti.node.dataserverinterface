@@ -9,7 +9,12 @@ var PARSERS = {
 	'application/vnd.nextthought.assessment.assessedpart': require('./assessment/AssessedPart'),
 
 	'application/vnd.nextthought.naquestionset': require('./assessment/QuestionSet'),
-	'application/vnd.nextthought.naquestion': require('./assessment/Question')
+	'application/vnd.nextthought.naquestion': require('./assessment/Question'),
+
+	'application/vnd.nextthought.grade': require('./assessment/Grade'),
+	'application/vnd.nextthought.assessment.userscourseassignmenthistoryitemfeedback': require('./assessment/AssignmentFeedback'),
+
+	'application/vnd.nextthought.change': require('./Change')
 };
 
 
@@ -21,13 +26,13 @@ module.exports = function parser(service, parent, obj) {
 	var Cls = PARSERS[obj.MimeType];
 	var args = [service];
 
-	if (Cls.parse.length >= 2) {
+	if (Cls && Cls.parse.length > 2) {
 		args.push(parent);
 	}
 
 	args.push(obj);
 
-	return Cls && Cls.parse.apply(Cls, args) || error(obj);
+	return (Cls && Cls.parse && Cls.parse.apply(Cls, args)) || error(obj);
 };
 
 

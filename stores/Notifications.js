@@ -5,10 +5,14 @@ var Promise = global.Promise || require('es6-promise').Promise;
 var merge = require('merge');
 var EventEmitter = require('events').EventEmitter;
 
+var objectParser = require('../models/Parser');
+
 var constants = require('../constants');
 var forwardFunctions = require('../utils/function-forwarding');
 var withValue = require('../utils/object-attribute-withvalue');
 var defineProperties = require('../utils/object-define-properties');
+
+var waitFor = require('../utils/waitfor');
 
 
 function Notifications(service, data) {
@@ -49,6 +53,7 @@ function get(s, url, ignoreCache) {
 	if (!cached || ignoreCache) {
 		result = s.get(url)
 			.catch(function empty () { return {titles: [], Items: []}; })
+			.then(resolveUIData.bind(null, s))
 			.then(function(data) {
 				cache.set(url, data);
 				return data;
@@ -58,6 +63,25 @@ function get(s, url, ignoreCache) {
 	}
 
 	return result;
+}
+
+
+function resolveUIData(service, data) {
+	var pending = [],
+		push = pending.push;
+
+	data.Items = data.Items.map(function(o) {
+		try {
+			o = objectParser(service, null, o);
+			push.apply(pending, o.__pending || []);
+		} catch(e) {
+			console.warn(e.stack);
+		}
+		return o;
+	});
+
+	return waitFor(pending)
+		.then(function() { return data; });
 }
 
 
