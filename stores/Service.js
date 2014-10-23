@@ -18,6 +18,8 @@ var deepFreeze = require('../utils/object-deepfreeze');
 var withValue = require('../utils/object-attribute-withvalue');
 var joinWithURL = require('../utils/urljoin');
 
+var inflight = {};
+
 var ServiceDocument = function (json, server, context) {
 	Object.defineProperty(this, '_server', withValue(server));
 	Object.defineProperty(this, '_context', withValue(context));
@@ -50,7 +52,19 @@ merge(ServiceDocument.prototype, {
 
 
 	get: function(url) {
-		return this.getServer()._get(url, this._context);
+		if (inflight[url]) {
+			return inflight[url];
+		}
+
+		function clean() {
+			delete inflight[url];
+		}
+
+		var p = inflight[url] = this.getServer()._get(url, this._context);
+
+		p.then(clean, clean);
+
+		return p;
 	},
 
 
@@ -243,7 +257,7 @@ merge(ServiceDocument.prototype, {
 	getContainerURL: function(ntiid) {
 		var base = this.getResolveAppUserURL();
 		var pageURI = encodeURIComponent('Pages('+ntiid+')');
-		
+
 		return joinWithURL(base, pageURI);
 	},
 
