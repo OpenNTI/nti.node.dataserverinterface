@@ -91,13 +91,24 @@ merge(DataServerInterface.prototype, {
 			opts.form = data;
 		}
 
+		function getContentType(headers) {
+			var reg = /Content-Type/i;
+			var key = Object.keys(headers).reduce(function(i, k) {
+				return i || (reg.test(k) && k);
+			}, null);
+
+			if (key) {
+				return headers[key];
+			}
+		}
+
 		result = new Promise(function(fulfill, reject) {
 			if(!isBrowser) {
 				console.log('DATASERVER <- [%s] %s %s', new Date().toUTCString(), opts.method, url);
 			}
 
 			request(opts, function(error, res, body) {
-				var contentType = res.headers['Content-Type'];
+				var contentType = getContentType(res.headers);
 				if (contentType && contentType.indexOf('application/') === 0) {
 					body = body && JSON.parse(body);
 				}
