@@ -62,7 +62,8 @@ merge(SessionManager.prototype, {
 
 		req.responseHeaders = {};
 
-		console.log('SESSION <- [%s] %s %s', new Date().toUTCString(), req.method, url, req);
+
+		console.log('SESSION <- [%s] %s %s', new Date().toUTCString(), req.method, url);
 
 		function finish() {
 			res.set(req.responseHeaders);
@@ -80,7 +81,6 @@ merge(SessionManager.prototype, {
 					reason = reason.statusCode;
 				}
 
-				console.error('CATCH: %o', reason.stack || reason);
 				if (reason instanceof Error) {
 					return next(reason);
 				}

@@ -84,7 +84,9 @@ merge(DataServerInterface.prototype, {
 				context.headers || {},
 				opts.headers,
 				{'accept-encoding': ''}
-				);
+			);
+		} else if (!isBrowser) {
+			throw new Error('Calling request w/o context!');
 		}
 
 		if (data) {
@@ -104,7 +106,7 @@ merge(DataServerInterface.prototype, {
 
 		result = new Promise(function(fulfill, reject) {
 			if(!isBrowser) {
-				console.log('DATASERVER <- [%s] %s %s', new Date().toUTCString(), opts.method, url, opts);
+				console.log('DATASERVER <- [%s] %s %s', new Date().toUTCString(), opts.method, url);
 			}
 
 			request(opts, function(error, res, body) {
@@ -250,7 +252,7 @@ merge(DataServerInterface.prototype, {
 
 		var me = this;
 
-		return me._get('logon.ping', null, context)//ping
+		return me._get('logon.ping', context)//ping
 			//pong
 			.then(function(data) {
 				var urls = getLink.asMap(data);
@@ -267,7 +269,7 @@ merge(DataServerInterface.prototype, {
 				if (!username) {
 					return (!urls['logon.continue']) ?
 						{links: urls} :
-						me.getServiceDocument()
+						me.getServiceDocument(context)
 							.then(function(d) {
 								username = d.getUserWorkspace().Title;
 								return me.handshake(urls, username, context);
