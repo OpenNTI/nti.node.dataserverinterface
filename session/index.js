@@ -86,8 +86,8 @@ merge(SessionManager.prototype, {
 				}
 
 				if (!/\/login/.test(req.url)) {
-					console.log('SESSION -> [%s] %s %s REDIRECT %slogin/ (User: annonymous, %dms)',
-						new Date().toUTCString(), req.method, url, basepath, Date.now() - start);
+					console.log('SESSION -> [%s] %s %s REDIRECT %slogin/ (User: annonymous, %dms) %s',
+						new Date().toUTCString(), req.method, url, basepath, Date.now() - start, req.headers);
 
 					res.redirect(basepath + 'login/');
 				} else {

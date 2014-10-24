@@ -248,7 +248,9 @@ merge(DataServerInterface.prototype, {
 	ping: function(context, username) {
 		username = username || (context && context.cookies && context.cookies.username);
 
-		return this._get('logon.ping', null, context)//ping
+		var me = this;
+
+		return me._get('logon.ping', null, context)//ping
 			//pong
 			.then(function(data) {
 				var urls = getLink.asMap(data);
@@ -259,25 +261,35 @@ merge(DataServerInterface.prototype, {
 
 				return urls;
 
-			}.bind(this))
+			})
 			.then(function(urls) {
 
 				if (!username) {
-					delete urls['logon.continue'];
-					return {links: urls};
+					return (!urls['logon.continue']) ?
+						{links: urls} :
+						me.getServiceDocument()
+							.then(function(d) {
+								username = d.getUserWorkspace().Title;
+								return me.handshake(urls, username, context);
+							});
 				}
 
-				return this._post(urls['logon.handshake'], {username: username}, context)
-					.then(function(data) {
-						var result = {links: merge(true, urls, getLink.asMap(data))};
-						if (!getLink(data, 'logon.continue')) {
-							result.reason = 'Not authenticated, no continue after handshake.';
-							return Promise.reject(result);
-						}
-						return result;
-					});
+				return me.handshake(urls, username, context);
 
-			}.bind(this));
+			});
+	},
+
+
+	handshake: function (urls, username, context) {
+		return this._post(urls['logon.handshake'], {username: username}, context)
+			.then(function(data) {
+				var result = {links: merge(true, urls, getLink.asMap(data))};
+				if (!getLink(data, 'logon.continue')) {
+					result.reason = 'Not authenticated, no continue after handshake.';
+					return Promise.reject(result);
+				}
+				return result;
+			});
 	},
 
 
