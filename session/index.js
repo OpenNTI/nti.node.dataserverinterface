@@ -62,7 +62,7 @@ merge(SessionManager.prototype, {
 
 		req.responseHeaders = {};
 
-		console.log('SESSION <- [%s] %s %s', new Date().toUTCString(), req.method, url);
+		console.log('SESSION <- [%s] %s %s', new Date().toUTCString(), req.method, url, req);
 
 		function finish() {
 			res.set(req.responseHeaders);

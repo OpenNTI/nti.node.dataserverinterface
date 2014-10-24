@@ -104,7 +104,7 @@ merge(DataServerInterface.prototype, {
 
 		result = new Promise(function(fulfill, reject) {
 			if(!isBrowser) {
-				console.log('DATASERVER <- [%s] %s %s %o', new Date().toUTCString(), opts.method, url, opts);
+				console.log('DATASERVER <- [%s] %s %s', new Date().toUTCString(), opts.method, url, opts);
 			}
 
 			request(opts, function(error, res, body) {
