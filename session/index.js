@@ -80,14 +80,14 @@ merge(SessionManager.prototype, {
 					reason = reason.statusCode;
 				}
 
-				console.error('CATCH: ', reason.stack || reason);
+				console.error('CATCH: %o', reason.stack || reason);
 				if (reason instanceof Error) {
 					return next(reason);
 				}
 
 				if (!/\/login/.test(req.url)) {
-					console.log('SESSION -> [%s] %s %s REDIRECT %slogin/ (User: annonymous, %dms) %s',
-						new Date().toUTCString(), req.method, url, basepath, Date.now() - start, req.headers);
+					console.log('SESSION -> [%s] %s %s REDIRECT %slogin/ (User: annonymous, %dms)',
+						new Date().toUTCString(), req.method, url, basepath, Date.now() - start);
 
 					res.redirect(basepath + 'login/');
 				} else {
