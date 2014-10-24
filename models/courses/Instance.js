@@ -27,8 +27,7 @@ function Instance(service, parent, data) {
 
 	this.__pending = [
 
-		this._resolveCatalogEntry(),
-		this.getAssignments()
+		this._resolveCatalogEntry()
 
 	].concat(b.__pending || []);
 }
