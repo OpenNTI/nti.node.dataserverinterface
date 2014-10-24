@@ -110,6 +110,11 @@ merge(DataServerInterface.prototype, {
 			}
 
 			request(opts, function(error, res, body) {
+				if (!res) {
+					console.error(arguments);
+					res = {headers:{}};
+				}
+
 				var contentType = getContentType(res.headers);
 
 				try {
