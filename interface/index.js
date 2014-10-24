@@ -109,9 +109,10 @@ merge(DataServerInterface.prototype, {
 
 			request(opts, function(error, res, body) {
 				var contentType = getContentType(res.headers);
-				if (contentType && contentType.indexOf('application/') === 0) {
-					body = body && JSON.parse(body);
-				}
+
+				try {
+					body = JSON.parse(body);
+				} catch (e) {}//Don't care... let it pass to the client as a string
 
 				if(!isBrowser) {
 					console.log('DATASERVER -> [%s] %s %s %s %dms',
