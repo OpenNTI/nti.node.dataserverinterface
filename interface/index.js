@@ -263,6 +263,7 @@ merge(DataServerInterface.prototype, {
 			.then(function(urls) {
 
 				if (!username) {
+					delete urls['logon.continue'];
 					return {links: urls};
 				}
 
