@@ -74,7 +74,7 @@ merge(Notifications.prototype, EventEmitter.prototype,
 
 	__applyData: function (data) {
 		this.Items = this.Items.concat(data.Items);
-		this.nextBatchSrc = (data.TotalItemCount < this.Items.length) &&
+		this.nextBatchSrc = (data.TotalItemCount > this.Items.length) &&
 			getLink(data, 'batch-next');
 
 		return this;
