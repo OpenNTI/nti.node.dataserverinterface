@@ -3,16 +3,21 @@
 var Promise = global.Promise || require('es6-promise').Promise;
 
 var merge = require('merge');
+var Url = require('url');
 var EventEmitter = require('events').EventEmitter;
 
 var objectParser = require('../models/Parser');
 
 var constants = require('../constants');
+var getLink = require('../utils/getlink');
 var forwardFunctions = require('../utils/function-forwarding');
 var withValue = require('../utils/object-attribute-withvalue');
 var defineProperties = require('../utils/object-define-properties');
+var objectToQuery = require('../utils/object-to-querystring');
 
 var waitFor = require('../utils/waitfor');
+
+var BATCH_SIZE = 5;
 
 var inflight;
 
@@ -25,14 +30,19 @@ function Notifications(service, data) {
 		length: {
 			get: this.getLength,
 			set: function() {}
+		},
+		isBusy: {
+			get: this.getIsBusy,
+			set: function() {}
 		}
 	});
 
-	merge(this, data);
+	this.Items = [];
+
+	this.__applyData(data);
 
 	this.lastViewed = new Date(parseFloat(data.lastViewed || 0) * 1000);
 
-	this.onChange = this.onChange.bind(this);
 }
 
 
@@ -44,8 +54,33 @@ merge(Notifications.prototype, EventEmitter.prototype,
 	},
 
 
-	onChange: function() {
-		this.emit('changed', this);
+	getIsBusy: function() {
+		return !!inflight;
+	},
+
+
+	nextBatch: function() {
+		var clean = cleanInflight;
+
+		if (!inflight) {
+			if (this.nextBatchSrc) {
+				inflight = get(this._service, this.nextBatchSrc, true)
+					.then(this.__applyData.bind(this));
+
+				inflight.then(clean, clean);
+
+			} else {
+				return Promise.fulfill(this);
+			}
+		}
+
+		return inflight;
+	},
+
+
+	__applyData: function (data) {
+		this.Items = this.Items.concat(data.Items);
+		this.nextBatchSrc = getLink(data, 'batch-next');
 	}
 });
 
