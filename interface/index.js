@@ -305,6 +305,17 @@ merge(DataServerInterface.prototype, {
 			}.bind(this));
 	},
 
+	resetPassword: function(username, newpw, id, context) {
+		return this.ping(context)
+			.then(function(result) {
+				return this._post(result.links['logon.reset.passcode'], {
+					username: username,
+					id: id,
+					password: newpw
+				}, context);
+			}.bind(this));
+	},
+
 	preflightAccountCreate: function(fields, context) {
 		return this.ping(context)
 			.then(function(result) {
