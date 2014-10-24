@@ -14,7 +14,10 @@ var PARSERS = {
 	'application/vnd.nextthought.grade': require('./assessment/Grade'),
 	'application/vnd.nextthought.assessment.userscourseassignmenthistoryitemfeedback': require('./assessment/AssignmentFeedback'),
 
-	'application/vnd.nextthought.change': require('./Change')
+	'application/vnd.nextthought.change': require('./Change'),
+
+	'application/vnd.nextthought.messageinfo': null,//Need To Model
+	'application/vnd.nextthought.openbadges.badge': null//Need To Model
 };
 
 

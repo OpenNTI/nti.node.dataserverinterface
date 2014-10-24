@@ -28,11 +28,15 @@ function Notifications(service, data) {
 	defineProperties(this, {
 		_service: withValue(service),
 		length: {
-			get: this.getLength,
+			get: function() {return (this.Items || []).length;},
+			set: function() {}
+		},
+		hasMore: {
+			get: function() {return !!this.nextBatchSrc;},
 			set: function() {}
 		},
 		isBusy: {
-			get: this.getIsBusy,
+			get: function() {return !!inflight;},
 			set: function() {}
 		}
 	});
@@ -48,16 +52,6 @@ function Notifications(service, data) {
 
 merge(Notifications.prototype, EventEmitter.prototype,
 	forwardFunctions(['every','filter','forEach','map','reduce'], 'Items'), {
-
-	getLength: function() {
-		return (this.Items || []).length;
-	},
-
-
-	getIsBusy: function() {
-		return !!inflight;
-	},
-
 
 	nextBatch: function() {
 		var clean = cleanInflight;
@@ -80,7 +74,10 @@ merge(Notifications.prototype, EventEmitter.prototype,
 
 	__applyData: function (data) {
 		this.Items = this.Items.concat(data.Items);
-		this.nextBatchSrc = getLink(data, 'batch-next');
+		this.nextBatchSrc = (data.TotalItemCount < this.Items.length) &&
+			getLink(data, 'batch-next');
+
+		return this;
 	}
 });
 
