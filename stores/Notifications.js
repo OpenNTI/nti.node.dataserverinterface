@@ -14,8 +14,12 @@ var defineProperties = require('../utils/object-define-properties');
 
 var waitFor = require('../utils/waitfor');
 
+var inflight;
+
+function cleanInflight() { inflight = null; }
 
 function Notifications(service, data) {
+	console.debug('New Notifications Object... only one should be here.');
 	defineProperties(this, {
 		_service: withValue(service),
 		length: {
@@ -44,6 +48,7 @@ merge(Notifications.prototype, EventEmitter.prototype,
 		this.emit('changed', this);
 	}
 });
+
 
 
 function get(s, url, ignoreCache) {
@@ -88,15 +93,27 @@ function resolveUIData(service, data) {
 Notifications.load = function(service, reload) {
 	var cache = service.getDataCache();
 
+	if (inflight) {
+		return inflight;
+	}
+
 	//We need some links...
-	return service.getPageInfo(constants.ROOT_NTIID)
+	inflight = service.getPageInfo(constants.ROOT_NTIID)
 		//Find our url to fetch notifications from...
 		.then(function(pageInfo) {
 			var url = pageInfo.getLink(constants.REL_MESSAGE_INBOX);
 			if (!url) {
 				return Promise.reject('No Notifications url');
 			}
-			return url;
+
+			url = Url.parse(url);
+
+			url.search = objectToQuery({
+				batchSize: BATCH_SIZE,
+				batchStart: 0
+			});
+
+			return url.format();
 		})
 
 		//Load the notifications...
@@ -120,6 +137,10 @@ Notifications.load = function(service, reload) {
 		.then(function(data) {
 			return new Notifications(service, data);
 		});
+
+	inflight.then(cleanInflight, cleanInflight);
+
+	return inflight;
 };
 
 
