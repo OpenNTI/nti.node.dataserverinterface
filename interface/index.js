@@ -106,7 +106,7 @@ merge(DataServerInterface.prototype, {
 
 		result = new Promise(function(fulfill, reject) {
 			if(!isBrowser) {
-				console.debug('%s REQUEST <- %s %s', new Date().toUTCString(), opts.method, url);
+				console.error('%s REQUEST <- %s %s', new Date().toUTCString(), opts.method, url);
 			}
 
 			request(opts, function(error, res, body) {
@@ -122,7 +122,7 @@ merge(DataServerInterface.prototype, {
 				} catch (e) {}//Don't care... let it pass to the client as a string
 
 				if(!isBrowser) {
-					console.debug('%s REQUEST -> %s %s %s %dms',
+					console.error('%s REQUEST -> %s %s %s %dms',
 						new Date().toUTCString(), opts.method, url, error || res.statusCode, Date.now() - start);
 				}
 
