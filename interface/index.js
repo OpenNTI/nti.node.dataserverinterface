@@ -330,7 +330,15 @@ merge(DataServerInterface.prototype, {
 			});
 	},
 
-
+	deleteTOS: function() {
+		return this.ping().then(function(result) {
+			var link = result.links['content.initial_tos_page'];
+			if (link) {
+				this._delete(link);
+			}
+			return 'initial_tos_page link not present.';
+		}.bind(this));
+	},
 
 	recoverUsername: function(email, context) {
 		return this.ping(context)
