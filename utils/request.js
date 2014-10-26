@@ -27,6 +27,17 @@ function copy(dest, src, keys) {
 	});
 }
 
+function keysToLowerCase(o) {
+	var k, out = {};
+	for (k in o) {
+		if (o.hasOwnProperty(k)) {
+			out[k.toLowerCase()] = o[k];
+		}
+	}
+	return out;
+}
+
+
 module.exports = exports = SERVER ? //SERVER is declared in th WebPack config file
 	//in node.js land...
 	require('request') :
@@ -35,6 +46,8 @@ module.exports = exports = SERVER ? //SERVER is declared in th WebPack config fi
 	function (options, callback) {
 		try {
 			var headers,
+				headersNormalized = keysToLowerCase(options.headers || {}),
+				formType, defaultType = 'application/x-www-form-urlencoded',
 				req = createXMLHTTPObject();
 
 			if (!req) {
@@ -52,15 +65,19 @@ module.exports = exports = SERVER ? //SERVER is declared in th WebPack config fi
 
 
 			req.open(options.method, options.url, true);
+			formType = headersNormalized['content-type'];
 
-			if (options.form) {
-				req.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+			if (options.form && (!formType || formType === defaultType)) {
+				req.setRequestHeader('Content-type', defaultType);
 				if (typeof options.form === 'object') {
 					options.form = Object.keys(options.form).reduce(function(str, v, i, a) {
 						var joiner = str.length === 0 || str[str.length - 1] === '&' ? '' : '&';
 						return str + joiner + encodeURIComponent(v) + '=' + encodeURIComponent(options.form[v]);
 					}, '');
 				}
+			}
+			else if (typeof options.form === 'object') {
+				options.form = JSON.stringify(options.form);
 			}
 
 			headers = options.headers;

@@ -91,6 +91,9 @@ merge(DataServerInterface.prototype, {
 
 		if (data) {
 			opts.form = data;
+			if (typeof data === 'object') {
+				opts.headers['Content-type'] = 'application/json';
+			}
 		}
 
 		function getContentType(headers) {
