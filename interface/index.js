@@ -193,37 +193,6 @@ merge(DataServerInterface.prototype, {
 		}, context);
 	},
 
-	_jsonRequest: function(url, data, context) {
-		return this._request({
-			url: url,
-			headers: {
-				'Content-type':'application/json'
-			},
-			data: JSON.stringify(data)
-		}, context);
-	},
-
-	postAnalytics: function(events) {
-		return this._getAnalyticsLinks().then(function(links) {
-			return this._post(links['analytics_session']).then(this._postAnalyticsEvents.bind(this,links,events));
-		}.bind(this));
-	},
-
-	_postAnalyticsEvents: function(links, events) {
-		return this._jsonRequest(links['batch_events'], {
-			"MimeType": "application/vnd.nextthought.analytics.batchevents",
-			events: events
-		});
-	},
-
-	_getAnalyticsLinks: function() {
-		return this.getServiceDocument()
-			.then(function(serviceDoc) {
-				var workspace = serviceDoc.getWorkspace("Analytics");
-				var links = getLink.asMap(workspace.Links);
-				return links;
-			});
-	},
 
 	getServiceDocument: function(context) {
 		var cache = DataCache.getForContext(context),

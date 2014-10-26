@@ -73,6 +73,26 @@ merge(ServiceDocument.prototype, {
 	},
 
 
+	post: function(url, data) {
+		return this.getServer()._post(url, data, this._context);
+	},
+
+
+	hasCookie: function(cookie) {
+		var c = this._context;
+		var d = global.document;
+		c = (c && c.headers) || d;
+		c = c && (c.Cookie || c.cookie);
+		c = (c && c.split(/;\W*/)) || [];
+
+		function search(found, v) {
+			return found || (v && v.indexOf(cookie)===0);
+		}
+
+		return c.reduce(search, false);
+	},
+
+
 	getPageInfo: function(ntiid) {
 		var key = 'pageinfo-' + ntiid;
 		var cache = this.getDataCache();
@@ -222,6 +242,27 @@ merge(ServiceDocument.prototype, {
 		});
 
 		return collection;
+	},
+
+
+	ensureAnalyticsSession: function () {
+		var workspace = this.getWorkspace("Analytics");
+		var url = getLink(workspace, 'analytics_session');
+
+		return this.hasCookie('nti.da_session') ? Promise.resolve() : this.post(url);
+	},
+
+
+	postAnalytics: function(events) {
+		var workspace = this.getWorkspace("Analytics");
+		var url = getLink(workspace, 'batch_events');
+		var payload = {
+			"MimeType": "application/vnd.nextthought.analytics.batchevents",
+			events: events
+		};
+
+		return this.ensureAnalyticsSession()
+				.then(this.post.bind(this, url, payload));
 	},
 
 
