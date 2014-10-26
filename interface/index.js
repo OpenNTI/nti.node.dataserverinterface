@@ -330,15 +330,17 @@ merge(DataServerInterface.prototype, {
 			});
 	},
 
-	deleteTOS: function() {
-		return this.ping().then(function(result) {
+
+	deleteTOS: function(context) {
+		return this.ping(context).then(function(result) {
 			var link = result.links['content.initial_tos_page'];
 			if (link) {
-				this._delete(link);
+				this._delete(link, context);
 			}
 			return 'initial_tos_page link not present.';
 		}.bind(this));
 	},
+
 
 	recoverUsername: function(email, context) {
 		return this.ping(context)
@@ -365,6 +367,7 @@ merge(DataServerInterface.prototype, {
 			}.bind(this));
 	},
 
+
 	resetPassword: function(username, newpw, id, context) {
 		return this.ping(context)
 			.then(function(result) {
@@ -375,6 +378,7 @@ merge(DataServerInterface.prototype, {
 				}, context);
 			}.bind(this));
 	},
+
 
 	preflightAccountCreate: function(fields, context) {
 		return this.ping(context)
@@ -389,6 +393,7 @@ merge(DataServerInterface.prototype, {
 			}.bind(this));
 	},
 
+
 	createAccount: function(fields, context) {
 		return this.ping(context)
 			.then(function(result) {
@@ -401,6 +406,7 @@ merge(DataServerInterface.prototype, {
 				}, context);
 			}.bind(this));
 	},
+
 
 	getObject: function(ntiid, mime, context) {
 		if (!NTIIDs.isNTIID(ntiid)) {
