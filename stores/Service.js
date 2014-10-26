@@ -257,7 +257,7 @@ merge(ServiceDocument.prototype, {
 		var workspace = this.getWorkspace("Analytics");
 		var url = getLink(workspace, 'batch_events');
 		var payload = {
-			"MimeType": "application/vnd.nextthought.analytics.batchevents",
+			MimeType: "application/vnd.nextthought.analytics.batchevents",
 			events: events
 		};
 

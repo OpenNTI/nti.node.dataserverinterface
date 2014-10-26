@@ -91,9 +91,10 @@ merge(DataServerInterface.prototype, {
 
 		if (data) {
 			opts.form = data;
-			if (typeof data === 'object') {
+			if (typeof data === 'object' && !data._asFORM) {
 				opts.headers['Content-type'] = 'application/json';
 			}
+			delete data._asFORM;
 		}
 
 		function getContentType(headers) {
@@ -291,7 +292,7 @@ merge(DataServerInterface.prototype, {
 
 
 	handshake: function (urls, username, context) {
-		return this._post(urls['logon.handshake'], {username: username}, context)
+		return this._post(urls['logon.handshake'], {_asFORM: true, username: username}, context)
 			.then(function(data) {
 				var result = {links: merge(true, urls, getLink.asMap(data))};
 				if (!getLink(data, 'logon.continue')) {
@@ -319,6 +320,7 @@ merge(DataServerInterface.prototype, {
 			.then(function(result) {
 
 				return this._post(result.links['logon.forgot.username'], {
+					_asFORM: true,
 					email: email
 				}, context);
 
@@ -331,6 +333,7 @@ merge(DataServerInterface.prototype, {
 			.then(function(result) {
 
 				return this._post(result.links['logon.forgot.passcode'], {
+					_asFORM: true,
 					email: email,
 					username: username,
 					success: returnURL
