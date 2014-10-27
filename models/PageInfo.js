@@ -13,7 +13,6 @@ var parser = null;//see parseObject below
 var withValue = require('../utils/object-attribute-withvalue');
 var toQueryString = require('../utils/object-to-querystring');
 var fixRefs = require('../utils/rebase-references');
-var NTIIDs = require('../utils/ntiids');
 
 function PageInfo(service, data) {
 	Object.defineProperty(this, '_service', withValue(service));
@@ -52,7 +51,7 @@ merge(PageInfo.prototype, base, {
 
 
 	getPackageID: function () {
-		function bestGuess(p) {
+		function bestGuess() {
 			throw new Error('PageInfo does not declare the package ID.');
 		}
 

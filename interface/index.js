@@ -5,7 +5,8 @@ var Promise = global.Promise || require('es6-promise').Promise;
 
 
 var Url = require('url');
-var btoa = global.bota || require('btoa');//If the login method is invoked on the NodeJS side, we will need this function...
+//If the login method is invoked on the NodeJS side, we will need this function...
+var btoa = global.bota || require('btoa');
 var QueryString = require('query-string');
 var request = require('../utils/request');
 var merge = require('merge');
@@ -14,7 +15,6 @@ var DataCache = require('../utils/datacache');
 
 var isBrowser = require('../utils/browser');
 var getLink = require('../utils/getlink');
-var clean = require('../utils/object-clean');
 var NTIIDs = require('../utils/ntiids');
 var waitFor = require('../utils/waitfor');
 
@@ -150,7 +150,8 @@ merge(DataServerInterface.prototype, {
 				//we get back.  If it's not we reject.
 				if (mime) {
 					if (contentType && contentType.indexOf(mime) < 0) {
-						return reject('Requested with an explicit accept value of ' + mime + ' but got ' + contentType + '.  Rejecting.');
+						return reject('Requested with an explicit accept value of ' +
+										mime + ' but got ' + contentType + '.  Rejecting.');
 					}
 				}
 
@@ -431,8 +432,7 @@ merge(DataServerInterface.prototype, {
 
 
 	getPageInfo: function(ntiid, context) {
-		var url,
-			mime = 'application/vnd.nextthought.pageinfo+json';
+		var mime = 'application/vnd.nextthought.pageinfo+json';
 
 		if (!NTIIDs.isNTIID(ntiid)) {
 			return Promise.reject('Bad NTIID');

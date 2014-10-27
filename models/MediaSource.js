@@ -1,7 +1,5 @@
 'use strict';
 
-var Promise = global.Promise || require('es6-promise').Promise;
-
 var merge = require('merge');
 var withValue = require('../utils/object-attribute-withvalue');
 var isEmpty = require('../utils/isempty');
