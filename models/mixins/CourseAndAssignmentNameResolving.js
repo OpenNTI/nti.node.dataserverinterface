@@ -1,5 +1,7 @@
 'use strict';
 
+var Promise = global.Promise || require('es6-promise').Promise;
+
 /**
  * This is for Objects within an assignment history item.
  */
