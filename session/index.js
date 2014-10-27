@@ -89,7 +89,7 @@ merge(SessionManager.prototype, {
 					console.log('SESSION -> [%s] %s %s REDIRECT %slogin/ (User: annonymous, %dms)',
 						new Date().toUTCString(), req.method, url, basepath, Date.now() - start);
 
-					res.redirect(basepath + 'login/');
+					res.redirect(basepath + 'login/?return=' + encodeURIComponent(req.originalUrl));
 				} else {
 					console.log('SESSION -> [%s] %s %s (%s, %dms)',
 						new Date().toUTCString(), req.method, url, reason, Date.now() - start);
