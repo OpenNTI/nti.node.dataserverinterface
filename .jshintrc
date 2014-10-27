@@ -2,8 +2,28 @@
     "node": true,
     "browser": false,
     "strict": true,
-    
-    "globals": {
-        "Promise": true
-    }
+    "bitwise": true,
+    "camelcase": true,
+    "curly": true,
+    "eqeqeq": true,
+    "forin": true,
+    //"es3": false,
+    "immed": true,
+    "indent": 2,
+    "latedef": false,
+    "newcap": true,
+    "noarg": true,
+    "noempty": true,
+    "nonbsp": true,
+    "nonew": true,
+    "plusplus": false,
+    "quotmark": "single",
+    "undef": true,
+    "unused": true,
+    //"maxparams": 4,
+    //"maxdepth": 3,
+    "maxlen": 120,
+    "debug": true,
+    "shadow": true,
+    "predef": [ "-Promise" ]
 }
