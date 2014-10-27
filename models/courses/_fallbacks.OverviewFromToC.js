@@ -86,9 +86,14 @@ function getAssessment(node, fallbackMime, outlineNode) {
 
 
 function notAThing(node) {
+	var ignored = {
+		'application/vnd.nextthought.ntislidedeck': 1,
+		'application/vnd.nextthought.relatedworkref': 1
+	};
+
 	return	node.get('suppressed') === 'true' ||
 			//extra tag...no data in it.
-			(/^object$/i.test(node.tag) && node.get('mimeType') === 'application/vnd.nextthought.relatedworkref');
+			(/^object$/i.test(node.tag) && ignored[node.get('mimeType')]);
 }
 
 
