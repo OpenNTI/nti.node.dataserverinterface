@@ -2,8 +2,8 @@
 
 var Promise = global.Promise || require('es6-promise').Promise;
 
-var Path = require('path');
-var Url = require('url');
+// var Path = require('path');
+// var Url = require('url');
 var merge = require('merge');
 
 var User = require('../models/User');
@@ -246,7 +246,7 @@ merge(ServiceDocument.prototype, {
 
 
 	ensureAnalyticsSession: function () {
-		var workspace = this.getWorkspace("Analytics");
+		var workspace = this.getWorkspace('Analytics');
 		var url = getLink(workspace, 'analytics_session');
 
 		return this.hasCookie('nti.da_session') ? Promise.resolve() : this.post(url);
@@ -254,10 +254,10 @@ merge(ServiceDocument.prototype, {
 
 
 	postAnalytics: function(events) {
-		var workspace = this.getWorkspace("Analytics");
+		var workspace = this.getWorkspace('Analytics');
 		var url = getLink(workspace, 'batch_events');
 		var payload = {
-			MimeType: "application/vnd.nextthought.analytics.batchevents",
+			MimeType: 'application/vnd.nextthought.analytics.batchevents',
 			events: events
 		};
 

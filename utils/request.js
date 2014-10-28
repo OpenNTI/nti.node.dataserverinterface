@@ -70,7 +70,7 @@ module.exports = exports = SERVER ? //SERVER is declared in th WebPack config fi
 			if (options.form && (!formType || formType === defaultType)) {
 				req.setRequestHeader('Content-type', defaultType);
 				if (typeof options.form === 'object') {
-					options.form = Object.keys(options.form).reduce(function(str, v, i, a) {
+					options.form = Object.keys(options.form).reduce(function(str, v) {
 						var joiner = str.length === 0 || str[str.length - 1] === '&' ? '' : '&';
 						return str + joiner + encodeURIComponent(v) + '=' + encodeURIComponent(options.form[v]);
 					}, '');
@@ -94,8 +94,9 @@ module.exports = exports = SERVER ? //SERVER is declared in th WebPack config fi
 				}
 
 				try {
+					/* jslint -W101 */
 					// see: https://prototype.lighthouseapp.com/projects/8886/tickets/129-ie-mangles-http-response-status-code-204-to-1223
-					var status = req.status == 1223 ? 204 : req.status;
+					var status = req.status === 1223 ? 204 : req.status;
 					var headers = req.getAllResponseHeaders()
 									.trim()
 									.split('\n')
@@ -104,7 +105,7 @@ module.exports = exports = SERVER ? //SERVER is declared in th WebPack config fi
 									});
 
 					var response = {
-						statusCode: req.status,
+						statusCode: status,
 						headers: {}
 					};
 
