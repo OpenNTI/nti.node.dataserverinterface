@@ -52,15 +52,17 @@ merge(ServiceDocument.prototype, {
 
 
 	get: function(url) {
-		if (inflight[url]) {
-			return inflight[url];
+		var key = typeof url === 'string' ? url : JSON.stringify(url);
+
+		if (inflight[key]) {
+			return inflight[key];
 		}
 
 		function clean() {
-			delete inflight[url];
+			delete inflight[key];
 		}
 
-		var p = inflight[url] = this.getServer()._get(url, this._context);
+		var p = inflight[key] = this.getServer()._get(url, this._context);
 
 		p.then(clean, clean);
 
