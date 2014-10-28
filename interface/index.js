@@ -130,7 +130,7 @@ merge(DataServerInterface.prototype, {
 						new Date().toUTCString(), opts.method, url, error || res.statusCode, Date.now() - start);
 				}
 
-				if (error || res.statusCode >= 300) {
+				if (error || res.statusCode >= 300 || res.statusCode === 0) {
 					if(res) {
 						res.___isResponse = true;
 						res.responseJSON = typeof body === 'object' ? body : null;
