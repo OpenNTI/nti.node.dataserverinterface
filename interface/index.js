@@ -73,11 +73,13 @@ merge(DataServerInterface.prototype, {
 			url: url//ensure the resolved url is used.
 		});
 
-		opts.headers = merge( true, ((options || {}).headers || {}), {
-			//Always override these headers
-			'accept': mime || 'application/json',
-			'x-requested-with': 'XMLHttpRequest'
-		});
+		if ((options || {}).headers !== null) {
+			opts.headers = merge( true, ((options || {}).headers || {}), {
+				//Always override these headers
+				'accept': mime || 'application/json',
+				'x-requested-with': 'XMLHttpRequest'
+			});
+		}
 
 		if(context) {
 			opts.headers = merge(true,
