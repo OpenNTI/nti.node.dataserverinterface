@@ -18,7 +18,7 @@ function VideoIndex(service, parent, data) {
 	this.data = {};
 
 	for(var index in data) {
-		if (data.hasOwnPropery(index)) {
+		if (data.hasOwnProperty(index)) {
 			this.data[index] = Video.parse(service, parent, data[index]);
 		}
 	}
