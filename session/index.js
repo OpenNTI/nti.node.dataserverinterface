@@ -86,7 +86,7 @@ merge(SessionManager.prototype, {
 					return next(reason);
 				}
 
-				if (!/\/login/.test(req.url)) {
+				if (!/\/(api|login)/.test(req.url)) {
 					console.log('SESSION -> [%s] %s %s REDIRECT %slogin/ (User: annonymous, %dms)',
 						new Date().toUTCString(), req.method, url, basepath, Date.now() - start);
 
@@ -94,7 +94,8 @@ merge(SessionManager.prototype, {
 				} else {
 					console.log('SESSION -> [%s] %s %s (%s, %dms)',
 						new Date().toUTCString(), req.method, url, reason, Date.now() - start);
-					res.end(reason);
+
+					next(reason);
 				}
 			});
 	}
