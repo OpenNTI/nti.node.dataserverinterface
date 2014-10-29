@@ -4,7 +4,7 @@ var Promise = global.Promise || require('es6-promise').Promise;
 var Url = require('url');
 var merge = require('merge');
 var getLink = require('../../utils/getlink');
-var urlJoin = require('../../utils/urljoin');
+
 var waitFor = require('../../utils/waitfor');
 var pluck = require('../../utils/array-pluck');
 var withValue = require('../../utils/object-attribute-withvalue');

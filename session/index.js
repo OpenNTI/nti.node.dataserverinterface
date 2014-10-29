@@ -3,9 +3,10 @@
 var Promise = global.Promise || require('es6-promise').Promise;
 var merge = require('merge');
 
+var define = require('../utils/object-define-hidden-props');
 var Catalog = require('../stores/Catalog');
 var Library = require('../stores/Library');
-var Notifications = require('../stores/Notifications');
+//var Notifications = require('../stores/Notifications');
 
 var SessionManager = function (server) {
 	if (!server) {
@@ -41,7 +42,7 @@ merge(SessionManager.prototype, {
 	setupIntitalData: function(context) {
 		return this.server.getServiceDocument(context)
 			.then(function(service) {
-				context.__nti_service = service;
+				define(context,{__nti_service: service});
 
 				return Promise.all([
 					service.getAppUser(),

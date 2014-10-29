@@ -7,7 +7,7 @@ var EventEmitter = require('events').EventEmitter;
 
 var forwardFunctions = require('../utils/function-forwarding');
 var withValue = require('../utils/object-attribute-withvalue');
-var identity = require('../utils/identity');
+//var identity = require('../utils/identity');
 var waitFor = require('../utils/waitfor');
 
 var Entry = require('../models/courses/CatalogEntry');
@@ -48,7 +48,7 @@ merge(Catalog.prototype, EventEmitter.prototype,
 	findEntry: function(entryId) {
 		var found;
 
-		this.every(function(course, index) {
+		this.every(function(course) {
 			if (course.getID() === entryId) {
 				found = course;
 			}

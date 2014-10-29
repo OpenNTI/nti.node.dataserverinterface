@@ -158,7 +158,7 @@ module.exports = OutlineNode;
 
 function collateVideo(json) {
 	var re = /ntivideo$/;
-	function collagte(list, current, index, items) {
+	function collagte(list, current) {
 		var last = list[list.length - 1];
 		if (re.test(current.MimeType)) {
 			//last was a video...

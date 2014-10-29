@@ -2,7 +2,6 @@
 
 var merge = require('merge');
 
-var freeze = require('../utils/object-deepfreeze');
 var withValue = require('../utils/object-attribute-withvalue');
 
 var capabilities = {
@@ -53,6 +52,7 @@ function Capabilities(service, list) {
 	var cap, test;
 
 	for (cap in capabilities) {
+		if (!capabilities.hasOwnProperty(cap)) {continue;}
 		test = capabilities[cap];
 		if (typeof test === 'string') {
 			test = this.hasCapability(test);

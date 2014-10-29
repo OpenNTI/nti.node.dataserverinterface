@@ -3,9 +3,7 @@
 var EventEmitter = require('events').EventEmitter;
 var merge = require('merge');
 var getLink = require('../../utils/getlink');
-var isBrowser = require('../../utils/browser');
-var urlJoin = require('../../utils/urljoin');
-var isEmpty = require('../../utils/isempty');
+
 
 var CONTENT_VISIBILITY_MAP = {
 	OU: 'OUID'

@@ -2,7 +2,7 @@
 
 var merge = require('merge');
 var setAndEmit = require('../../utils/getsethandler');
-var urlJoin = require('../../utils/urljoin');
+
 var withValue = require('../../utils/object-attribute-withvalue');
 var assets = require('../mixins/PresentationResources');
 var base = require('../mixins/Base');

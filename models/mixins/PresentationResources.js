@@ -3,10 +3,10 @@
 var Promise = global.Promise || require('es6-promise').Promise;
 
 var merge = require('merge');
-var isBrowser = require('../../utils/browser');
+//var isBrowser = require('../../utils/browser');
 var urlJoin = require('../../utils/urljoin');
 var isEmpty = require('../../utils/isempty');
-var isThenable = require('../../utils/isthenable');
+//var isThenable = require('../../utils/isthenable');
 
 var ASSET_MAP = {
 	thumb: 'contentpackage-thumb-60x60.png',

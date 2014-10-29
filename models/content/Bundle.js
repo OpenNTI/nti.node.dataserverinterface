@@ -65,7 +65,7 @@ merge(Bundle.prototype, base, assets,
 			.then(function (tables){
 				var result = tables.slice();
 
-				tables.forEach(function(v, i, a) {
+				tables.forEach(function(v, i) {
 					result[v.id] = result[i] = v.toc; });
 
 				return new TablesOfContents(me._service, me, result);

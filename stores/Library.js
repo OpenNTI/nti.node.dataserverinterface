@@ -80,7 +80,7 @@ merge(Library.prototype, EventEmitter.prototype, {
 	getCourse: function(courseInstanceId) {
 		var courses = [].concat(this.coursesAdmin || []).concat(this.courses || []);
 		var found;
-		courses.every(function(course, index) {
+		courses.every(function(course) {
 			if (course.getCourseID() === courseInstanceId) {
 				found = course;
 			}

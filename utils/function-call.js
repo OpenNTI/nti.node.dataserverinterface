@@ -7,7 +7,7 @@
  * @param  {any...}   [args...] Varargs of paramaters.
  * @return {*}
  */
-module.exports = function call(fn, args) {
+module.exports = function call(fn) {
 	var params = Array.prototype.slice.call(arguments);
 
 	params.shift();//drop the function off

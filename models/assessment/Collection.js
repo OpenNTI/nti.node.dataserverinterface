@@ -7,9 +7,6 @@
  */
 'use strict';
 
-var Promise = global.Promise || require('es6-promise').Promise;
-
-var path = require('path');
 var merge = require('merge');
 
 var base = require('../mixins/Base');
@@ -19,7 +16,7 @@ var withValue = require('../../utils/object-attribute-withvalue');
 var objectEach = require('../../utils/object-each');
 
 var Assignment = require('./Assignment');
-var Assessment = require('./Assignment');
+//var Assessment = require('./Assignment');
 
 function f(Cls, service, parent) {
 	return function (v, k, o) {

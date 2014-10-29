@@ -2,7 +2,7 @@
 
 var merge = require('merge');
 var withValue = require('../utils/object-attribute-withvalue');
-var isEmpty = require('../utils/isempty');
+//var isEmpty = require('../utils/isempty');
 
 
 function MediaSource(service, parent, data) {

@@ -2,7 +2,7 @@
 
 var merge = require('merge');
 var unique = require('../../utils/array-unique');
-var urlJoin = require('../../utils/urljoin');
+
 var withValue = require('../../utils/object-attribute-withvalue');
 var forwardFunctions = require('../../utils/function-forwarding');
 var base = require('../mixins/Base');
@@ -17,6 +17,8 @@ function Enrollment(service, data, admin) {
 	var i = this.CourseInstance = Instance.parse(service, this, data.CourseInstance);
 
 	i.on('changed', this.onChange.bind(this));
+
+	this.admin = admin;
 
 	this.__pending = [].concat(i.__pending || []);
 }

@@ -1,8 +1,5 @@
 'use strict';
 
-var Promise = global.Promise || require('es6-promise').Promise;
-
-var path = require('path');
 var merge = require('merge');
 
 var base = require('../mixins/Base');

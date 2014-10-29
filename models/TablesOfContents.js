@@ -1,12 +1,12 @@
 'use strict';
 
-var et = require('elementtree');
+//var et = require('elementtree');
 var merge = require('merge');
 var base = require('./mixins/Base');
 
-var PageSource = require('./TableOfContentsBackedPageSource');
+//var PageSource = require('./TableOfContentsBackedPageSource');
 
-var forwardFunctions = require('../utils/function-forwarding');
+//var forwardFunctions = require('../utils/function-forwarding');
 var defineProperties = require('../utils/object-define-properties');
 var withValue = require('../utils/object-attribute-withvalue');
 

@@ -1,6 +1,5 @@
 'use strict';
 
-var path = require('path');
 var merge = require('merge');
 
 var base = require('./mixins/Base');
