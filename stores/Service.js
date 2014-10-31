@@ -9,6 +9,7 @@ var merge = require('merge');
 var User = require('../models/User');
 var PageInfo = require('../models/PageInfo');
 var Capabilities = require('../models/Capabilities');
+var Enrollment = require('./Enrollment');
 
 var DataCache = require('../utils/datacache');
 
@@ -94,6 +95,18 @@ merge(ServiceDocument.prototype, {
 		return c.reduce(search, false);
 	},
 
+	getEnrollment: function() {
+		var key = 'enrollment-store';
+		var cache = this.getDataCache();
+
+		var cached = cache.get(key);
+		if(cached) {
+			return cached;
+		}
+		var enrollment = new Enrollment(this);
+		cache.set(key,enrollment);
+		return enrollment;
+	},
 
 	getPageInfo: function(ntiid) {
 		var key = 'pageinfo-' + ntiid;
@@ -201,7 +214,6 @@ merge(ServiceDocument.prototype, {
 
 		return req;
 	},
-
 
 	getUserWorkspace: function() {
 		var workspace;
