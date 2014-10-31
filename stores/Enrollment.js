@@ -10,8 +10,24 @@ var Enrollment = function(service) {
 }
 
 merge(Enrollment.prototype, {
-	enrollOpen: function(courseid) {
-		console.debug(courseid);
+
+	_openEnrollLink: function() {
+		var workspace = this._service.getWorkspace('Courses');
+		var result = null;
+		workspace.Items.every(function(item) {
+			if(item.Title === 'EnrolledCourses') {
+				result = item.href;
+			}
+			return !result;
+		})
+		return result;
+	},
+
+	enrollOpen: function(course_id) {
+		var link = this._openEnrollLink();
+		return this._service.post(link,{
+			NTIID: course_id
+		});
 	}
 })
 

@@ -30,6 +30,7 @@ var ServiceDocument = function (json, server, context) {
 	merge(this, json);
 
 	this.capabilities = new Capabilities(this, caps);
+	this.enrollment = new Enrollment(this);
 
 	this.__pending = [
 		this.getAppUser().then(function(u) {
@@ -96,16 +97,7 @@ merge(ServiceDocument.prototype, {
 	},
 
 	getEnrollment: function() {
-		var key = 'enrollment-store';
-		var cache = this.getDataCache();
-
-		var cached = cache.get(key);
-		if(cached) {
-			return cached;
-		}
-		var enrollment = new Enrollment(this);
-		cache.set(key,enrollment);
-		return enrollment;
+		return this.enrollment;
 	},
 
 	getPageInfo: function(ntiid) {
