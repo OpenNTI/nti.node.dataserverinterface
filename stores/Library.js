@@ -42,7 +42,7 @@ function Library(service, name, contentPackages,
 
 	this.bundles = contentBundles.map(function(bdl) {
 		if (!bdl.ContentPackages || !bdl.ContentPackages.length) {
-			console.warn('Bundle is empty. Missing packages.');
+			console.warn('%o Bundle is empty. Missing packages.', bdl);
 			return null;
 		}
 
