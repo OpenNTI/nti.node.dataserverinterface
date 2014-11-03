@@ -12,16 +12,37 @@ function Enrollment(service) {
 
 merge(Enrollment.prototype, {
 
-	_openEnrollLink: function() {
-		var workspace = this._service.getWorkspace('Courses');
+	_enrolledCoursesWorkspaceItem: function() {
+		var workspace = this._coursesWorkspace();
 		var result = null;
 		workspace.Items.every(function(item) {
 			if(item.Title === 'EnrolledCourses') {
-				result = item.href;
+				result = item;
 			}
 			return !result;
 		});
 		return result;
+	},
+
+	_coursesWorkspace: function() {
+		return this._service.getWorkspace('Courses');
+	},
+
+	_openEnrollLink: function() {
+		return this._enrolledCoursesWorkspaceItem().href;
+	},
+
+	_dropLink: function() {
+		return this._openEnrollLink();
+	},
+
+	isEnrolled: function(course_id) {
+		return this._service.get(this._enrolledCoursesWorkspaceItem().href)
+		.then(function(result) {
+			return result.Items.some(function(item) {
+				return item.CourseInstance.NTIID === course_id;
+			})
+		});
 	},
 
 	enrollOpen: function(course_id) {
@@ -29,6 +50,13 @@ merge(Enrollment.prototype, {
 		return this._service.post(link,{
 			NTIID: course_id
 		});
+	},
+
+	dropCourse: function(course_id) {
+		var link = this._dropLink();
+		return this._service.delete(link,{
+			NTIID: course_id
+		});	
 	}
 });
 
