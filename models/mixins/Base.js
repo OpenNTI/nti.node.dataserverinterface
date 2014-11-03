@@ -3,6 +3,7 @@
 var EventEmitter = require('events').EventEmitter;
 var merge = require('merge');
 var getLink = require('../../utils/getlink');
+var isFunction = require('../../utils/isfunction');
 
 
 var CONTENT_VISIBILITY_MAP = {
@@ -10,6 +11,25 @@ var CONTENT_VISIBILITY_MAP = {
 };
 
 merge(exports, {
+
+
+	getData: function() {
+		var k, v, d = {};
+
+		for (k in this) {
+			if (!this.hasOwnProperty(k)) {continue;}
+			if (!isFunction(this[k])) {
+				v = this[k];
+
+				if (isFunction(v.getData)) {
+					v = v.getData();
+				}
+
+				d[k] = v;
+			}
+		}
+	},
+
 
 	getID: function() {
 		return this.NTIID;

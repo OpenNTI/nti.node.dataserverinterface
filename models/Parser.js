@@ -1,5 +1,6 @@
 'use strict';
 
+/* jshint -W101*/
 var PARSERS = {
 	'application/vnd.nextthought.user': require('./User'),
 	'application/vnd.nextthought.pageinfo': require('./PageInfo'),
