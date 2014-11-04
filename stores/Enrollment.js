@@ -40,7 +40,7 @@ merge(Enrollment.prototype, {
 				}
 			}
 			return null;
-		})
+		});
 	},
 
 	_enrollment: function() {
@@ -52,7 +52,7 @@ merge(Enrollment.prototype, {
 		.then(function(result) {
 			return result.Items.some(function(item) {
 				return item.CourseInstance.NTIID === course_id;
-			})
+			});
 		});
 	},
 
