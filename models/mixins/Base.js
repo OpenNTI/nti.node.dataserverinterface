@@ -18,16 +18,18 @@ merge(exports, {
 
 		for (k in this) {
 			if (!this.hasOwnProperty(k)) {continue;}
-			if (!isFunction(this[k])) {
-				v = this[k];
+			v = this[k];
+			if (v && !isFunction(v)) {
 
-				if (isFunction(v.getData)) {
+				if (v && isFunction(v.getData)) {
 					v = v.getData();
 				}
 
 				d[k] = v;
 			}
 		}
+
+		return d;
 	},
 
 
