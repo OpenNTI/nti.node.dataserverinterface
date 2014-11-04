@@ -60,7 +60,7 @@ function buildRef(node) {
 	return node && {
 		ntiid: node.getID(),
 		title: node.title,
-		ref: node.href
+		ref: node.ref
 	};
 }
 

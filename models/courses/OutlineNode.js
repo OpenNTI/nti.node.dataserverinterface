@@ -21,6 +21,11 @@ function OutlineNode(service, parent, data) {
 			enumerable: true,
 			configurable: false,
 			get: this.__getHref.bind(this)
+		},
+		ref: {
+			enumerable: true,
+			configurable: false,
+			get: this.__getRef.bind(this)
 		}
 	});
 	merge(this, data);
@@ -48,14 +53,24 @@ merge(OutlineNode.prototype, base, {
 
 	__getHref: function() {
 		var courseId = (this.__getCourse() || {getID:function(){}}).getID();
+		var ref = this.ref;
+
+		if (!ref) {
+			return undefined;
+		}
+
+		return path.join('course', encodeForURI(courseId), ref) + '/';
+	},
+
+
+	__getRef: function() {
 		var id = this.getID();
 
 		if (!id) {
 			return undefined;
 		}
 
-		return path.join(	'course', encodeForURI(courseId),
-							'o', encodeForURI(id)) + '/';//end in a separator
+		return path.join('o', encodeForURI(id));
 	},
 
 
