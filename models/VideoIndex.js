@@ -4,13 +4,19 @@ var merge = require('merge');
 var defineProperties = require('../utils/object-define-properties');
 var withValue = require('../utils/object-attribute-withvalue');
 
+var PageSource = require('./VideoIndexBackedPageSource');
 var Video = require('./Video');
 
 function VideoIndex(service, parent, data) {
 	defineProperties(this, {
 		_service: withValue(service),
 		_parent: withValue(parent),
-		_order: withValue(data._order || [])
+		_order: withValue(data._order || []),
+		length: {
+			enumerable: true,
+			configurable: false,
+			get: this.__getLength.bind(this)
+		},
 	});
 
 	delete data._order;
@@ -19,12 +25,14 @@ function VideoIndex(service, parent, data) {
 
 	for(var index in data) {
 		if (data.hasOwnProperty(index)) {
-			this.data[index] = Video.parse(service, parent, data[index]);
+			this.data[index] = Video.parse(service, this, data[index]);
 		}
 	}
 }
 
 merge(VideoIndex.prototype, {
+	__getLength: function () { return this._order.length; },
+
 
 	asJSON: function() {
 		return merge({}, this.data, {_order: this._order});
@@ -69,7 +77,21 @@ merge(VideoIndex.prototype, {
 	indexOf: function(id) { return this._order.indexOf(id); },
 
 
-	get: function(id) { return this.data[id]; }
+	get: function(id) { return this.data[id]; },
+
+
+	getAt: function (index) {
+		var id = this._order[index];
+		return id && this.get(id);
+	},
+
+
+	getPageSource: function() {
+		if (!this._pageSource) {
+			this._pageSource = new PageSource(this);
+		}
+		return this._pageSource;
+	}
 });
 
 

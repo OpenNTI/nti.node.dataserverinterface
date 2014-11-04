@@ -26,6 +26,11 @@ function Video(service, parent, data) {
 
 merge(Video.prototype, {
 
+	getID: function() {
+		return this.ntiid;
+	},
+
+
 	/**
 	 * @param {String} [lang] Request a language specific transcript. If
 	 *                        nothing is provided, it will default to english.
@@ -49,6 +54,11 @@ merge(Video.prototype, {
 		}
 
 		return this._service.get(target.src);
+	},
+
+
+	getPageSource: function() {
+		return this._parent.getPageSource();
 	}
 
 });
