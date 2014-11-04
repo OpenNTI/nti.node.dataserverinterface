@@ -81,6 +81,9 @@ merge(ServiceDocument.prototype, {
 		return this.getServer()._post(url, data, this._context);
 	},
 
+	delete: function(url, data) {
+		return this.getServer()._delete(url, data, this._context);
+	},
 
 	hasCookie: function(cookie) {
 		var c = this._context;

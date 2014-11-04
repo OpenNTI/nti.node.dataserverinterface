@@ -32,12 +32,23 @@ merge(Enrollment.prototype, {
 		return this._enrolledCoursesWorkspaceItem().href;
 	},
 
-	_dropLink: function() {
-		return this._openEnrollLink();
+	_getDropLink: function(course_id) {
+		return this._enrollment().then(function(enrollment) {
+			for( var i = 0; i < enrollment.Items.length; i++ ) {
+				if (enrollment.Items[i].CourseInstance.NTIID === course_id) {
+					return enrollment.Items[i].href;
+				}
+			}
+			return null;
+		})
+	},
+
+	_enrollment: function() {
+		return this._service.get(this._enrolledCoursesWorkspaceItem().href);
 	},
 
 	isEnrolled: function(course_id) {
-		return this._service.get(this._enrolledCoursesWorkspaceItem().href)
+		return this._enrollment()
 		.then(function(result) {
 			return result.Items.some(function(item) {
 				return item.CourseInstance.NTIID === course_id;
@@ -45,18 +56,17 @@ merge(Enrollment.prototype, {
 		});
 	},
 
-	enrollOpen: function(course_id) {
+	enrollOpen: function(catalogEntryId) {
 		var link = this._openEnrollLink();
 		return this._service.post(link,{
-			NTIID: course_id
+			NTIID: catalogEntryId
 		});
 	},
 
 	dropCourse: function(course_id) {
-		var link = this._dropLink();
-		return this._service.delete(link,{
-			NTIID: course_id
-		});	
+		return this._getDropLink(course_id).then(function(link) {
+			return this._service.delete(link);
+		}.bind(this));
 	}
 });
 
