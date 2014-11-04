@@ -7,6 +7,7 @@ var merge = require('merge');
 
 var base = require('../mixins/Base');
 var makeFallbackOverview = require('./_fallbacks.OverviewFromToC');
+var PageSource = require('./OutlineNodeBackedPageSource');
 
 var define = require('../../utils/object-define-properties');
 var withValue = require('../../utils/object-attribute-withvalue');
@@ -118,6 +119,14 @@ merge(OutlineNode.prototype, base, {
 		}
 
 		return level;
+	},
+
+
+	getPageSource: function() {
+		if (!this._pageSource) {
+			this._pageSource = new PageSource(this, this.__getRoot());
+		}
+		return this._pageSource;
 	},
 
 
