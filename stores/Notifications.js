@@ -8,6 +8,9 @@ var EventEmitter = require('events').EventEmitter;
 
 var objectParser = require('../models/Parser');
 
+
+var ensureInstanceCountDoesNotReach = require('../utils/debugging-invoke-limiter');
+
 var constants = require('../constants');
 var getLink = require('../utils/getlink');
 var forwardFunctions = require('../utils/function-forwarding');
@@ -24,7 +27,8 @@ var inflight;
 function cleanInflight() { inflight = null; }
 
 function Notifications(service, data) {
-	console.debug('New Notifications Object... only one should be here.');
+	ensureInstanceCountDoesNotReach(this, 2);
+
 	defineProperties(this, {
 		_service: withValue(service),
 		length: {
