@@ -236,7 +236,7 @@ function getSrc(node) {
 
 
 function getContentFallback(outlineNode) {
-	console.debug('[FALLBACK] Deriving outline outlineNode src content');
+	//console.debug('[FALLBACK] Deriving OutlineNode content');
 	var course = outlineNode.__getCourse();
 	var bundle = course && course.ContentPackageBundle;
 	var pkg = ((bundle && bundle.ContentPackages) || [])[0];
