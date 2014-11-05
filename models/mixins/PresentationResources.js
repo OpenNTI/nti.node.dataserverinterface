@@ -14,12 +14,20 @@ var ASSET_MAP = {
 	background: 'background.png'
 };
 
+var MISSING_ASSET_DATA = {};
 
 /**
  * return the root that should be used if PlatforPresentationResources isn't defined
  * @return {string} default root to use
  */
 function getDefaultAssetRoot(scope) {
+	if (typeof window !== 'undefined') {
+		/* global window */
+		window.__MISSING_ASSET_DATA = MISSING_ASSET_DATA;
+	}
+
+	MISSING_ASSET_DATA[scope.getID()] = true;
+
 	if (scope.getDefaultAssetRoot) {
 		return scope.getDefaultAssetRoot();
 	}

@@ -29,7 +29,6 @@ merge(CourseCatalogEntry.prototype, base, assets, {
 
 
 	getDefaultAssetRoot: function() {
-		console.log('Legacy Course Catalog Entry: (No Presentation Asset Data)', this.getID());
 		return '';
 	},
 
