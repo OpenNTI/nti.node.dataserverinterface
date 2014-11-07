@@ -43,6 +43,7 @@ function Assignment(service, parent, data) {
 	});
 }
 
+
 merge(Assignment.prototype, base, {
 	isSubmittable: true,
 
@@ -51,11 +52,15 @@ merge(Assignment.prototype, base, {
 		return this.getID() === id || this.containsId(id);
 	},
 
-
+	/**
+	 * Checks to see if the NTIID is within this Assignment (Checking the QuestionSet's id and all questions id's)
+	 *
+	 * @param {String} id NTIID
+	 */
 	containsId: function(id) {
 		var items = this.parts.filter(function(p) {
 			p = p.question_set;
-			return p && p.getID() === id;
+			return p && p.getID() === id || p.containsId(id);
 		});
 
 		return items.length > 0;
@@ -69,6 +74,14 @@ merge(Assignment.prototype, base, {
 
 	getDueDate: function() {
 		return this.available_for_submission_ending;
+	},
+
+
+	getQuestion: function (id) {
+		function getQuestionFromSet(question, part) {
+			return question || part.question_set.getQuestion(id);
+		}
+		return this.parts.reduce(getQuestionFromSet, null);
 	}
 
 });
