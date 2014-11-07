@@ -18,7 +18,7 @@ function QuestionSet(service, parent, data) {
 }
 
 merge(QuestionSet.prototype, base, {
-
+	isSubmittable: true
 });
 
 

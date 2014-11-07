@@ -14,12 +14,6 @@ var withValue = require('../utils/object-attribute-withvalue');
 var toQueryString = require('../utils/object-to-querystring');
 var fixRefs = require('../utils/rebase-references');
 
-function PageInfo(service, data) {
-	Object.defineProperty(this, '_service', withValue(service));
-	merge(this, data);
-}
-
-
 function parseObject(pi, data) {
 	//because Parser requires this model (PageInfo), we can't put this ref
 	//at the top... build will fail. So we will pull the ref on demand
@@ -29,6 +23,15 @@ function parseObject(pi, data) {
 	return parser(pi._service, pi, data);
 }
 
+
+function PageInfo(service, data) {
+	Object.defineProperty(this, '_service', withValue(service));
+	merge(this, data);
+
+	if (data.AssessmentItems) {
+		this.AssessmentItems = data.AssessmentItems.map(parseObject.bind(this, this));
+	}
+}
 
 merge(PageInfo.prototype, base, {
 

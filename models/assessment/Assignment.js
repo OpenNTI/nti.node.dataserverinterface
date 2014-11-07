@@ -44,6 +44,8 @@ function Assignment(service, parent, data) {
 }
 
 merge(Assignment.prototype, base, {
+	isSubmittable: true,
+
 
 	is: function(id) {
 		return this.getID() === id || this.containsId(id);
