@@ -3,10 +3,10 @@
 var assign = require('../../utils/assign');
 
 var base = require('../mixins/Base');
+var content = require('../mixins/HasContent');
 
 var define = require('../../utils/object-define-properties');
 var withValue = require('../../utils/object-attribute-withvalue');
-var fixRefs = require('../../utils/rebase-references');
 var parseObject = require('../../utils/parse-object');
 
 var WordBank = require('./WordBank');
@@ -17,6 +17,8 @@ function Question(service, parent, data) {
 		_parent: withValue(parent)
 	});
 
+	content.initMixin.call(this, data);
+
 	assign(this, data);
 
 	this.parts = data.parts.map(parseObject.bind(this, this));
@@ -24,21 +26,9 @@ function Question(service, parent, data) {
 	if (this.wordbank) {
 		this.wordbank = WordBank.parse(service, this, this.wordbank);
 	}
-
-	try {
-		var root = this.getContentRoot();
-		this.content = fixRefs(this.content, root);
-	} catch (e) {
-		delete this.content;
-		console.error('Content cannot be rooted. %s', e.stack || e.message || e);
-	}
 }
 
-assign(Question.prototype, base, {
-
-	getContentRoot: function () {
-		return this.ContentRoot || this.up('getContentRoot').getContentRoot();
-	}
+assign(Question.prototype, base, content, {
 
 });
 

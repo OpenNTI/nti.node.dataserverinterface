@@ -3,6 +3,8 @@
 var assign = require('../../utils/assign');
 
 var base = require('../mixins/Base');
+var content = require('../mixins/HasContent');
+
 
 var define = require('../../utils/object-define-properties');
 var withValue = require('../../utils/object-attribute-withvalue');
@@ -14,10 +16,11 @@ function Part(service, parent, data) {
 		_parent: withValue(parent)
 	});
 
+	content.initMixin.call(this, data);
+
 	assign(this, data);
 
 	/*
-		content <-fixRefs
 		hints <-Parse
 		solutions <-Parse
 
@@ -26,7 +29,7 @@ function Part(service, parent, data) {
 	*/
 }
 
-assign(Part.prototype, base, {
+assign(Part.prototype, base, content, {
 
 
 });
