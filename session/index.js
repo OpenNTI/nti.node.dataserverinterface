@@ -1,7 +1,7 @@
 'use strict';
 
 var Promise = global.Promise || require('es6-promise').Promise;
-var merge = require('merge');
+var assign = require('../utils/assign');
 
 var define = require('../utils/object-define-hidden-props');
 var Catalog = require('../stores/Catalog');
@@ -16,7 +16,7 @@ var SessionManager = function (server) {
 	this.config = server.config;
 };
 
-merge(SessionManager.prototype, {
+assign(SessionManager.prototype, {
 
 	getUser: function(context) {
 

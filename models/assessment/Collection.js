@@ -7,7 +7,7 @@
  */
 'use strict';
 
-var merge = require('merge');
+var assign = require('../../utils/assign');
 
 var base = require('../mixins/Base');
 
@@ -53,7 +53,7 @@ function Collection(service, parent, assignments, assessments, tables) {
 	//this._notAssignments = objectEach(assessments, f(Assessment, service, this));
 }
 
-merge(Collection.prototype, base, {
+assign(Collection.prototype, base, {
 
 	getAssignments: function(outlineNodeID) {
 		var node = this._tables.getNode(outlineNodeID);

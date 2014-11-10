@@ -2,7 +2,7 @@
 
 var Promise = global.Promise || require('es6-promise').Promise;
 
-var merge = require('merge');
+var assign = require('../utils/assign');
 var base = require('./mixins/Base');
 var Url = require('url');
 var path = require('path');
@@ -18,14 +18,14 @@ var fixRefs = require('../utils/rebase-references');
 
 function PageInfo(service, data) {
 	Object.defineProperty(this, '_service', withValue(service));
-	merge(this, data);
+	assign(this, data);
 
 	if (data.AssessmentItems) {
 		this.AssessmentItems = setupAssessmentItems(data.AssessmentItems, this);
 	}
 }
 
-merge(PageInfo.prototype, base, {
+assign(PageInfo.prototype, base, {
 
 	getContentRoot: function () {
 		var url = Url.parse(this.getLink('content'));

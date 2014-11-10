@@ -1,6 +1,6 @@
 'use strict';
 
-var merge = require('merge');
+var assign = require('../../utils/assign');
 
 var Question = require('./Question');
 
@@ -17,14 +17,14 @@ function QuestionSet(service, parent, data) {
 		_parent: withValue(parent)
 	});
 
-	merge(me, data);
+	assign(me, data);
 
 	me.questions = data.questions.map(function(q) {
 		return Question.parse(service, me, q);
 	});
 }
 
-merge(QuestionSet.prototype, base, {
+assign(QuestionSet.prototype, base, {
 	isSubmittable: true,
 
 	/**

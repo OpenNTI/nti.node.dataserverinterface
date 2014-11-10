@@ -2,7 +2,7 @@
 
 var Promise = global.Promise || require('es6-promise').Promise;
 
-var merge = require('merge');
+var assign = require('../utils/assign');
 var Url = require('url');
 var EventEmitter = require('events').EventEmitter;
 
@@ -54,7 +54,7 @@ function Notifications(service, data) {
 }
 
 
-merge(Notifications.prototype, EventEmitter.prototype,
+assign(Notifications.prototype, EventEmitter.prototype,
 	forwardFunctions(['every','filter','forEach','map','reduce'], 'Items'), {
 
 	nextBatch: function() {

@@ -1,6 +1,6 @@
 'use strict';
 
-var merge = require('merge');
+var assign = require('../../utils/assign');
 
 var base = require('../mixins/Base');
 
@@ -14,7 +14,7 @@ function Part(service, parent, data) {
 		_parent: withValue(parent)
 	});
 
-	merge(this, data);
+	assign(this, data);
 
 	/*
 		content <-fixRefs
@@ -26,7 +26,7 @@ function Part(service, parent, data) {
 	*/
 }
 
-merge(Part.prototype, base, {
+assign(Part.prototype, base, {
 
 
 });

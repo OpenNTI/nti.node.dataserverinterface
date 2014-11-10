@@ -1,6 +1,6 @@
 'use strict';
 
-var merge = require('merge');
+var assign = require('../utils/assign');
 var base = require('./mixins/Base');
 
 var NTIIDs = require('../utils/ntiids');
@@ -23,7 +23,7 @@ function TableOfContentsBackedPageSource(ToC, root) {
 }
 
 
-merge(TableOfContentsBackedPageSource.prototype, base, {
+assign(TableOfContentsBackedPageSource.prototype, base, {
 
 	getPagesAround: function(pageId) {
 		var query = './/*[@ntiid="' + pageId + '"]';

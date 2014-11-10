@@ -1,11 +1,11 @@
 'use strict';
 
-var merge = require('merge');
+var assign = require('../../utils/assign');
 
 var base = require('../mixins/Base');
 
 function WatchVideoEvent(resourceId, rootContextId, context, duration, startTime, endTime, hasTranscript) {
-	merge(this, {
+	assign(this, {
 		MimeType: 'application/vnd.nextthought.analytics.watchvideoevent',
 		type: 'video-watch',
 		resource_id: resourceId,
@@ -19,7 +19,7 @@ function WatchVideoEvent(resourceId, rootContextId, context, duration, startTime
 	});
 }
 
-merge(WatchVideoEvent.prototype, base, {
+assign(WatchVideoEvent.prototype, base, {
 
 	setContextPath: function(path) {
 		this.context_path = path;

@@ -2,7 +2,7 @@
 
 var Promise = global.Promise || require('es6-promise').Promise;
 
-var merge = require('merge');
+var assign = require('../utils/assign');
 var EventEmitter = require('events').EventEmitter;
 
 var forwardFunctions = require('../utils/function-forwarding');
@@ -16,7 +16,7 @@ function Catalog(service, data) {
 	var pending = this.__pending = [];
 	Object.defineProperty(this, '_service', withValue(service));
 
-	merge(this, data);
+	assign(this, data);
 
 	this.onChange = this.onChange.bind(this);
 
@@ -36,7 +36,7 @@ function Catalog(service, data) {
 }
 
 
-merge(Catalog.prototype, EventEmitter.prototype,
+assign(Catalog.prototype, EventEmitter.prototype,
 	forwardFunctions(['every','filter','forEach','map','reduce'], 'Items'), {
 
 

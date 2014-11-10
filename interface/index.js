@@ -9,7 +9,7 @@ var Url = require('url');
 var btoa = global.bota || require('btoa');
 var QueryString = require('query-string');
 var request = require('../utils/request');
-var merge = require('merge');
+var assign = require('../utils/assign');
 
 var DataCache = require('../utils/datacache');
 
@@ -29,7 +29,7 @@ var DataServerInterface = function (config) {
 };
 
 
-merge(DataServerInterface.prototype, {
+assign(DataServerInterface.prototype, {
 
 	/**
 	 * Makes a request to the dataserver.
@@ -67,14 +67,14 @@ merge(DataServerInterface.prototype, {
 
 		var mime = (options.headers || {}).accept;
 		var data = options.data;
-		var opts = merge(true, {
+		var opts = assign({}, {
 			method: data ? 'POST' : 'GET'
 		}, options, {
 			url: url//ensure the resolved url is used.
 		});
 
 		if ((options || {}).headers !== null) {
-			opts.headers = merge( true, ((options || {}).headers || {}), {
+			opts.headers = assign( true, ((options || {}).headers || {}), {
 				//Always override these headers
 				'accept': mime || 'application/json',
 				'x-requested-with': 'XMLHttpRequest'
@@ -82,7 +82,7 @@ merge(DataServerInterface.prototype, {
 		}
 
 		if(context) {
-			opts.headers = merge(true,
+			opts.headers = assign({},
 				context.headers || {},
 				opts.headers,
 				{'accept-encoding': ''}
@@ -297,7 +297,7 @@ merge(DataServerInterface.prototype, {
 	handshake: function (urls, username, context) {
 		return this._post(urls['logon.handshake'], {_asFORM: true, username: username}, context)
 			.then(function(data) {
-				var result = {links: merge(true, urls, getLink.asMap(data))};
+				var result = {links: assign({}, urls, getLink.asMap(data))};
 				if (!getLink(data, 'logon.continue')) {
 					result.reason = 'Not authenticated, no continue after handshake.';
 					return Promise.reject(result);
@@ -398,7 +398,7 @@ merge(DataServerInterface.prototype, {
 
 				if (mime) {
 					url = Url.parse(url);
-					url.search = QueryString.stringify(merge(
+					url.search = QueryString.stringify(assign(
 						QueryString.parse(url.query), {
 							type: mime
 						}));

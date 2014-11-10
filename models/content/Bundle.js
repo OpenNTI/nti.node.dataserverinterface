@@ -1,6 +1,6 @@
 'use strict';
 
-var merge = require('merge');
+var assign = require('../../utils/assign');
 var setAndEmit = require('../../utils/getsethandler');
 var urlJoin = require('../../utils/urljoin');
 var Promise = global.Promise || require('es6-promise').Promise;
@@ -17,7 +17,7 @@ var TablesOfContents = require('../TablesOfContents');
 function Bundle(service, parent, data) {
 	Object.defineProperty(this, '_service', withValue(service));
 	Object.defineProperty(this, '_parent', withValue(parent));
-	merge(this, data);
+	assign(this, data);
 
 	this.author = (data.DCCreator || []).join(', ');
 
@@ -36,7 +36,7 @@ function Bundle(service, parent, data) {
 		this.getAsset('background').then(setAndEmit(this, 'background')));
 }
 
-merge(Bundle.prototype, base, assets,
+assign(Bundle.prototype, base, assets,
 	forwardFunctions(['every','filter','forEach','map','reduce'], 'ContentPackages'), {
 	isBundle: true,
 

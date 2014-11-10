@@ -1,6 +1,6 @@
 'use strict';
 
-var merge = require('merge');
+var assign = require('../../utils/assign');
 
 var base = require('../mixins/Base');
 
@@ -14,10 +14,10 @@ function Hint(service, parent, data) {
 		_parent: withValue(parent)
 	});
 
-	merge(this, data);
+	assign(this, data);
 }
 
-merge(Hint.prototype, base, {
+assign(Hint.prototype, base, {
 
 
 });

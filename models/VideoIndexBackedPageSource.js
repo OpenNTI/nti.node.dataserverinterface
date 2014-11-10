@@ -1,7 +1,7 @@
 'use strict';
 
 var path = require('path');
-var merge = require('merge');
+var assign = require('../utils/assign');
 var base = require('./mixins/Base');
 
 var NTIID = require('../utils/ntiids');
@@ -16,7 +16,7 @@ function VideoIndexBackedPageSource(index) {
 }
 
 
-merge(VideoIndexBackedPageSource.prototype, base, {
+assign(VideoIndexBackedPageSource.prototype, base, {
 
 	getPagesAround: function(pageId) {
 		var nodes = this._parent;

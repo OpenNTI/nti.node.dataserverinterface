@@ -1,6 +1,6 @@
 'use strict';
 
-var merge = require('merge');
+var assign = require('../../utils/assign');
 
 var base = require('../mixins/Base');
 var names = require('../mixins/CourseAndAssignmentNameResolving');
@@ -16,13 +16,13 @@ function AssignmentFeedback(service, parent, data) {
 	});
 
 
-	merge(this, data);
+	assign(this, data);
 	this.__pending = [
 		this.__resolveNames(service)
 	];
 }
 
-merge(AssignmentFeedback.prototype, base, names, {
+assign(AssignmentFeedback.prototype, base, names, {
 
 
 });

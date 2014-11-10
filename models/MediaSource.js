@@ -1,6 +1,6 @@
 'use strict';
 
-var merge = require('merge');
+var assign = require('../utils/assign');
 var withValue = require('../utils/object-attribute-withvalue');
 //var isEmpty = require('../utils/isempty');
 
@@ -9,10 +9,10 @@ function MediaSource(service, parent, data) {
 	Object.defineProperty(this, '_service', withValue(service));
 	Object.defineProperty(this, '_parent', withValue(parent));
 
-	merge(this, data);
+	assign(this, data);
 }
 
-merge(MediaSource.prototype, {
+assign(MediaSource.prototype, {
 
 });
 

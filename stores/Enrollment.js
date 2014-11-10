@@ -3,14 +3,14 @@
 /* jshint -W098 */ //Delete this comment-line once Promise is referenced.
 var Promise = global.Promise || require('es6-promise').Promise;
 
-var merge = require('merge');
+var assign = require('../utils/assign');
 var withValue = require('../utils/object-attribute-withvalue');
 
 function Enrollment(service) {
 	Object.defineProperty(this, '_service', withValue(service));
 }
 
-merge(Enrollment.prototype, {
+assign(Enrollment.prototype, {
 
 	_enrolledCoursesWorkspaceItem: function() {
 		var workspace = this._coursesWorkspace();

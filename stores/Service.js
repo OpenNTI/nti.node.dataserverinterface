@@ -4,7 +4,7 @@ var Promise = global.Promise || require('es6-promise').Promise;
 
 // var Path = require('path');
 // var Url = require('url');
-var merge = require('merge');
+var assign = require('../utils/assign');
 
 var User = require('../models/User');
 var PageInfo = require('../models/PageInfo');
@@ -27,7 +27,7 @@ var ServiceDocument = function (json, server, context) {
 	var caps = json.CapabilityList || [];
 
 	deepFreeze(json); //make the data immutable
-	merge(this, json);
+	assign(this, json);
 
 	this.capabilities = new Capabilities(this, caps);
 	this.enrollment = new Enrollment(this);
@@ -41,7 +41,7 @@ var ServiceDocument = function (json, server, context) {
 };
 
 
-merge(ServiceDocument.prototype, {
+assign(ServiceDocument.prototype, {
 
 	getServer: function() {
 		return this._server;

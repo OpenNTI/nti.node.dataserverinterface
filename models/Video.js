@@ -2,7 +2,7 @@
 
 var Promise = global.Promise || require('es6-promise').Promise;
 
-var merge = require('merge');
+var assign = require('../utils/assign');
 var withValue = require('../utils/object-attribute-withvalue');
 var isEmpty = require('../utils/isempty');
 
@@ -17,14 +17,14 @@ function Video(service, parent, data) {
 
 	var sources = data.sources;
 
-	merge(this, data);
+	assign(this, data);
 
 	this.sources = sources.map(function(item) {
 		return MediaSource.parse(service, this, item);
 	}.bind(this));
 }
 
-merge(Video.prototype, {
+assign(Video.prototype, {
 
 	getID: function() {
 		return this.ntiid;

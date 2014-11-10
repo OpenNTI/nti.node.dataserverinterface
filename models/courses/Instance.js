@@ -2,7 +2,7 @@
 var Promise = global.Promise || require('es6-promise').Promise;
 
 var Url = require('url');
-var merge = require('merge');
+var assign = require('../../utils/assign');
 var getLink = require('../../utils/getlink');
 
 var waitFor = require('../../utils/waitfor');
@@ -19,7 +19,7 @@ var AssessmentCollection = require('../assessment/Collection');
 function Instance(service, parent, data) {
 	Object.defineProperty(this, '_service', withValue(service));
 	Object.defineProperty(this, '_parent', withValue(parent));
-	merge(this, data);
+	assign(this, data);
 
 	var b = this.ContentPackageBundle = Bundle.parse(service, this, data.ContentPackageBundle);
 
@@ -32,7 +32,7 @@ function Instance(service, parent, data) {
 	].concat(b.__pending || []);
 }
 
-merge(Instance.prototype, base, {
+assign(Instance.prototype, base, {
 	isCourse: true,
 
 
@@ -159,7 +159,7 @@ merge(Instance.prototype, base, {
 
 		function combine(indices) {
 			var orders = pluck(indices, '_order');
-			var out = indices.reduce(merge, {});
+			var out = indices.reduce(function(a,b){return assign(a,b);}, {});
 			out._order = orders.reduce(flattenList, []);
 			return VideoIndex.parse(service, me, out);
 		}

@@ -1,11 +1,11 @@
 'use strict';
 
-var merge = require('merge');
+var assign = require('../../utils/assign');
 
 var base = require('../mixins/Base');
 
 function ResourceEvent(resourceId, courseId, duration) {
-	merge(this, {
+	assign(this, {
 		MimeType: 'application/vnd.nextthought.analytics.resourceevent',
 		type: 'resource-viewed',
 		resource_id: resourceId,
@@ -15,7 +15,7 @@ function ResourceEvent(resourceId, courseId, duration) {
 	});
 }
 
-merge(ResourceEvent.prototype, base, {
+assign(ResourceEvent.prototype, base, {
 
 	setContextPath: function(path) {
 		this.context_path = path;

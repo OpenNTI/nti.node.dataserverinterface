@@ -1,6 +1,6 @@
 'use strict';
 
-var merge = require('merge');
+var assign = require('../../utils/assign');
 
 var base = require('../mixins/Base');
 
@@ -16,12 +16,12 @@ function WordBank(service, parent, data) {
 	});
 
 
-	merge(this, data);
+	assign(this, data);
 
 	this.entries = data.entries.map(WordEntry.parse.bind(this, service, this));
 }
 
-merge(WordBank.prototype, base, {
+assign(WordBank.prototype, base, {
 
 
 });

@@ -1,6 +1,6 @@
 'use strict';
 
-var merge = require('merge');
+var assign = require('../utils/assign');
 var base = require('./mixins/Base');
 
 var defineProperties = require('../utils/object-define-properties');
@@ -17,13 +17,13 @@ function User(service, data) {
 			}
 		}
 	});
-	merge(this, data);
+	assign(this, data);
 
 
 }
 
 
-merge(User.prototype, base, {
+assign(User.prototype, base, {
 
 
 });

@@ -1,6 +1,6 @@
 'use strict';
 
-var merge = require('merge');
+var assign = require('../../utils/assign');
 
 var base = require('../mixins/Base');
 
@@ -17,7 +17,7 @@ function Question(service, parent, data) {
 		_parent: withValue(parent)
 	});
 
-	merge(this, data);
+	assign(this, data);
 
 	this.parts = data.parts.map(parseObject.bind(this, this));
 
@@ -34,7 +34,7 @@ function Question(service, parent, data) {
 	}
 }
 
-merge(Question.prototype, base, {
+assign(Question.prototype, base, {
 
 	getContentRoot: function () {
 		return this.ContentRoot || this.up('getContentRoot').getContentRoot();

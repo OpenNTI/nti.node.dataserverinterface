@@ -1,6 +1,6 @@
 'use strict';
 
-var merge = require('merge');
+var assign = require('../../utils/assign');
 
 var base = require('../mixins/Base');
 
@@ -17,13 +17,13 @@ function AssessedQuestionSet(service, parent, data) {
 	});
 
 
-	merge(me, data);
+	assign(me, data);
 	me.questions = data.questions.map(function(question) {
 		return AssessedQuestion.parse(service, me, question);
 	});
 }
 
-merge(AssessedQuestionSet.prototype, base, {
+assign(AssessedQuestionSet.prototype, base, {
 
 	getTotal: function () {
 		return (this.questions || []).length;

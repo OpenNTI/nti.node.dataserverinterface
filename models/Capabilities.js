@@ -1,6 +1,6 @@
 'use strict';
 
-var merge = require('merge');
+var assign = require('../utils/assign');
 
 var withValue = require('../utils/object-attribute-withvalue');
 
@@ -64,7 +64,7 @@ function Capabilities(service, list) {
 	}
 }
 
-merge(Capabilities.prototype, {
+assign(Capabilities.prototype, {
 	hasCapability: function(c) {
 		return this._list.indexOf(c) >= 0;
 	}

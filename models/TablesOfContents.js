@@ -1,7 +1,7 @@
 'use strict';
 
 //var et = require('elementtree');
-var merge = require('merge');
+var assign = require('../utils/assign');
 var base = require('./mixins/Base');
 
 //var PageSource = require('./TableOfContentsBackedPageSource');
@@ -19,7 +19,7 @@ function TablesOfContents(service, parent, tables) {
 }
 
 
-merge(TablesOfContents.prototype, base, {
+assign(TablesOfContents.prototype, base, {
 
 	getNode: function(id) {
 		return this._tables.reduce(function(found, toc) {

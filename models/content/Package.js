@@ -1,6 +1,6 @@
 'use strict';
 
-var merge = require('merge');
+var assign = require('../../utils/assign');
 
 var Promise = global.Promise || require('es6-promise').Promise;
 
@@ -18,7 +18,7 @@ var ToC = require('../XMLBasedTableOfContents');
 function Package(service, parent, data) {
 	Object.defineProperty(this, '_service', withValue(service));
 	Object.defineProperty(this, '_parent', withValue(parent));
-	merge(this, data);
+	assign(this, data);
 
 	this.author = (data.DCCreator || []).join(', ');
 
@@ -28,7 +28,7 @@ function Package(service, parent, data) {
 	];
 }
 
-merge(Package.prototype, base, assets, {
+assign(Package.prototype, base, assets, {
 
 	getDefaultAssetRoot: function() {
 		var root = this.root;

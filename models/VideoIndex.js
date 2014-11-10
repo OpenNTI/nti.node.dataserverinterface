@@ -1,6 +1,6 @@
 'use strict';
 
-var merge = require('merge');
+var assign = require('../utils/assign');
 var defineProperties = require('../utils/object-define-properties');
 var withValue = require('../utils/object-attribute-withvalue');
 
@@ -30,12 +30,12 @@ function VideoIndex(service, parent, data) {
 	}
 }
 
-merge(VideoIndex.prototype, {
+assign(VideoIndex.prototype, {
 	__getLength: function () { return this._order.length; },
 
 
 	asJSON: function() {
-		return merge({}, this.data, {_order: this._order});
+		return assign({}, this.data, {_order: this._order});
 	},
 
 

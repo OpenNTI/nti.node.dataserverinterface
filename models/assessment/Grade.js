@@ -1,6 +1,6 @@
 'use strict';
 
-var merge = require('merge');
+var assign = require('../../utils/assign');
 
 var base = require('../mixins/Base');
 var names = require('../mixins/CourseAndAssignmentNameResolving');
@@ -15,14 +15,14 @@ function Grade(service, parent, data) {
 	});
 
 
-	merge(this, data);
+	assign(this, data);
 
 	this.__pending = [
 		this.__resolveNames(service)
 	];
 }
 
-merge(Grade.prototype, base, names, {
+assign(Grade.prototype, base, names, {
 
 
 });

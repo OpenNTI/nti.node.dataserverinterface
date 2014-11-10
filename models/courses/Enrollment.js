@@ -1,6 +1,6 @@
 'use strict';
 
-var merge = require('merge');
+var assign = require('../../utils/assign');
 var unique = require('../../utils/array-unique');
 
 var withValue = require('../../utils/object-attribute-withvalue');
@@ -12,7 +12,7 @@ var Instance = require('./Instance');
 function Enrollment(service, data, admin) {
 	Object.defineProperty(this, '_service', withValue(service));
 
-	merge(this, data);
+	assign(this, data);
 
 	var i = this.CourseInstance = Instance.parse(service, this, data.CourseInstance);
 
@@ -23,7 +23,7 @@ function Enrollment(service, data, admin) {
 	this.__pending = [].concat(i.__pending || []);
 }
 
-merge(Enrollment.prototype, base,
+assign(Enrollment.prototype, base,
 	forwardFunctions([
 		'getPresentationProperties',
 		'getOutline'

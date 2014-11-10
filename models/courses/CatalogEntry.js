@@ -1,6 +1,6 @@
 'use strict';
 
-var merge = require('merge');
+var assign = require('../../utils/assign');
 var setAndEmit = require('../../utils/getsethandler');
 
 var withValue = require('../../utils/object-attribute-withvalue');
@@ -9,7 +9,7 @@ var base = require('../mixins/Base');
 
 function CourseCatalogEntry(service, data) {
 	Object.defineProperty(this, '_service', withValue(service));
-	merge(this, data);
+	assign(this, data);
 
 	this.author = (data.DCCreator || []).join(', ');
 
@@ -24,7 +24,7 @@ function CourseCatalogEntry(service, data) {
 	];
 }
 
-merge(CourseCatalogEntry.prototype, base, assets, {
+assign(CourseCatalogEntry.prototype, base, assets, {
 	isCourse: true,
 
 

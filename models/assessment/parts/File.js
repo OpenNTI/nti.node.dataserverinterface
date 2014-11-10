@@ -1,6 +1,6 @@
 'use strict';
 
-var merge = require('merge');
+var assign = require('../../../utils/assign');
 var Base = require('../Part');
 
 var isEmpty = require('../../../utils/isempty');
@@ -11,7 +11,7 @@ function File(service, parent, data) {
 
 
 File.prototype = Object.create(Base.prototype);
-merge(File.prototype, {
+assign(File.prototype, {
 	constructor: File,
 
 

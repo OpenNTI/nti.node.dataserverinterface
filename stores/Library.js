@@ -2,7 +2,7 @@
 
 var Promise = global.Promise || require('es6-promise').Promise;
 
-var merge = require('merge');
+var assign = require('../utils/assign');
 var EventEmitter = require('events').EventEmitter;
 
 var withValue = require('../utils/object-attribute-withvalue');
@@ -70,7 +70,7 @@ function Library(service, name, contentPackages,
 }
 
 
-merge(Library.prototype, EventEmitter.prototype, {
+assign(Library.prototype, EventEmitter.prototype, {
 
 	onChange: function() {
 		this.emit('changed', this);

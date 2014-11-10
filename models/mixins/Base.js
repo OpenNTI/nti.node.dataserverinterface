@@ -1,7 +1,7 @@
 'use strict';
 
 var EventEmitter = require('events').EventEmitter;
-var merge = require('merge');
+var assign = require('../../utils/assign');
 var getLink = require('../../utils/getlink');
 var isFunction = require('../../utils/isfunction');
 
@@ -10,7 +10,7 @@ var CONTENT_VISIBILITY_MAP = {
 	OU: 'OUID'
 };
 
-merge(exports, {
+assign(exports, {
 
 
 	getData: function() {

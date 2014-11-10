@@ -1,13 +1,13 @@
 'use strict';
 
-var merge = require('merge');
+var assign = require('./assign');
 
 function Task(fn, interval) {
 	this.fn = fn;
 	this.interval = interval || 1000;
 }
 
-merge(Task.prototype, {
+assign(Task.prototype, {
 	start: function () {
 		if (this._id) {
 			return;

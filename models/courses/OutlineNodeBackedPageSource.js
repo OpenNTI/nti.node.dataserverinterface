@@ -1,6 +1,6 @@
 'use strict';
 
-var merge = require('merge');
+var assign = require('../../utils/assign');
 var base = require('../mixins/Base');
 
 var defineProperties = require('../../utils/object-define-properties');
@@ -25,7 +25,7 @@ function OutlineNodeBackedPageSource(node, root) {
 }
 
 
-merge(OutlineNodeBackedPageSource.prototype, base, {
+assign(OutlineNodeBackedPageSource.prototype, base, {
 
 	getPagesAround: function(pageId) {
 		var nodes = this.pagesInRange;

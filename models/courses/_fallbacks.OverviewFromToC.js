@@ -1,6 +1,6 @@
 'use strict';
 
-var merge = require('merge');
+var assign = require('../../utils/assign');
 
 var SECTION_TYPE_MAP = {
 	'application/vnd.nextthought.ntivideo': 'video',
@@ -112,7 +112,7 @@ function getConfigForNode(node, outlineNode) {
 
 	var parser = MIME_PARSER[obj.MimeType] || noOp;
 
-	return merge(obj, parser(node, obj.MimeType, outlineNode));
+	return assign(obj, parser(node, obj.MimeType, outlineNode));
 }
 
 

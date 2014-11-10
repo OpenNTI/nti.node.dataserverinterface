@@ -1,6 +1,6 @@
 'use strict';
 
-var merge = require('merge');
+var assign = require('../../utils/assign');
 
 var base = require('../mixins/Base');
 
@@ -33,7 +33,7 @@ function Assignment(service, parent, data) {
 		_parent: withValue(parent)
 	});
 
-	merge(me, data);
+	assign(me, data);
 
 	parseDate(me, 'available_for_submission_beginning');
 	parseDate(me, 'available_for_submission_ending');
@@ -44,7 +44,7 @@ function Assignment(service, parent, data) {
 }
 
 
-merge(Assignment.prototype, base, {
+assign(Assignment.prototype, base, {
 	isSubmittable: true,
 
 

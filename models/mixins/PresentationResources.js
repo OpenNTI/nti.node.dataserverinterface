@@ -2,7 +2,7 @@
 
 var Promise = global.Promise || require('es6-promise').Promise;
 
-var merge = require('merge');
+var assign = require('../../utils/assign');
 //var isBrowser = require('../../utils/browser');
 var urlJoin = require('../../utils/urljoin');
 var isEmpty = require('../../utils/isempty');
@@ -36,7 +36,7 @@ function getDefaultAssetRoot(scope) {
 	return '';
 }
 
-merge(exports, {
+assign(exports, {
 
 
 	getAssetRoot: function getAssetRoot() {

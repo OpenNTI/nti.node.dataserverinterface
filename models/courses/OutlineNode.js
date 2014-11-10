@@ -3,7 +3,7 @@
 var Promise = global.Promise || require('es6-promise').Promise;
 
 var path = require('path');
-var merge = require('merge');
+var assign = require('../../utils/assign');
 
 var base = require('../mixins/Base');
 var makeFallbackOverview = require('./_fallbacks.OverviewFromToC');
@@ -28,13 +28,13 @@ function OutlineNode(service, parent, data) {
 			get: this.__getRef.bind(this)
 		}
 	});
-	merge(this, data);
+	assign(this, data);
 
 	var c = this.contents;
 	this.contents = (c && c.map(parse.bind(this, service, this))) || [];
 }
 
-merge(OutlineNode.prototype, base, {
+assign(OutlineNode.prototype, base, {
 
 	getID: function() {
 		return this.ContentNTIID;

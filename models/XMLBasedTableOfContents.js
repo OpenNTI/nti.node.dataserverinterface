@@ -1,7 +1,7 @@
 'use strict';
 
 var et = require('elementtree');
-var merge = require('merge');
+var assign = require('../utils/assign');
 var base = require('./mixins/Base');
 
 var PageSource = require('./TableOfContentsBackedPageSource');
@@ -22,7 +22,7 @@ function TableOfContents(service, parent, data) {
 }
 
 
-merge(TableOfContents.prototype, base,
+assign(TableOfContents.prototype, base,
 	forwardFunctions(['find'], '_root'), {
 
 	getVideoIndexRef: function() {
