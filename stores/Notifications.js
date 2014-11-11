@@ -116,7 +116,7 @@ function resolveUIData(service, data) {
 			o = objectParser(service, null, o);
 			push.apply(pending, o.__pending || []);
 		} catch(e) {
-			console.warn(e.stack);
+			console.warn(e.NoParser? e.message : (e.stack || e.message || e));
 		}
 		return o;
 	});

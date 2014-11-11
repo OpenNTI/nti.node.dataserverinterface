@@ -102,5 +102,7 @@ module.exports = function parser(service, parent, obj) {
 
 
 function error(obj) {
-	throw new Error('No Parser for object: ' + (obj && obj.MimeType));
+	var e = new Error('No Parser for object: ' + (obj && obj.MimeType));
+	e.NoParser = true;
+	throw e;
 }
