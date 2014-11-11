@@ -2,7 +2,7 @@
 
 var Promise = global.Promise || require('es6-promise').Promise;
 
-var assign = require('../utils/assign');
+var assign = require('object-assign');
 var base = require('./mixins/Base');
 var Url = require('url');
 var path = require('path');

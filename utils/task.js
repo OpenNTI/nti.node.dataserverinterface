@@ -1,6 +1,6 @@
 'use strict';
 
-var assign = require('./assign');
+var assign = require('object-assign');
 
 function Task(fn, interval) {
 	this.fn = fn;

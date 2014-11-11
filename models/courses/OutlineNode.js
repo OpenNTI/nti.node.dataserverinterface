@@ -3,7 +3,7 @@
 var Promise = global.Promise || require('es6-promise').Promise;
 
 var path = require('path');
-var assign = require('../../utils/assign');
+var assign = require('object-assign');
 
 var base = require('../mixins/Base');
 var makeFallbackOverview = require('./_fallbacks.OverviewFromToC');

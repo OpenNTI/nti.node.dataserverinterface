@@ -9,7 +9,7 @@ var Url = require('url');
 var btoa = global.bota || require('btoa');
 var QueryString = require('query-string');
 var request = require('../utils/request');
-var assign = require('../utils/assign');
+var assign = require('object-assign');
 
 var DataCache = require('../utils/datacache');
 

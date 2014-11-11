@@ -2,7 +2,7 @@
 var Promise = global.Promise || require('es6-promise').Promise;
 
 var Url = require('url');
-var assign = require('../../utils/assign');
+var assign = require('object-assign');
 var getLink = require('../../utils/getlink');
 
 var waitFor = require('../../utils/waitfor');

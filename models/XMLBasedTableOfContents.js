@@ -1,7 +1,7 @@
 'use strict';
 
 var et = require('elementtree');
-var assign = require('../utils/assign');
+var assign = require('object-assign');
 var base = require('./mixins/Base');
 
 var PageSource = require('./TableOfContentsBackedPageSource');

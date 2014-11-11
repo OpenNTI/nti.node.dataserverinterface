@@ -1,6 +1,6 @@
 'use strict';
 
-var assign = require('../utils/assign');
+var assign = require('object-assign');
 var defineProperties = require('../utils/object-define-properties');
 var withValue = require('../utils/object-attribute-withvalue');
 

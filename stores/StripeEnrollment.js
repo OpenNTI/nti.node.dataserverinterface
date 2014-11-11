@@ -3,7 +3,7 @@
 /* jshint -W098 */ //Delete this comment-line once Promise is referenced.
 var Promise = global.Promise || require('es6-promise').Promise;
 
-var assign = require('../utils/assign');
+var assign = require('object-assign');
 var withValue = require('../utils/object-attribute-withvalue');
 var getLink = require('../utils/getlink');
 

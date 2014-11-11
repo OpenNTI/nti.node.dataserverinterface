@@ -4,7 +4,7 @@ var Promise = global.Promise || require('es6-promise').Promise;
 
 // var Path = require('path');
 // var Url = require('url');
-var assign = require('../utils/assign');
+var assign = require('object-assign');
 
 var User = require('../models/User');
 var PageInfo = require('../models/PageInfo');

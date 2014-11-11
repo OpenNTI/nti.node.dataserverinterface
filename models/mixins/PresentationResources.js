@@ -2,7 +2,7 @@
 
 var Promise = global.Promise || require('es6-promise').Promise;
 
-var assign = require('../../utils/assign');
+var assign = require('object-assign');
 //var isBrowser = require('../../utils/browser');
 var urlJoin = require('../../utils/urljoin');
 var isEmpty = require('../../utils/isempty');

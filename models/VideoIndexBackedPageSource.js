@@ -1,7 +1,7 @@
 'use strict';
 
 var path = require('path');
-var assign = require('../utils/assign');
+var assign = require('object-assign');
 var base = require('./mixins/Base');
 
 var NTIID = require('../utils/ntiids');

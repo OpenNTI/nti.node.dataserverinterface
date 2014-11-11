@@ -1,7 +1,7 @@
 'use strict';
 
 var EventEmitter = require('events').EventEmitter;
-var assign = require('../../utils/assign');
+var assign = require('object-assign');
 var getLink = require('../../utils/getlink');
 var isFunction = require('../../utils/isfunction');
 

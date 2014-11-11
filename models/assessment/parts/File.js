@@ -1,6 +1,6 @@
 'use strict';
 
-var assign = require('../../../utils/assign');
+var assign = require('object-assign');
 var Base = require('../Part');
 
 var isEmpty = require('../../../utils/isempty');

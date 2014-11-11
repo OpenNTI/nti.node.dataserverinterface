@@ -1,6 +1,6 @@
 'use strict';
 
-var assign = require('../../utils/assign');
+var assign = require('object-assign');
 var setAndEmit = require('../../utils/getsethandler');
 
 var withValue = require('../../utils/object-attribute-withvalue');

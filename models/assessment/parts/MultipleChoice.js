@@ -1,6 +1,6 @@
 'use strict';
 
-var assign = require('../../../utils/assign');
+var assign = require('object-assign');
 var clean = require('../../../utils/sanitize-markup');
 
 var Base = require('../Part');
