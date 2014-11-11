@@ -17,9 +17,10 @@ function Question(service, parent, data) {
 		_parent: withValue(parent)
 	});
 
+	assign(this, data);
+	
 	content.initMixin.call(this, data);
 
-	assign(this, data);
 
 	this.parts = data.parts.map(parseObject.bind(this, this));
 

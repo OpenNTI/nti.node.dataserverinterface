@@ -16,9 +16,9 @@ function Part(service, parent, data) {
 		_parent: withValue(parent)
 	});
 
-	content.initMixin.call(this, data);
-
 	assign(this, data);
+
+	content.initMixin.call(this, data);
 
 	/*
 		hints <-Parse

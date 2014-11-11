@@ -18,9 +18,8 @@ define(exports, {
 	initMixin: withValue(
 		function initContentMixin(data) {
 			var content = data.content;
-
-			delete data.content;
-
+			if (!content) {return;}
+			
 			define(this,{
 				content: {
 					enumerable: true,
