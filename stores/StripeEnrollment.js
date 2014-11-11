@@ -3,7 +3,7 @@
 /* jshint -W098 */ //Delete this comment-line once Promise is referenced.
 var Promise = global.Promise || require('es6-promise').Promise;
 
-var merge = require('merge');
+var assign = require('../utils/assign');
 var withValue = require('../utils/object-attribute-withvalue');
 var getLink = require('../utils/getlink');
 
@@ -11,7 +11,7 @@ function StripeEnrollment(service) {
 	Object.defineProperty(this, '_service', withValue(service));
 }
 
-merge(StripeEnrollment.prototype, {
+assign(StripeEnrollment.prototype, {
 	getPricing: function(purchasable) {
 		var link = getLink(purchasable.Links,'price');
 		if (link) {
