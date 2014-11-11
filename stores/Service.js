@@ -10,6 +10,7 @@ var User = require('../models/User');
 var PageInfo = require('../models/PageInfo');
 var Capabilities = require('../models/Capabilities');
 var Enrollment = require('./Enrollment');
+var StripeEnrollment = require('./StripeEnrollment');
 
 var DataCache = require('../utils/datacache');
 
@@ -31,6 +32,7 @@ var ServiceDocument = function (json, server, context) {
 
 	this.capabilities = new Capabilities(this, caps);
 	this.enrollment = new Enrollment(this);
+	this.stripeenrollment = new StripeEnrollment(this);
 
 	this.__pending = [
 		this.getAppUser().then(function(u) {
@@ -101,6 +103,10 @@ assign(ServiceDocument.prototype, {
 
 	getEnrollment: function() {
 		return this.enrollment;
+	},
+
+	getStripeEnrollment: function() {
+		return this.stripeenrollment;
 	},
 
 	getPageInfo: function(ntiid) {
