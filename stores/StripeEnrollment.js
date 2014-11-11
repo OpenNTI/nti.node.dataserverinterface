@@ -20,7 +20,20 @@ assign(StripeEnrollment.prototype, {
 			});
 		}
 		throw new Error('Unable to find price link for provided Purchasable');
+	},
+
+	getToken: function(stripePublicKey, data) {
+		return new Promise(function(fullfill, reject) {
+			Stripe.setPublishableKey(stripePublicKey);
+			Stripe.card.createToken(data, function(status, response) {
+				fullfill({
+					status: status,
+					response: response
+				});
+			});	
+		});
 	}
+
 });
 
 module.exports = StripeEnrollment;
