@@ -23,17 +23,34 @@ assign(StripeEnrollment.prototype, {
 	},
 
 	getToken: function(stripePublicKey, data) {
-		return new Promise(function(fullfill, reject) {
+		return new Promise(function(fulfill, reject) {
 			Stripe.setPublishableKey(stripePublicKey);
 			Stripe.card.createToken(data, function(status, response) {
-				fullfill({
+				fulfill({
 					status: status,
 					response: response
 				});
 			});	
 		});
+	},
+
+	submitPayment: function(data) {
+
+		var paymentUrl = getLink(data.purchasable.Links, 'post_stripe_payment');
+
+		var payload = {
+			PurchasableID: data.purchasable.ID,
+			token: data.stripeToken.id,
+			context: {
+				AllowVendorUpdates: true
+			}
+		};
+
+		return this._service.post(paymentUrl, payload);
+
 	}
 
 });
 
 module.exports = StripeEnrollment;
+
