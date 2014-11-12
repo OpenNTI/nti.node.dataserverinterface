@@ -16,30 +16,48 @@ assign(exports, {
 
 define(exports, {
 	initMixin: withValue(
-		function initContentMixin(data) {
-			var content = data.content;
-			if (!content) {return;}
-			
-			define(this,{
-				content: {
+		function (data, keys) {
+			var props = {}, clean = exports.cleanupContentString.bind(this);
+			if (keys === undefined) {
+				keys = ['content'];
+			}
+
+			keys.forEach(function(key) {
+				var content = data[key] || '';
+				props[key] = {
 					enumerable: true,
 					configurable: true,
-					get: function __getContent () {
-						try {
-							var root = this.getContentRoot();
-							content = fixRefs(content, root);
-						} catch (e) {
-							console.error('Content cannot be rooted. %s', e.stack || e.message || e);
+					get: function() {
+						if (Array.isArray(content)) {
+							content = content.map(clean);
+						} else {
+							content = clean(content);
 						}
 
-						content = clean(content);
-
 						//re-define the getter
-						define(this, {content: withValue(content, true)});
+						var newValue = {};
+						newValue[key] = withValue(content, true);
+
+						define(this, newValue);
 						return content;
-					}.bind(this)
-				}
+					}
+				};
 			});
+
+			define(this, props);
+		}
+	),
+
+	cleanupContentString: withValue(
+		function (content) {
+			try {
+				var root = this.getContentRoot();
+				content = fixRefs(content, root);
+			} catch (e) {
+				console.error('Content cannot be rooted. %s', e.stack || e.message || e);
+			}
+
+			return clean(content);
 		}
 	)
 });

@@ -19,7 +19,7 @@ function Part(service, parent, data) {
 
 	assign(this, data);
 
-	content.initMixin.call(this, data);
+	content.initMixin.call(this, data, this.__contentProperties);
 
 	if (this.wordbank) {
 		this.wordbank = WordBank.parse(service, this, this.wordbank);
@@ -28,14 +28,11 @@ function Part(service, parent, data) {
 	/*
 		hints <-Parse
 		solutions <-Parse
-
-		explanation
-		answerLabel
 	*/
 }
 
 assign(Part.prototype, base, content, {
-
+	__contentProperties: ['content', 'explanation', 'answerLabel']
 
 });
 

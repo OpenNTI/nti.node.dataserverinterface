@@ -37,7 +37,7 @@ var PARSERS = {
 	'assessment.fillintheblankshortanswerpart': 'assessment.part',
 	'assessment.fillintheblankwithwordbankpart': 'assessment.part',
 	'assessment.freeresponsepart': 'assessment.part',
-	'assessment.matchingpart': 'assessment.part',
+	'assessment.matchingpart': require('./assessment/parts/Matching'),
 	'assessment.mathpart': 'assessment.part',
 	'assessment.modeledcontentpart': 'assessment.part',
 	'assessment.multiplechoicepart': require('./assessment/parts/MultipleChoice'),

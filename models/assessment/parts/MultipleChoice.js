@@ -1,24 +1,17 @@
 'use strict';
 
 var assign = require('object-assign');
-var clean = require('../../../utils/sanitize-markup');
 
 var Base = require('../Part');
 
-var pars = /<(\/)?p([^>]*)>/igm;
-
 function MultipleChoice(service, parent, data) {
 	Base.call(this, service, parent, data);
-
-	this.choices = this.choices.map(function(s) {
-		s = s && clean(s);
-		return s && s.replace(pars, '').trim();
-	});
 }
 
 
 MultipleChoice.prototype = Object.create(Base.prototype);
 assign(MultipleChoice.prototype, {
+	__contentProperties: Base.prototype.__contentProperties.concat(['choices']),
 	constructor: MultipleChoice
 });
 
