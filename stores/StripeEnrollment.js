@@ -7,6 +7,8 @@ var assign = require('object-assign');
 var withValue = require('../utils/object-attribute-withvalue');
 var getLink = require('../utils/getlink');
 
+var _pollInterval = 1000;
+
 function StripeEnrollment(service) {
 	Object.defineProperty(this, '_service', withValue(service));
 }
@@ -30,7 +32,7 @@ assign(StripeEnrollment.prototype, {
 					status: status,
 					response: response
 				});
-			});	
+			});
 		});
 	},
 
@@ -46,8 +48,31 @@ assign(StripeEnrollment.prototype, {
 			}
 		};
 
-		return this._service.post(paymentUrl, payload);
+		return this._service.post(paymentUrl, payload)
+			.then(function(result) {
+				return this._pollPurchaseAttempt(result.Items[0].ID);
+			}.bind(this));
+	},
 
+	_pollPurchaseAttempt: function(purchaseId) {
+		var service = this._service;
+		return new Promise(function(fulfill, reject) {
+			var timeoutId = setTimeout(function() {
+				service.get('/dataserver2/store/get_purchase_attempt?purchaseID=' + purchaseId)
+				.then(function(result) {
+					var attempt = result.Items[0];
+					switch(attempt.State) {
+						case "Success":
+						case "Failed":
+							fulfill(attempt);
+						break;
+						
+						default:
+							_pollPurchaseAttempt(purchaseId);
+					}
+				});
+			}, _pollInterval);
+		});
 	}
 
 });
