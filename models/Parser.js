@@ -12,6 +12,7 @@ var PARSERS = {
 
 	'naquestionset': require('./assessment/QuestionSet'),
 	'naquestion': require('./assessment/Question'),
+	'naquestionfillintheblankwordbank': 'naquestion',
 
 	'assessment.assignment': require('./assessment/Assignment'),
 

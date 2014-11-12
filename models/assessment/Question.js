@@ -18,9 +18,8 @@ function Question(service, parent, data) {
 	});
 
 	assign(this, data);
-	
-	content.initMixin.call(this, data);
 
+	content.initMixin.call(this, data);
 
 	this.parts = data.parts.map(parseObject.bind(this, this));
 
