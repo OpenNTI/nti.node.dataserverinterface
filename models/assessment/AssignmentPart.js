@@ -21,6 +21,9 @@ function AssignmentPart(service, parent, data) {
 
 assign(AssignmentPart.prototype, base, {
 
+	getQuestionCount: function () {
+		return this.question_set.getQuestionCount();
+	}
 
 });
 

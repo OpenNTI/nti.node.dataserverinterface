@@ -41,6 +41,11 @@ assign(QuestionSet.prototype, base, {
 		return this.questions.reduce(function(found, q) {
 			return found || (q.getID() === id && q);
 		}, null);
+	},
+
+
+	getQuestionCount: function () {
+		return this.questions.length;
 	}
 });
 

@@ -82,6 +82,14 @@ assign(Assignment.prototype, base, {
 			return question || part.question_set.getQuestion(id);
 		}
 		return this.parts.reduce(getQuestionFromSet, null);
+	},
+
+
+	getQuestionCount: function () {
+		function sum(agg, part) {
+			return agg + part.getQuestionCount();
+		}
+		return this.parts.reduce(sum, 0);
 	}
 
 });
