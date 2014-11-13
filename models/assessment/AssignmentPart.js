@@ -21,8 +21,28 @@ function AssignmentPart(service, parent, data) {
 
 assign(AssignmentPart.prototype, base, {
 
+	containsId: function(id) {
+		var qSet = this.question_set;
+		return qSet && qSet.getID() === id || qSet.containsId(id);
+	},
+
+	getQuestion: function (id) {
+		return this.question_set.getQuestion(id);
+	},
+
+
+	getQuestions: function () {
+		return this.question_set.getQuestions();
+	},
+
+
 	getQuestionCount: function () {
 		return this.question_set.getQuestionCount();
+	},
+
+
+	getSubmission: function () {
+		return this.question_set.getSubmission();
 	}
 
 });

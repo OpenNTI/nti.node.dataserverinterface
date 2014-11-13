@@ -8,6 +8,7 @@ var define = require('../../utils/object-define-properties');
 var withValue = require('../../utils/object-attribute-withvalue');
 
 var AssignmentPart = require('./AssignmentPart');
+var AssignmentSubmission = require('./AssignmentSubmission');
 
 function parseDate(me, key) {
 	var v = me[key];
@@ -59,10 +60,8 @@ assign(Assignment.prototype, base, {
 	 */
 	containsId: function(id) {
 		var items = this.parts.filter(function(p) {
-			p = p.question_set;
-			return p && p.getID() === id || p.containsId(id);
+			return p.containsId(id);
 		});
-
 		return items.length > 0;
 	},
 
@@ -78,10 +77,18 @@ assign(Assignment.prototype, base, {
 
 
 	getQuestion: function (id) {
-		function getQuestionFromSet(question, part) {
-			return question || part.question_set.getQuestion(id);
+		function get(question, part) {
+			return question || part.getQuestion(id);
 		}
-		return this.parts.reduce(getQuestionFromSet, null);
+		return this.parts.reduce(get, null);
+	},
+
+
+	getQuestions: function () {
+		function get(list, part) {
+			return list.concat(part.getQuestions());
+		}
+		this.parts.reduce(get, []);
 	},
 
 
@@ -90,6 +97,20 @@ assign(Assignment.prototype, base, {
 			return agg + part.getQuestionCount();
 		}
 		return this.parts.reduce(sum, 0);
+	},
+
+
+	getSubmission: function () {
+		var s = AssignmentSubmission.build(this._service, {
+			assignmentId: this.getID(),
+			parts: []
+		});
+
+		s.parts = this.parts.map(function(p) {
+			return p.getSubmission();
+		});
+
+		return s;
 	}
 
 });

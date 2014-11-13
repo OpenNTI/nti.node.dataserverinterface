@@ -15,13 +15,14 @@ function QuestionSetSubmission(service, parent, data) {
 	});
 
 	assign(this, data);
+
 	// questionSetId
 	// questions -> parse
+	// CreatorRecordedEffortDuration: 0
 }
 
 assign(QuestionSetSubmission.prototype, base, {
-
-
+	MimeType: 'application/vnd.nextthought.assessment.questionsetsubmission'
 });
 
 
@@ -29,6 +30,11 @@ function parse(service, parent, data) {
 	return new QuestionSetSubmission(service, parent, data);
 }
 
+function build(service, data) {
+	return new QuestionSetSubmission(service, null, data);
+}
+
 QuestionSetSubmission.parse = parse;
+QuestionSetSubmission.build = build;
 
 module.exports = QuestionSetSubmission;

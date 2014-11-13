@@ -3,6 +3,7 @@
 var assign = require('object-assign');
 
 var Question = require('./Question');
+var QuestionSetSubmission = require('./QuestionSetSubmission');
 
 var base = require('../mixins/Base');
 
@@ -44,8 +45,29 @@ assign(QuestionSet.prototype, base, {
 	},
 
 
+	getQuestions: function () {
+		return this.questions.slice();
+	},
+
+
 	getQuestionCount: function () {
 		return this.questions.length;
+	},
+
+
+	getSubmission: function () {
+		var s = QuestionSetSubmission.build(this._service, {
+			questionSetId: this.getID(),
+			ContainerId: this.containerId,
+			CreatorRecordedEffortDuration: null,
+			questions: []
+		});
+
+		s.questions = this.questions.map(function(q) {
+			return q.getSubmission();
+		});
+
+		return s;
 	}
 });
 

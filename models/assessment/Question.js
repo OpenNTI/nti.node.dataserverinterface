@@ -9,6 +9,7 @@ var define = require('../../utils/object-define-properties');
 var withValue = require('../../utils/object-attribute-withvalue');
 var parseObject = require('../../utils/parse-object');
 
+var QuestionSubmission = require('./QuestionSubmission');
 var WordBank = require('./WordBank');
 
 function Question(service, parent, data) {
@@ -29,6 +30,14 @@ function Question(service, parent, data) {
 }
 
 assign(Question.prototype, base, content, {
+
+	getSubmission: function () {
+		return QuestionSubmission.build(this._service, {
+			ContainerId: this.containerId,
+			NTIID: this.getID(),
+			questionId: this.getID()
+		});
+	}
 
 });
 
