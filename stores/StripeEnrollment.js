@@ -27,7 +27,7 @@ assign(StripeEnrollment.prototype, {
 	},
 
 	getToken: function(stripePublicKey, data) {
-		return new Promise(function(fulfill, reject) {
+		return new Promise(function(fulfill) {
 			Stripe.setPublishableKey(stripePublicKey);
 			Stripe.card.createToken(data, function(status, response) {
 				//if (response.error) {return reject(response.error);}
