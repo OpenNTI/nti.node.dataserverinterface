@@ -17,14 +17,17 @@ var DataCache = require('../utils/datacache');
 var constants = require('../constants');
 var getLink = require('../utils/getlink');
 var deepFreeze = require('../utils/object-deepfreeze');
+var define = require('../../utils/object-define-properties');
 var withValue = require('../utils/object-attribute-withvalue');
 var joinWithURL = require('../utils/urljoin');
 
 var inflight = {};
 
 var ServiceDocument = function (json, server, context) {
-	Object.defineProperty(this, '_server', withValue(server));
-	Object.defineProperty(this, '_context', withValue(context));
+	define(this,{
+		_server: withValue(server),
+		_context: withValue(context)
+	});
 	var caps = json.CapabilityList || [];
 
 	deepFreeze(json); //make the data immutable

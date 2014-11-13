@@ -1,7 +1,7 @@
 'use strict';
 
 var assign = require('object-assign');
-
+var define = require('../../utils/object-define-properties');
 var withValue = require('../utils/object-attribute-withvalue');
 
 var capabilities = {
@@ -46,8 +46,10 @@ var capabilities = {
 
 
 function Capabilities(service, list) {
-	Object.defineProperty(this, '_service', withValue(service));
-	Object.defineProperty(this, '_list', withValue(list || []));
+	define(this,{
+		_service: withValue(service),
+		_list: withValue(list || [])
+	});
 
 	var cap, test;
 

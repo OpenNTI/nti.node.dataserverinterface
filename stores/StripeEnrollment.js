@@ -4,13 +4,16 @@
 var Promise = global.Promise || require('es6-promise').Promise;
 
 var assign = require('object-assign');
+var define = require('../../utils/object-define-properties');
 var withValue = require('../utils/object-attribute-withvalue');
 var getLink = require('../utils/getlink');
 
 var _pollInterval = 1000;
 
 function StripeEnrollment(service) {
-	Object.defineProperty(this, '_service', withValue(service));
+	define(this, {
+		_service: withValue(service)
+	});
 }
 
 assign(StripeEnrollment.prototype, {

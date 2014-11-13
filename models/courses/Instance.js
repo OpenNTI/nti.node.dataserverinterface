@@ -7,6 +7,7 @@ var getLink = require('../../utils/getlink');
 
 var waitFor = require('../../utils/waitfor');
 var pluck = require('../../utils/array-pluck');
+var define = require('../../utils/object-define-properties');
 var withValue = require('../../utils/object-attribute-withvalue');
 
 var base = require('../mixins/Base');
@@ -17,8 +18,10 @@ var Outline = require('./OutlineNode');
 var AssessmentCollection = require('../assessment/Collection');
 
 function Instance(service, parent, data) {
-	Object.defineProperty(this, '_service', withValue(service));
-	Object.defineProperty(this, '_parent', withValue(parent));
+	define(this, {
+		_service: withValue(service),
+		_parent: withValue(parent)
+	});
 	assign(this, data);
 
 	var b = this.ContentPackageBundle = Bundle.parse(service, this, data.ContentPackageBundle);
@@ -128,7 +131,7 @@ assign(Instance.prototype, base, {
 				.then(function(contents) {
 					var o = Outline.parse(this._service, this, this.Outline);
 
-					Object.defineProperty(o, '_assignments', withValue(contents[1]));
+					define(o, {_assignments: withValue(contents[1])});
 
 					o.contents = Outline.parse(this._service, o, contents[0]);
 					return o;

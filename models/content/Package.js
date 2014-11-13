@@ -10,14 +10,17 @@ var urlJoin = require('../../utils/urljoin');
 var withValue = require('../../utils/object-attribute-withvalue');
 
 var base = require('../mixins/Base');
+var define = require('../../utils/object-define-properties');
 var assets = require('../mixins/PresentationResources');
 
 var VideoIndex = require('../VideoIndex');
 var ToC = require('../XMLBasedTableOfContents');
 
 function Package(service, parent, data) {
-	Object.defineProperty(this, '_service', withValue(service));
-	Object.defineProperty(this, '_parent', withValue(parent));
+	define(this, {
+		_service: withValue(service),
+		_parent: withValue(parent)
+	});
 	assign(this, data);
 
 	this.author = (data.DCCreator || []).join(', ');

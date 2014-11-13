@@ -3,6 +3,7 @@
 var assign = require('object-assign');
 var unique = require('../../utils/array-unique');
 
+var define = require('../../utils/object-define-properties');
 var withValue = require('../../utils/object-attribute-withvalue');
 var forwardFunctions = require('../../utils/function-forwarding');
 var base = require('../mixins/Base');
@@ -10,7 +11,7 @@ var base = require('../mixins/Base');
 var Instance = require('./Instance');
 
 function Enrollment(service, data, admin) {
-	Object.defineProperty(this, '_service', withValue(service));
+	define(this, {_service: withValue(service)});
 
 	assign(this, data);
 

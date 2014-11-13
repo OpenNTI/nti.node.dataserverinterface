@@ -3,6 +3,7 @@
 var Promise = global.Promise || require('es6-promise').Promise;
 
 var assign = require('object-assign');
+var define = require('../../utils/object-define-properties');
 var withValue = require('../utils/object-attribute-withvalue');
 var isEmpty = require('../utils/isempty');
 
@@ -12,8 +13,10 @@ var NO_TRANSCRIPT = 'No Transcript';
 var NO_TRANSCRIPT_LANG = 'No Transcript for the requested language.';
 
 function Video(service, parent, data) {
-	Object.defineProperty(this, '_service', withValue(service));
-	Object.defineProperty(this, '_parent', withValue(parent));
+	define(this, {
+		_service: withValue(service),
+		_parent: withValue(parent)
+	});
 
 	var sources = data.sources;
 

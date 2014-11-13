@@ -10,6 +10,7 @@ var path = require('path');
 var constants = require('../constants');
 var parseObject = require('../utils/parse-object');
 
+var define = require('../../utils/object-define-properties');
 var withValue = require('../utils/object-attribute-withvalue');
 var toQueryString = require('../utils/object-to-querystring');
 var fixRefs = require('../utils/rebase-references');
@@ -17,7 +18,7 @@ var fixRefs = require('../utils/rebase-references');
 
 
 function PageInfo(service, data) {
-	Object.defineProperty(this, '_service', withValue(service));
+	define(this, {_service: withValue(service)});
 	assign(this, data);
 
 	if (data.AssessmentItems) {

@@ -3,12 +3,15 @@
 var assign = require('object-assign');
 var setAndEmit = require('../../utils/getsethandler');
 
+var define = require('../../utils/object-define-properties');
 var withValue = require('../../utils/object-attribute-withvalue');
 var assets = require('../mixins/PresentationResources');
 var base = require('../mixins/Base');
 
 function CourseCatalogEntry(service, data) {
-	Object.defineProperty(this, '_service', withValue(service));
+	define(this, {
+		_service: withValue(service)
+	});
 	assign(this, data);
 
 	this.author = (data.DCCreator || []).join(', ');

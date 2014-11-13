@@ -9,6 +9,7 @@ module.exports = function defineProperties(obj, props) {
 	for (property in props) {
 		if (props.hasOwnProperty(property)) {
 			cfg = props[property];
+			if (!cfg) {continue;}
 
 			if (hasDefineProp) {
 				/*jshint -W103*/

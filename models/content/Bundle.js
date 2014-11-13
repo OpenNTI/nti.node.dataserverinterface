@@ -6,6 +6,7 @@ var urlJoin = require('../../utils/urljoin');
 var Promise = global.Promise || require('es6-promise').Promise;
 
 var forwardFunctions = require('../../utils/function-forwarding');
+var define = require('../../utils/object-define-properties');
 var withValue = require('../../utils/object-attribute-withvalue');
 
 var base = require('../mixins/Base');
@@ -15,8 +16,10 @@ var Package = require('./Package');
 var TablesOfContents = require('../TablesOfContents');
 
 function Bundle(service, parent, data) {
-	Object.defineProperty(this, '_service', withValue(service));
-	Object.defineProperty(this, '_parent', withValue(parent));
+	define(this, {
+		_service: withValue(service),
+		_parent: withValue(parent)
+	});
 	assign(this, data);
 
 	this.author = (data.DCCreator || []).join(', ');

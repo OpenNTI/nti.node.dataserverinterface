@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = function withValue(value, enumerable) {
-	return {
+	return value && {
 		enumerable: enumerable || false,
 		writable: false,
 		configurable: false,

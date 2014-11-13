@@ -6,6 +6,7 @@ var assign = require('object-assign');
 var EventEmitter = require('events').EventEmitter;
 
 var forwardFunctions = require('../utils/function-forwarding');
+var define = require('../../utils/object-define-properties');
 var withValue = require('../utils/object-attribute-withvalue');
 //var identity = require('../utils/identity');
 var waitFor = require('../utils/waitfor');
@@ -14,7 +15,9 @@ var Entry = require('../models/courses/CatalogEntry');
 
 function Catalog(service, data) {
 	var pending = this.__pending = [];
-	Object.defineProperty(this, '_service', withValue(service));
+	define(this, {
+		_service: withValue(service)
+	});
 
 	assign(this, data);
 
