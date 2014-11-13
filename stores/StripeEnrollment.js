@@ -1,6 +1,5 @@
 'use strict';
-
-/* jshint -W098 */ //Delete this comment-line once Promise is referenced.
+/* global Stripe */
 var Promise = global.Promise || require('es6-promise').Promise;
 
 var assign = require('object-assign');
@@ -31,6 +30,8 @@ assign(StripeEnrollment.prototype, {
 		return new Promise(function(fulfill, reject) {
 			Stripe.setPublishableKey(stripePublicKey);
 			Stripe.card.createToken(data, function(status, response) {
+				//if (response.error) {return reject(response.error);}
+
 				fulfill({
 					status: status,
 					response: response
@@ -59,27 +60,29 @@ assign(StripeEnrollment.prototype, {
 
 	_pollPurchaseAttempt: function(purchaseId) {
 		var service = this._service;
-		var me = this;
+
 		return new Promise(function(fulfill, reject) {
-			setTimeout(function() {
+
+			function pollResponse(result) {
+				var attempt = result.Items[0];
+				if(/^Failed|Success$/i.test(attempt.State)) {
+					return fulfill(attempt);
+				}
+
+				setTimeout(check, _pollInterval);
+			}
+
+
+			function check() {
 				service.get('/dataserver2/store/get_purchase_attempt?purchaseID=' + purchaseId)
-				.then(function(result) {
-					var attempt = result.Items[0];
-					switch(attempt.State) {
-						case "Success":
-						case "Failed":
-							fulfill(attempt);
-						break;
-						
-						default:
-							me._pollPurchaseAttempt(purchaseId);
-					}
-				});
-			}, _pollInterval);
+					.then(pollResponse)
+					.catch(reject);
+			}
+
+			check();
 		});
 	}
 
 });
 
 module.exports = StripeEnrollment;
-
