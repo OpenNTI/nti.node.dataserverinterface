@@ -17,7 +17,7 @@ var DataCache = require('../utils/datacache');
 var constants = require('../constants');
 var getLink = require('../utils/getlink');
 var deepFreeze = require('../utils/object-deepfreeze');
-var define = require('../../utils/object-define-properties');
+var define = require('../utils/object-define-properties');
 var withValue = require('../utils/object-attribute-withvalue');
 var joinWithURL = require('../utils/urljoin');
 

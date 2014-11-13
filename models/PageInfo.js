@@ -10,7 +10,7 @@ var path = require('path');
 var constants = require('../constants');
 var parseObject = require('../utils/parse-object');
 
-var define = require('../../utils/object-define-properties');
+var define = require('../utils/object-define-properties');
 var withValue = require('../utils/object-attribute-withvalue');
 var toQueryString = require('../utils/object-to-querystring');
 var fixRefs = require('../utils/rebase-references');

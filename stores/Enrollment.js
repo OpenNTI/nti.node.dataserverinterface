@@ -4,7 +4,7 @@
 var Promise = global.Promise || require('es6-promise').Promise;
 
 var assign = require('object-assign');
-var define = require('../../utils/object-define-properties');
+var define = require('../utils/object-define-properties');
 var withValue = require('../utils/object-attribute-withvalue');
 
 function Enrollment(service) {

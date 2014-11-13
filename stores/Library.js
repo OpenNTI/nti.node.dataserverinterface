@@ -5,7 +5,7 @@ var Promise = global.Promise || require('es6-promise').Promise;
 var assign = require('object-assign');
 var EventEmitter = require('events').EventEmitter;
 
-var define = require('../../utils/object-define-properties');
+var define = require('../utils/object-define-properties');
 var withValue = require('../utils/object-attribute-withvalue');
 var identity = require('../utils/identity');
 var waitFor = require('../utils/waitfor');
