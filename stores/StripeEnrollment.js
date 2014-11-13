@@ -56,8 +56,9 @@ assign(StripeEnrollment.prototype, {
 
 	_pollPurchaseAttempt: function(purchaseId) {
 		var service = this._service;
+		var me = this;
 		return new Promise(function(fulfill, reject) {
-			var timeoutId = setTimeout(function() {
+			setTimeout(function() {
 				service.get('/dataserver2/store/get_purchase_attempt?purchaseID=' + purchaseId)
 				.then(function(result) {
 					var attempt = result.Items[0];
@@ -68,7 +69,7 @@ assign(StripeEnrollment.prototype, {
 						break;
 						
 						default:
-							_pollPurchaseAttempt(purchaseId);
+							me._pollPurchaseAttempt(purchaseId);
 					}
 				});
 			}, _pollInterval);
