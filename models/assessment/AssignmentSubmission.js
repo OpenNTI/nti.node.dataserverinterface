@@ -34,6 +34,12 @@ assign(AssignmentSubmission.prototype, base, {
 	countUnansweredQuestions: function () {
 		return this.parts.reduce(function(sum, q) {
 			return sum + q.countUnansweredQuestions(); }, 0);
+	},
+
+
+	canSubmit: function() {
+		return this.parts.reduce(function(can, q) {
+			return can || q.canSubmit(); }, false);
 	}
 
 });

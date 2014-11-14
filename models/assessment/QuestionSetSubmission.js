@@ -33,6 +33,12 @@ assign(QuestionSetSubmission.prototype, base, {
 	countUnansweredQuestions: function () {
 		return this.questions.reduce(function(sum, q) {
 			return sum + (q.isAnswered() ? 0 : 1); }, 0);
+	},
+
+
+	canSubmit: function() {
+		return this.questions.reduce(function(can, q) {
+			return can || q.canSubmit(); }, false);
 	}
 
 });

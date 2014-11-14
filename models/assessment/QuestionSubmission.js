@@ -40,10 +40,18 @@ assign(QuestionSubmission.prototype, base, {
 		this.parts[index] = value;
 	},
 
+
 	isAnswered: function() {
-		function answered(p) {
-			return p !== null;
-		}
+		function answered(p) { return p !== null; }
+
+		var expect = this.parts.length;
+
+		return this.parts.filter(answered).length === expect;
+	},
+
+
+	canSubmit: function() {
+		function answered(p) { return p !== null; }
 		return this.parts.filter(answered).length > 0;
 	}
 
