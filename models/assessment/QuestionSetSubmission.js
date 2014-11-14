@@ -15,14 +15,26 @@ function QuestionSetSubmission(service, parent, data) {
 	});
 
 	assign(this, data);
+	assign(this, {
+		MimeType: 'application/vnd.nextthought.assessment.questionsetsubmission'
+	});
 
-	// questionSetId
-	// questions -> parse
 	// CreatorRecordedEffortDuration: 0
 }
 
 assign(QuestionSetSubmission.prototype, base, {
-	MimeType: 'application/vnd.nextthought.assessment.questionsetsubmission'
+
+	getQuestion: function (id) {
+		return this.questions.reduce(function(found, q) {
+			return found || (q.getID() === id && q);
+		}, null);
+	},
+
+	countUnansweredQuestions: function () {
+		return this.questions.reduce(function(sum, q) {
+			return sum + (q.isAnswered() ? 0 : 1); }, 0);
+	}
+
 });
 
 

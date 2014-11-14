@@ -32,8 +32,16 @@ function Part(service, parent, data) {
 }
 
 assign(Part.prototype, base, content, {
-	__contentProperties: ['content', 'explanation', 'answerLabel']
+	__contentProperties: ['content', 'explanation', 'answerLabel'],
 
+	getQuestionId: function() {
+		return this._parent.getID();
+	},
+
+
+	getPartIndex: function() {
+		return this._parent.parts.indexOf(this);
+	}
 });
 
 

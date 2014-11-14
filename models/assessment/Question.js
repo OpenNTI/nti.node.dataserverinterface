@@ -35,7 +35,8 @@ assign(Question.prototype, base, content, {
 		return QuestionSubmission.build(this._service, {
 			ContainerId: this.containerId,
 			NTIID: this.getID(),
-			questionId: this.getID()
+			questionId: this.getID(),
+			parts: this.parts.map(function() {return null;})
 		});
 	}
 

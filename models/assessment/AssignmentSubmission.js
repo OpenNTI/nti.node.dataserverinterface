@@ -15,14 +15,27 @@ function AssignmentSubmission(service, parent, data) {
 	});
 
 	assign(this, data);
+	assign(this, {
+		MimeType: 'application/vnd.nextthought.assessment.assignmentsubmission'
+	});
 
-	// assignmentId
-	// parts --> parse
 	// CreatorRecordedEffortDuration: 0
 }
 
 assign(AssignmentSubmission.prototype, base, {
-	MimeType: 'application/vnd.nextthought.assessment.assignmentsubmission'
+
+	getQuestion: function (id) {
+		return this.parts.reduce(function(found, p) {
+			return found || p.getQuestion(id);
+		}, null);
+	},
+
+
+	countUnansweredQuestions: function () {
+		return this.parts.reduce(function(sum, q) {
+			return sum + q.countUnansweredQuestions(); }, 0);
+	}
+
 });
 
 

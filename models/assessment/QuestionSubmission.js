@@ -15,6 +15,9 @@ function QuestionSubmission(service, parent, data) {
 	});
 
 	assign(this, data);
+	assign(this, {
+		MimeType: 'application/vnd.nextthought.assessment.questionsubmission'
+	});
 
 	// questionId
 	// parts -> parse
@@ -22,7 +25,28 @@ function QuestionSubmission(service, parent, data) {
 }
 
 assign(QuestionSubmission.prototype, base, {
-	MimeType: 'application/vnd.nextthought.assessment.questionsubmission'
+
+	getPartValue: function (index) {
+		return this.parts[index];
+	},
+
+
+	setPartValue: function (index, value) {
+		index = parseInt(index, 10);
+		if (index < 0 || index >= this.parts.length) {
+			throw new Error('Index Out Of Bounds.');
+		}
+
+		this.parts[index] = value;
+	},
+
+	isAnswered: function() {
+		function answered(p) {
+			return p !== null;
+		}
+		return this.parts.filter(answered).length > 0;
+	}
+
 });
 
 
