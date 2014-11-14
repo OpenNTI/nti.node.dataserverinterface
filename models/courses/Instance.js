@@ -118,26 +118,33 @@ assign(Instance.prototype, base, {
 
 
 	getOutline: function() {
+		var me = this;
 		var link = getLink(this.Outline || {}, 'contents');
 		if (!link) {
 			return Promise.reject('No Outline or content link');
 		}
 
-		if (!this.__outline) {
-			this.__outline = Promise.all([
-					this._service.get(link),
-					this.getAssignments().catch(function(){})
-				])
-				.then(function(contents) {
-					var o = Outline.parse(this._service, this, this.Outline);
+		function buildOutline(contents) {
+			var o = Outline.parse(me._service, me, me.Outline);
 
-					define(o, {_assignments: withValue(contents[1])});
+			define(o, {_assignments: withValue(contents[1])});
 
-					o.contents = Outline.parse(this._service, o, contents[0]);
-					return o;
-				}.bind(this));
+			o.contents = Outline.parse(me._service, o, contents[0]);
+			return o;
 		}
-		return this.__outline;
+
+		if (!this.__outline) {
+			this.__outline = waitFor(this.__pending)
+				.then(function () {
+					return !me.CatalogEntry.Preview ?
+						Promise.reject('Preview') :
+						Promise.all([
+							me._service.get(link),
+							me.getAssignments().catch(function(){}) ])
+						.then(buildOutline);
+				});
+		}
+		return me.__outline;
 	},
 
 
