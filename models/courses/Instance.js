@@ -136,7 +136,7 @@ assign(Instance.prototype, base, {
 		if (!this.__outline) {
 			this.__outline = waitFor(this.__pending)
 				.then(function () {
-					return !me.CatalogEntry.Preview ?
+					return me.CatalogEntry.Preview ?
 						Promise.reject('Preview') :
 						Promise.all([
 							me._service.get(link),
