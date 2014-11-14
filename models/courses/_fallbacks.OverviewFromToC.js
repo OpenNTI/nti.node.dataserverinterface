@@ -35,6 +35,7 @@ var SECTION_COLOR_MAP = {
 var SHARED = {};
 
 var MIME_PARSER = {
+	'topic': getTopicLink,
 	'application/vnd.nextthought.ntivideo': getVideoProps,
 	'application/vnd.nextthought.discussion': getForumProps,
 	'application/vnd.nextthought.content': getRelatedWorkProps,
@@ -47,6 +48,13 @@ var MIME_PARSER = {
 
 
 function noOp() { return SHARED; }
+
+
+function getTopicLink() {
+	return {
+		MimeType: 'application/vnd.nextthought.topic'
+	};
+}
 
 
 function getForumProps(node) {
@@ -110,7 +118,7 @@ function getConfigForNode(node, outlineNode) {
 		section: node.get('section')
 	};
 
-	var parser = MIME_PARSER[obj.MimeType] || noOp;
+	var parser = MIME_PARSER[obj.MimeType||node.tag] || noOp;
 
 	return assign(obj, parser(node, obj.MimeType, outlineNode));
 }
