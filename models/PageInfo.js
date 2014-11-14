@@ -69,7 +69,7 @@ assign(PageInfo.prototype, base, {
 				(item.getID() === questionId && item)
 			);
 		}
-		return this.AssessmentItems.reduce(find, null);
+		return (this.AssessmentItems || []).reduce(find, null);
 	},
 
 
