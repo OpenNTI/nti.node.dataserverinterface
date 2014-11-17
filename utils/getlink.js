@@ -13,8 +13,10 @@ var fn = module.exports = function getLink(o, rel, raw) {
 	}
 };
 
-
 fn.asMap = function(o) {
+
+	//console.error('Prefer getLink(data, linkName)...');
+
 	if (o && o.Links) { o = o.Links; }
 	if (!Array.isArray(o)) {
 		o = [o];
