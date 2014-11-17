@@ -13,6 +13,8 @@ var assign = require('object-assign');
 
 var DataCache = require('../utils/datacache');
 
+var define = require('../utils/object-define-hidden-props');
+
 var isBrowser = require('../utils/browser');
 var getLink = require('../utils/getlink');
 var NTIIDs = require('../utils/ntiids');
@@ -271,6 +273,10 @@ assign(DataServerInterface.prototype, {
 
 				if (!urls['logon.handshake']) {
 					return Promise.reject('No handshake present');
+				}
+
+				if (context && data && data.Site) {
+					define(context,{__nti_site: data.Site});
 				}
 
 				return urls;
