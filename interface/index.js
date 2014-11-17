@@ -280,10 +280,12 @@ assign(DataServerInterface.prototype, {
 
 				if (!username) {
 					return (!urls['logon.continue']) ?
+						//Not logged in... we need the urls
 						{links: urls} :
+						//There is a continue link, but we need our username to handshake...
 						me.getServiceDocument(context)
 							.then(function(d) {
-								username = d.getUserWorkspace().Title;
+								username = d.getAppUsername();
 								return me.handshake(urls, username, context);
 							});
 				}

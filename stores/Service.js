@@ -144,6 +144,11 @@ assign(ServiceDocument.prototype, {
 	},
 
 
+	getAppUsername: function () {
+		return this.getUserWorkspace().Title;
+	},
+
+
 	getAppUser: function() {
 		var key = 'appuser';
 		var cache = this.getDataCache();
@@ -218,6 +223,7 @@ assign(ServiceDocument.prototype, {
 
 		return req;
 	},
+
 
 	getUserWorkspace: function() {
 		var workspace;
