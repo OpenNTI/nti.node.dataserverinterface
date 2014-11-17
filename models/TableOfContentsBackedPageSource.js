@@ -66,7 +66,9 @@ function buildRef(node, root) {
 
 function suppressed(node) {
 	var isAnchor = suppressed.is || (suppressed.id = /#/);
-	return node && !isAnchor.test(node.get('href'));
+	var isTopic = suppressed.tag || (suppressed.tag = /topic/i);
+
+	return node && isTopic.test(node.tag) && !isAnchor.test(node.get('href'));
 }
 
 function flatten(node) {
