@@ -10,6 +10,8 @@ var WordBank = require('./WordBank');
 var define = require('../../utils/object-define-properties');
 var withValue = require('../../utils/object-attribute-withvalue');
 
+var toArray = require('../../utils/toarray');
+
 
 function Part(service, parent, data) {
 	define(this,{
@@ -41,6 +43,28 @@ assign(Part.prototype, base, content, {
 
 	getPartIndex: function() {
 		return this._parent.parts.indexOf(this);
+	},
+
+
+	getVideos: function () {
+		if (!global.DOMParser) {
+			console.error('Environment does not support DOMParser() no related videos');
+			return [];
+		}
+
+		var out = [],
+			dom = new global.DOMParser().parseFromString(this.content, 'text/xml'),
+			nodes = toArray(dom.querySelectorAll('object.naqvideo'));
+
+		nodes.forEach(function (i) {
+			var o = {};
+			toArray(i.getElementsByTagName('param')).forEach(function(p) {
+				o[p.getAttribute('name')] = p.getAttribute('value');
+			});
+			out.push(o);
+		});
+
+		return out;
 	}
 });
 

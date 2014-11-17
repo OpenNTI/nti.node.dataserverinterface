@@ -9,6 +9,7 @@ var define = require('../../utils/object-define-properties');
 var withValue = require('../../utils/object-attribute-withvalue');
 var parseObject = require('../../utils/parse-object');
 
+var Part = require('./Part');
 var QuestionSubmission = require('./QuestionSubmission');
 var WordBank = require('./WordBank');
 
@@ -30,6 +31,16 @@ function Question(service, parent, data) {
 }
 
 assign(Question.prototype, base, content, {
+
+	getVideos: function() {
+		var all = Part.prototype.getVideos.call(this);
+		this.parts.forEach(function(p) {
+			all.push.apply(all, p.getVideos());
+		});
+		return all;
+	},
+
+
 
 	getSubmission: function () {
 		return QuestionSubmission.build(this._service, {
