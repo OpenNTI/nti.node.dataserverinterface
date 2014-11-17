@@ -11,7 +11,6 @@ var parseObject = require('../../utils/parse-object');
 
 var Part = require('./Part');
 var QuestionSubmission = require('./QuestionSubmission');
-var WordBank = require('./WordBank');
 
 function Question(service, parent, data) {
 	define(this,{
@@ -26,7 +25,7 @@ function Question(service, parent, data) {
 	this.parts = data.parts.map(parseObject.bind(this, this));
 
 	if (this.wordbank) {
-		this.wordbank = WordBank.parse(service, this, this.wordbank);
+		this.wordbank = parseObject(this, this.wordbank);
 	}
 }
 

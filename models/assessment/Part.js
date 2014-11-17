@@ -5,10 +5,10 @@ var assign = require('object-assign');
 var base = require('../mixins/Base');
 var content = require('../mixins/HasContent');
 
-var WordBank = require('./WordBank');
-
 var define = require('../../utils/object-define-properties');
 var withValue = require('../../utils/object-attribute-withvalue');
+
+var parseObject = require('../../utils/parse-object');
 
 var toArray = require('../../utils/toarray');
 
@@ -24,7 +24,7 @@ function Part(service, parent, data) {
 	content.initMixin.call(this, data, this.__contentProperties);
 
 	if (this.wordbank) {
-		this.wordbank = WordBank.parse(service, this, this.wordbank);
+		this.wordbank = parseObject(this, this.wordbank);
 	}
 
 	/*
