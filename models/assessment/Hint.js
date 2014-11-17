@@ -3,6 +3,7 @@
 var assign = require('object-assign');
 
 var base = require('../mixins/Base');
+var content = require('../mixins/HasContent');
 
 var define = require('../../utils/object-define-properties');
 var withValue = require('../../utils/object-attribute-withvalue');
@@ -15,10 +16,10 @@ function Hint(service, parent, data) {
 	});
 
 	assign(this, data);
+	content.initMixin.call(this, data, ['value']);
 }
 
-assign(Hint.prototype, base, {
-
+assign(Hint.prototype, base, content, {
 
 });
 
