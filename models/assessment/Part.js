@@ -27,10 +27,15 @@ function Part(service, parent, data) {
 		this.wordbank = parseObject(this, this.wordbank);
 	}
 
-	/*
-		hints <-Parse
-		solutions <-Parse
-	*/
+	//Rules:
+	// Show Hints from start if they are present. If more than one, increment which one you see every time your show.
+	// Show Solutions if the part is answered & incorrect (as apposed to correct or 'unknown'), and there are solutions
+
+	this.hints = this.hints.map(parseObject.bind(this, this));
+	this.solutions = this.solutions.map(parseObject.bind(this, this));
+
+	if (this.hints.length === 0) { delete this.hints; }
+	if (this.solutions.length === 0) { delete this.solutions; }
 }
 
 assign(Part.prototype, base, content, {
