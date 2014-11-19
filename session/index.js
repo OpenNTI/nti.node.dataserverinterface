@@ -98,6 +98,17 @@ assign(SessionManager.prototype, {
 					next(reason);
 				}
 			});
+	},
+
+
+	anonymousMiddleware: function (context, res, next) {
+		this.server.ping(context)
+			.then(function() {
+				next();
+			})
+			.catch(function(error) {
+				next(error);
+			});
 	}
 
 });
