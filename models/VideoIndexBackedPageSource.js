@@ -1,7 +1,6 @@
 'use strict';
 
 var path = require('path');
-var assign = require('object-assign');
 var base = require('./mixins/Base');
 
 var NTIID = require('../utils/ntiids');
@@ -16,7 +15,7 @@ function VideoIndexBackedPageSource(index) {
 }
 
 
-assign(VideoIndexBackedPageSource.prototype, base, {
+Object.assign(VideoIndexBackedPageSource.prototype, base, {
 
 	getPagesAround: function(pageId) {
 		var nodes = this._parent;

@@ -1,6 +1,5 @@
 'use strict';
 
-var assign = require('object-assign');
 
 var base = require('../mixins/Base');
 
@@ -16,12 +15,12 @@ function WordBank(service, parent, data) {
 	});
 
 
-	assign(this, data);
+	Object.assign(this, data);
 
 	this.entries = data.entries.map(WordEntry.parse.bind(this, service, this));
 }
 
-assign(WordBank.prototype, base, {
+Object.assign(WordBank.prototype, base, {
 
 
 });

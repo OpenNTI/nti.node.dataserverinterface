@@ -1,7 +1,6 @@
 'use strict';
 
 //var et = require('elementtree');
-var assign = require('object-assign');
 var base = require('./mixins/Base');
 
 //var PageSource = require('./TableOfContentsBackedPageSource');
@@ -19,7 +18,7 @@ function TablesOfContents(service, parent, tables) {
 }
 
 
-assign(TablesOfContents.prototype, base, {
+Object.assign(TablesOfContents.prototype, base, {
 
 	getNode: function(id) {
 		return this._tables.reduce(function(found, toc) {

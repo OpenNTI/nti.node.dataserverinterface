@@ -1,11 +1,10 @@
 'use strict';
 
-var assign = require('object-assign');
 
 var base = require('../mixins/Base');
 
 function WatchVideoEvent(resourceId, rootContextId, context, duration, startTime, endTime, hasTranscript) {
-	assign(this, {
+	Object.assign(this, {
 		MimeType: 'application/vnd.nextthought.analytics.watchvideoevent',
 		type: 'video-watch',
 		resource_id: resourceId,
@@ -19,7 +18,7 @@ function WatchVideoEvent(resourceId, rootContextId, context, duration, startTime
 	});
 }
 
-assign(WatchVideoEvent.prototype, base, {
+Object.assign(WatchVideoEvent.prototype, base, {
 
 	setContextPath: function(path) {
 		this.context_path = path;

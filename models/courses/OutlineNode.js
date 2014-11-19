@@ -1,9 +1,7 @@
 'use strict';
 
-var Promise = global.Promise || require('es6-promise').Promise;
 
 var path = require('path');
-var assign = require('object-assign');
 
 var base = require('../mixins/Base');
 var makeFallbackOverview = require('./_fallbacks.OverviewFromToC');
@@ -28,13 +26,13 @@ function OutlineNode(service, parent, data) {
 			get: this.__getRef.bind(this)
 		}
 	});
-	assign(this, data);
+	Object.assign(this, data);
 
 	var c = this.contents;
 	this.contents = (c && c.map(parse.bind(this, service, this))) || [];
 }
 
-assign(OutlineNode.prototype, base, {
+Object.assign(OutlineNode.prototype, base, {
 
 	getID: function() {
 		return this.ContentNTIID;

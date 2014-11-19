@@ -1,6 +1,5 @@
 'use strict';
 
-var assign = require('object-assign');
 
 var base = require('./mixins/Base');
 
@@ -25,14 +24,14 @@ function Change(service, parent, data) {
 		_parent: withValue(parent)
 	});
 
-	assign(this, data);
+	Object.assign(this, data);
 
 	this.Item = parseObject(this, data.Item);
 
 	this.__pending = this.Item.__pending || [];
 }
 
-assign(Change.prototype, base, {
+Object.assign(Change.prototype, base, {
 
 });
 

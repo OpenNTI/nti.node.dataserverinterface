@@ -1,6 +1,5 @@
 'use strict';
 
-var assign = require('object-assign');
 var defineProperties = require('../utils/object-define-properties');
 var withValue = require('../utils/object-attribute-withvalue');
 
@@ -30,12 +29,12 @@ function VideoIndex(service, parent, data) {
 	}
 }
 
-assign(VideoIndex.prototype, {
+Object.assign(VideoIndex.prototype, {
 	__getLength: function () { return this._order.length; },
 
 
 	asJSON: function() {
-		return assign({}, this.data, {_order: this._order});
+		return Object.assign({}, this.data, {_order: this._order});
 	},
 
 

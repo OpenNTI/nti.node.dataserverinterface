@@ -1,6 +1,5 @@
 'use strict';
 
-var assign = require('object-assign');
 
 var base = require('../mixins/Base');
 
@@ -12,10 +11,10 @@ function WordEntry(service, parent, data) {
 		_service: withValue(service),
 		_parent: withValue(parent)
 	});
-	assign(this, data);
+	Object.assign(this, data);
 }
 
-assign(WordEntry.prototype, base, {
+Object.assign(WordEntry.prototype, base, {
 
 
 });

@@ -1,8 +1,6 @@
 'use strict';
 
-var Promise = global.Promise || require('es6-promise').Promise;
 
-var assign = require('object-assign');
 var Url = require('url');
 var EventEmitter = require('events').EventEmitter;
 
@@ -54,7 +52,7 @@ function Notifications(service, data) {
 }
 
 
-assign(Notifications.prototype, EventEmitter.prototype,
+Object.assign(Notifications.prototype, EventEmitter.prototype,
 	forwardFunctions(['every','filter','forEach','map','reduce'], 'Items'), {
 
 	nextBatch: function() {

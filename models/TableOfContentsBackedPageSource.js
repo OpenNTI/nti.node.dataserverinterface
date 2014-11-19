@@ -1,6 +1,5 @@
 'use strict';
 
-var assign = require('object-assign');
 var base = require('./mixins/Base');
 
 var NTIIDs = require('../utils/ntiids');
@@ -23,7 +22,7 @@ function TableOfContentsBackedPageSource(ToC, root) {
 }
 
 
-assign(TableOfContentsBackedPageSource.prototype, base, {
+Object.assign(TableOfContentsBackedPageSource.prototype, base, {
 
 	getPagesAround: function(pageId) {
 		var query = './/*[@ntiid="' + pageId + '"]';

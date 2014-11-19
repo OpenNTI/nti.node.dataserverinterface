@@ -1,12 +1,11 @@
 'use strict';
 
-var assign = require('object-assign');
 var define = require('../../utils/object-define-properties');
 var withValue = require('../../utils/object-attribute-withvalue');
 var fixRefs = require('../../utils/rebase-references');
 var clean = require('../../utils/sanitize-markup');
 
-assign(exports, {
+Object.assign(exports, {
 
 	getContentRoot: function () {
 		return this.ContentRoot || this.up('getContentRoot').getContentRoot();

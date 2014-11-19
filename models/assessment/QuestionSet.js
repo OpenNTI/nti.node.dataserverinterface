@@ -1,6 +1,5 @@
 'use strict';
 
-var assign = require('object-assign');
 
 var Question = require('./Question');
 var QuestionSetSubmission = require('./QuestionSetSubmission');
@@ -18,14 +17,14 @@ function QuestionSet(service, parent, data) {
 		_parent: withValue(parent)
 	});
 
-	assign(me, data);
+	Object.assign(me, data);
 
 	me.questions = data.questions.map(function(q) {
 		return Question.parse(service, me, q);
 	});
 }
 
-assign(QuestionSet.prototype, base, {
+Object.assign(QuestionSet.prototype, base, {
 	isSubmittable: true,
 
 	/**

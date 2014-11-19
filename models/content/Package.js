@@ -1,8 +1,6 @@
 'use strict';
 
-var assign = require('object-assign');
 
-var Promise = global.Promise || require('es6-promise').Promise;
 
 var isEmpty = require('../../utils/isempty');
 var setAndEmit = require('../../utils/getsethandler');
@@ -21,7 +19,7 @@ function Package(service, parent, data) {
 		_service: withValue(service),
 		_parent: withValue(parent)
 	});
-	assign(this, data);
+	Object.assign(this, data);
 
 	this.author = (data.DCCreator || []).join(', ');
 
@@ -31,7 +29,7 @@ function Package(service, parent, data) {
 	];
 }
 
-assign(Package.prototype, base, assets, {
+Object.assign(Package.prototype, base, assets, {
 
 	getDefaultAssetRoot: function() {
 		var root = this.root;

@@ -1,6 +1,5 @@
 'use strict';
 
-var assign = require('object-assign');
 var define = require('../utils/object-define-properties');
 var withValue = require('../utils/object-attribute-withvalue');
 //var isEmpty = require('../utils/isempty');
@@ -12,10 +11,10 @@ function MediaSource(service, parent, data) {
 		_parent: withValue(parent)
 	});
 
-	assign(this, data);
+	Object.assign(this, data);
 }
 
-assign(MediaSource.prototype, {
+Object.assign(MediaSource.prototype, {
 
 });
 

@@ -1,6 +1,5 @@
 'use strict';
 
-var assign = require('object-assign');
 
 var base = require('../mixins/Base');
 
@@ -17,13 +16,13 @@ function AssessedQuestionSet(service, parent, data) {
 	});
 
 
-	assign(me, data);
+	Object.assign(me, data);
 	me.questions = data.questions.map(function(question) {
 		return AssessedQuestion.parse(service, me, question);
 	});
 }
 
-assign(AssessedQuestionSet.prototype, base, {
+Object.assign(AssessedQuestionSet.prototype, base, {
 
 	getTotal: function () {
 		return (this.questions || []).length;

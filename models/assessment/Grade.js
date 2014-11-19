@@ -1,6 +1,5 @@
 'use strict';
 
-var assign = require('object-assign');
 
 var base = require('../mixins/Base');
 var names = require('../mixins/CourseAndAssignmentNameResolving');
@@ -15,14 +14,14 @@ function Grade(service, parent, data) {
 	});
 
 
-	assign(this, data);
+	Object.assign(this, data);
 
 	this.__pending = [
 		this.__resolveNames(service)
 	];
 }
 
-assign(Grade.prototype, base, names, {
+Object.assign(Grade.prototype, base, names, {
 
 
 });

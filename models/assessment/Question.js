@@ -1,6 +1,5 @@
 'use strict';
 
-var assign = require('object-assign');
 
 var base = require('../mixins/Base');
 var content = require('../mixins/HasContent');
@@ -18,7 +17,7 @@ function Question(service, parent, data) {
 		_parent: withValue(parent)
 	});
 
-	assign(this, data);
+	Object.assign(this, data);
 
 	content.initMixin.call(this, data);
 
@@ -29,7 +28,7 @@ function Question(service, parent, data) {
 	}
 }
 
-assign(Question.prototype, base, content, {
+Object.assign(Question.prototype, base, content, {
 
 	getVideos: function() {
 		var all = Part.prototype.getVideos.call(this);

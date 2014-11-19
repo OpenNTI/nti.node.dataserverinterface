@@ -1,8 +1,5 @@
 'use strict';
 
-var Promise = global.Promise || require('es6-promise').Promise;
-
-var assign = require('object-assign');
 var define = require('../utils/object-define-properties');
 var withValue = require('../utils/object-attribute-withvalue');
 var isEmpty = require('../utils/isempty');
@@ -20,14 +17,14 @@ function Video(service, parent, data) {
 
 	var sources = data.sources;
 
-	assign(this, data);
+	Object.assign(this, data);
 
 	this.sources = sources.map(function(item) {
 		return MediaSource.parse(service, this, item);
 	}.bind(this));
 }
 
-assign(Video.prototype, {
+Object.assign(Video.prototype, {
 
 	getID: function() {
 		return this.ntiid;

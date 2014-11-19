@@ -1,6 +1,5 @@
 'use strict';
 
-var assign = require('object-assign');
 
 var base = require('../mixins/Base');
 var content = require('../mixins/HasContent');
@@ -19,7 +18,7 @@ function Part(service, parent, data) {
 		_parent: withValue(parent)
 	});
 
-	assign(this, data);
+	Object.assign(this, data);
 
 	content.initMixin.call(this, data, this.__contentProperties);
 
@@ -38,7 +37,7 @@ function Part(service, parent, data) {
 	if (this.solutions.length === 0) { delete this.solutions; }
 }
 
-assign(Part.prototype, base, content, {
+Object.assign(Part.prototype, base, content, {
 	__contentProperties: ['content', 'explanation', 'answerLabel'],
 
 	getQuestionId: function() {

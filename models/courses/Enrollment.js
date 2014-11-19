@@ -1,6 +1,5 @@
 'use strict';
 
-var assign = require('object-assign');
 var unique = require('../../utils/array-unique');
 
 var define = require('../../utils/object-define-properties');
@@ -13,7 +12,7 @@ var Instance = require('./Instance');
 function Enrollment(service, data, admin) {
 	define(this, {_service: withValue(service)});
 
-	assign(this, data);
+	Object.assign(this, data);
 
 	var i = this.CourseInstance = Instance.parse(service, this, data.CourseInstance);
 
@@ -24,7 +23,7 @@ function Enrollment(service, data, admin) {
 	this.__pending = [].concat(i.__pending || []);
 }
 
-assign(Enrollment.prototype, base,
+Object.assign(Enrollment.prototype, base,
 	forwardFunctions([
 		'getPresentationProperties',
 		'getOutline'

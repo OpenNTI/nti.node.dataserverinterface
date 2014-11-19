@@ -1,8 +1,5 @@
 'use strict';
 
-var Promise = global.Promise || require('es6-promise').Promise;
-
-var assign = require('object-assign');
 var base = require('./mixins/Base');
 var Url = require('url');
 var path = require('path');
@@ -19,14 +16,14 @@ var fixRefs = require('../utils/rebase-references');
 
 function PageInfo(service, data) {
 	define(this, {_service: withValue(service)});
-	assign(this, data);
+	Object.assign(this, data);
 
 	if (data.AssessmentItems) {
 		this.AssessmentItems = setupAssessmentItems(data.AssessmentItems, this);
 	}
 }
 
-assign(PageInfo.prototype, base, {
+Object.assign(PageInfo.prototype, base, {
 
 	getContentRoot: function () {
 		var url = Url.parse(this.getLink('content'));

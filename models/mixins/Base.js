@@ -1,7 +1,6 @@
 'use strict';
 
 var EventEmitter = require('events').EventEmitter;
-var assign = require('object-assign');
 var getLink = require('../../utils/getlink');
 var isFunction = require('../../utils/isfunction');
 
@@ -10,7 +9,7 @@ var CONTENT_VISIBILITY_MAP = {
 	OU: 'OUID'
 };
 
-assign(exports, {
+Object.assign(exports, {
 
 
 	getData: function() {

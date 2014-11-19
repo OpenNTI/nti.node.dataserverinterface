@@ -1,8 +1,6 @@
 'use strict';
 
-var Promise = global.Promise || require('es6-promise').Promise;
 
-var assign = require('object-assign');
 var EventEmitter = require('events').EventEmitter;
 
 var define = require('../utils/object-define-properties');
@@ -73,7 +71,7 @@ function Library(service, name, contentPackages,
 }
 
 
-assign(Library.prototype, EventEmitter.prototype, {
+Object.assign(Library.prototype, EventEmitter.prototype, {
 
 	onChange: function() {
 		this.emit('changed', this);

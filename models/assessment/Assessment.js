@@ -1,6 +1,5 @@
 'use strict';
 
-var assign = require('object-assign');
 
 var base = require('../mixins/Base');
 
@@ -15,10 +14,10 @@ function Assessment(service, parent, data) {
 	});
 
 
-	assign(this, data);
+	Object.assign(this, data);
 }
 
-assign(Assessment.prototype, base, {
+Object.assign(Assessment.prototype, base, {
 
 
 });

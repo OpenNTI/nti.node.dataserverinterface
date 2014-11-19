@@ -1,6 +1,5 @@
 'use strict';
 
-var assign = require('object-assign');
 var Base = require('../Part');
 
 var isEmpty = require('../../../utils/isempty');
@@ -11,7 +10,7 @@ function File(service, parent, data) {
 
 
 File.prototype = Object.create(Base.prototype);
-assign(File.prototype, {
+Object.assign(File.prototype, {
 	constructor: File,
 
 

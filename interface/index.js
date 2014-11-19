@@ -1,15 +1,10 @@
 'use strict';
 
-
-var Promise = global.Promise || require('es6-promise').Promise;
-
-
 var Url = require('url');
 //If the login method is invoked on the NodeJS side, we will need this function...
 var btoa = global.bota || require('btoa');
 var QueryString = require('query-string');
 var request = require('../utils/request');
-var assign = require('object-assign');
 
 var DataCache = require('../utils/datacache');
 
@@ -31,7 +26,7 @@ var DataServerInterface = function (config) {
 };
 
 
-assign(DataServerInterface.prototype, {
+Object.assign(DataServerInterface.prototype, {
 
 	/**
 	 * Makes a request to the dataserver.
@@ -69,14 +64,14 @@ assign(DataServerInterface.prototype, {
 
 		var mime = (options.headers || {}).accept;
 		var data = options.data;
-		var opts = assign({}, {
+		var opts = Object.assign({}, {
 			method: data ? 'POST' : 'GET'
 		}, options, {
 			url: url//ensure the resolved url is used.
 		});
 
 		if ((options || {}).headers !== null) {
-			opts.headers = assign( true, ((options || {}).headers || {}), {
+			opts.headers = Object.assign( true, ((options || {}).headers || {}), {
 				//Always override these headers
 				'accept': mime || 'application/json',
 				'x-requested-with': 'XMLHttpRequest'
@@ -84,7 +79,7 @@ assign(DataServerInterface.prototype, {
 		}
 
 		if(context) {
-			opts.headers = assign({},
+			opts.headers = Object.assign({},
 				context.headers || {},
 				opts.headers,
 				{'accept-encoding': ''}
@@ -305,7 +300,7 @@ assign(DataServerInterface.prototype, {
 	handshake: function (urls, username, context) {
 		return this._post(urls['logon.handshake'], {_asFORM: true, username: username}, context)
 			.then(function(data) {
-				var result = {links: assign({}, urls, getLink.asMap(data))};
+				var result = {links: Object.assign({}, urls, getLink.asMap(data))};
 				if (!getLink(data, 'logon.continue')) {
 					result.reason = 'Not authenticated, no continue after handshake.';
 					return Promise.reject(result);
@@ -406,7 +401,7 @@ assign(DataServerInterface.prototype, {
 
 				if (mime) {
 					url = Url.parse(url);
-					url.search = QueryString.stringify(assign(
+					url.search = QueryString.stringify(Object.assign(
 						QueryString.parse(url.query), {
 							type: mime
 						}));

@@ -1,6 +1,5 @@
 'use strict';
 
-var assign = require('object-assign');
 var setAndEmit = require('../../utils/getsethandler');
 
 var define = require('../../utils/object-define-properties');
@@ -12,7 +11,7 @@ function CourseCatalogEntry(service, data) {
 	define(this, {
 		_service: withValue(service)
 	});
-	assign(this, data);
+	Object.assign(this, data);
 
 	this.author = (data.DCCreator || []).join(', ');
 
@@ -27,7 +26,7 @@ function CourseCatalogEntry(service, data) {
 	];
 }
 
-assign(CourseCatalogEntry.prototype, base, assets, {
+Object.assign(CourseCatalogEntry.prototype, base, assets, {
 	isCourse: true,
 
 

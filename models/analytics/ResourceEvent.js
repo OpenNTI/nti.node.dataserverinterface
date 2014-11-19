@@ -1,11 +1,9 @@
 'use strict';
 
-var assign = require('object-assign');
-
 var base = require('../mixins/Base');
 
 function ResourceEvent(resourceId, courseId, duration) {
-	assign(this, {
+	Object.assign(this, {
 		MimeType: 'application/vnd.nextthought.analytics.resourceevent',
 		type: 'resource-viewed',
 		resource_id: resourceId,
@@ -15,7 +13,7 @@ function ResourceEvent(resourceId, courseId, duration) {
 	});
 }
 
-assign(ResourceEvent.prototype, base, {
+Object.assign(ResourceEvent.prototype, base, {
 
 	setContextPath: function(path) {
 		this.context_path = path;

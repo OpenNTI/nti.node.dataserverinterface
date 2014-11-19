@@ -1,8 +1,6 @@
 'use strict';
-var Promise = global.Promise || require('es6-promise').Promise;
 
 var Url = require('url');
-var assign = require('object-assign');
 var getLink = require('../../utils/getlink');
 
 var waitFor = require('../../utils/waitfor');
@@ -22,7 +20,7 @@ function Instance(service, parent, data) {
 		_service: withValue(service),
 		_parent: withValue(parent)
 	});
-	assign(this, data);
+	Object.assign(this, data);
 
 	var b = this.ContentPackageBundle = Bundle.parse(service, this, data.ContentPackageBundle);
 
@@ -35,7 +33,7 @@ function Instance(service, parent, data) {
 	].concat(b.__pending || []);
 }
 
-assign(Instance.prototype, base, {
+Object.assign(Instance.prototype, base, {
 	isCourse: true,
 
 
@@ -169,7 +167,7 @@ assign(Instance.prototype, base, {
 
 		function combine(indices) {
 			var orders = pluck(indices, '_order');
-			var out = indices.reduce(function(a,b){return assign(a,b);}, {});
+			var out = indices.reduce(function(a,b){return Object.assign(a,b);}, {});
 			out._order = orders.reduce(flattenList, []);
 			return VideoIndex.parse(service, me, out);
 		}

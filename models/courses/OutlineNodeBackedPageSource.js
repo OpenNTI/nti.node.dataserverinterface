@@ -1,6 +1,5 @@
 'use strict';
 
-var assign = require('object-assign');
 var base = require('../mixins/Base');
 
 var defineProperties = require('../../utils/object-define-properties');
@@ -25,7 +24,7 @@ function OutlineNodeBackedPageSource(node, root) {
 }
 
 
-assign(OutlineNodeBackedPageSource.prototype, base, {
+Object.assign(OutlineNodeBackedPageSource.prototype, base, {
 
 	getPagesAround: function(pageId) {
 		var nodes = this.pagesInRange;

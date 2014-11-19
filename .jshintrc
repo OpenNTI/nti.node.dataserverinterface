@@ -25,5 +25,5 @@
     "maxlen": 120,
     "debug": true,
     "shadow": true,
-    "predef": [ "-Promise" ]
+    "predef": [ "Promise" ]
 }

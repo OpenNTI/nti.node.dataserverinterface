@@ -1,6 +1,5 @@
 'use strict';
 
-var assign = require('object-assign');
 var base = require('./mixins/Base');
 
 var defineProperties = require('../utils/object-define-properties');
@@ -17,13 +16,13 @@ function User(service, data) {
 			}
 		}
 	});
-	assign(this, data);
+	Object.assign(this, data);
 
 
 }
 
 
-assign(User.prototype, base, {
+Object.assign(User.prototype, base, {
 
 
 });

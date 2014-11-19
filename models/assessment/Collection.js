@@ -7,7 +7,6 @@
  */
 'use strict';
 
-var assign = require('object-assign');
 
 var base = require('../mixins/Base');
 
@@ -53,7 +52,7 @@ function Collection(service, parent, assignments, assessments, tables) {
 	//this._notAssignments = objectEach(assessments, f(Assessment, service, this));
 }
 
-assign(Collection.prototype, base, {
+Object.assign(Collection.prototype, base, {
 
 	getAssignments: function(outlineNodeID) {
 		var node = this._tables.getNode(outlineNodeID);

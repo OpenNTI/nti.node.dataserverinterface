@@ -1,8 +1,6 @@
 'use strict';
 
-var Promise = global.Promise || require('es6-promise').Promise;
 
-var assign = require('object-assign');
 var EventEmitter = require('events').EventEmitter;
 
 var forwardFunctions = require('../utils/function-forwarding');
@@ -19,7 +17,7 @@ function Catalog(service, data) {
 		_service: withValue(service)
 	});
 
-	assign(this, data);
+	Object.assign(this, data);
 
 	this.onChange = this.onChange.bind(this);
 
@@ -39,7 +37,7 @@ function Catalog(service, data) {
 }
 
 
-assign(Catalog.prototype, EventEmitter.prototype,
+Object.assign(Catalog.prototype, EventEmitter.prototype,
 	forwardFunctions(['every','filter','forEach','map','reduce'], 'Items'), {
 
 

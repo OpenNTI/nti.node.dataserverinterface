@@ -1,6 +1,5 @@
 'use strict';
 
-var assign = require('object-assign');
 
 var base = require('../mixins/Base');
 
@@ -34,7 +33,7 @@ function Assignment(service, parent, data) {
 		_parent: withValue(parent)
 	});
 
-	assign(me, data);
+	Object.assign(me, data);
 
 	parseDate(me, 'available_for_submission_beginning');
 	parseDate(me, 'available_for_submission_ending');
@@ -45,7 +44,7 @@ function Assignment(service, parent, data) {
 }
 
 
-assign(Assignment.prototype, base, {
+Object.assign(Assignment.prototype, base, {
 	isSubmittable: true,
 
 

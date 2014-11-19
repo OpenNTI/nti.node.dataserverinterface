@@ -1,6 +1,5 @@
 'use strict';
 
-var assign = require('object-assign');
 
 var base = require('../mixins/Base');
 
@@ -14,15 +13,15 @@ function AssignmentSubmission(service, parent, data) {
 		_parent: withValue(parent)
 	});
 
-	assign(this, data);
-	assign(this, {
+	Object.assign(this, data);
+	Object.assign(this, {
 		MimeType: 'application/vnd.nextthought.assessment.assignmentsubmission'
 	});
 
 	// CreatorRecordedEffortDuration: 0
 }
 
-assign(AssignmentSubmission.prototype, base, {
+Object.assign(AssignmentSubmission.prototype, base, {
 
 	getQuestion: function (id) {
 		return this.parts.reduce(function(found, p) {

@@ -1,7 +1,6 @@
 'use strict';
 
 var et = require('elementtree');
-var assign = require('object-assign');
 var base = require('./mixins/Base');
 
 var PageSource = require('./TableOfContentsBackedPageSource');
@@ -22,7 +21,7 @@ function TableOfContents(service, parent, data) {
 }
 
 
-assign(TableOfContents.prototype, base,
+Object.assign(TableOfContents.prototype, base,
 	forwardFunctions(['find'], '_root'), {
 
 	getVideoIndexRef: function() {

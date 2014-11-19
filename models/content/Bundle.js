@@ -1,9 +1,7 @@
 'use strict';
 
-var assign = require('object-assign');
 var setAndEmit = require('../../utils/getsethandler');
 var urlJoin = require('../../utils/urljoin');
-var Promise = global.Promise || require('es6-promise').Promise;
 
 var forwardFunctions = require('../../utils/function-forwarding');
 var define = require('../../utils/object-define-properties');
@@ -20,7 +18,7 @@ function Bundle(service, parent, data) {
 		_service: withValue(service),
 		_parent: withValue(parent)
 	});
-	assign(this, data);
+	Object.assign(this, data);
 
 	this.author = (data.DCCreator || []).join(', ');
 
@@ -39,7 +37,7 @@ function Bundle(service, parent, data) {
 		this.getAsset('background').then(setAndEmit(this, 'background')));
 }
 
-assign(Bundle.prototype, base, assets,
+Object.assign(Bundle.prototype, base, assets,
 	forwardFunctions(['every','filter','forEach','map','reduce'], 'ContentPackages'), {
 	isBundle: true,
 

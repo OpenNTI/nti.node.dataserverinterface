@@ -1,6 +1,5 @@
 'use strict';
 
-var assign = require('object-assign');
 
 var SECTION_TYPE_MAP = {
 	'application/vnd.nextthought.ntivideo': 'video',
@@ -120,7 +119,7 @@ function getConfigForNode(node, outlineNode) {
 
 	var parser = MIME_PARSER[obj.MimeType||node.tag] || noOp;
 
-	return assign(obj, parser(node, obj.MimeType, outlineNode));
+	return Object.assign(obj, parser(node, obj.MimeType, outlineNode));
 }
 
 

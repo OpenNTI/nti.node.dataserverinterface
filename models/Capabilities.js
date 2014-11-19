@@ -1,6 +1,5 @@
 'use strict';
 
-var assign = require('object-assign');
 var define = require('../utils/object-define-properties');
 var withValue = require('../utils/object-attribute-withvalue');
 
@@ -66,7 +65,7 @@ function Capabilities(service, list) {
 	}
 }
 
-assign(Capabilities.prototype, {
+Object.assign(Capabilities.prototype, {
 	hasCapability: function(c) {
 		return this._list.indexOf(c) >= 0;
 	}

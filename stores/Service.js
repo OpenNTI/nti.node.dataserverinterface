@@ -1,10 +1,8 @@
 'use strict';
 
-var Promise = global.Promise || require('es6-promise').Promise;
 
 // var Path = require('path');
 // var Url = require('url');
-var assign = require('object-assign');
 
 var User = require('../models/User');
 var PageInfo = require('../models/PageInfo');
@@ -31,7 +29,7 @@ var ServiceDocument = function (json, server, context) {
 	var caps = json.CapabilityList || [];
 
 	deepFreeze(json); //make the data immutable
-	assign(this, json);
+	Object.assign(this, json);
 
 	this.capabilities = new Capabilities(this, caps);
 	this.enrollment = new Enrollment(this);
@@ -46,7 +44,7 @@ var ServiceDocument = function (json, server, context) {
 };
 
 
-assign(ServiceDocument.prototype, {
+Object.assign(ServiceDocument.prototype, {
 
 	getServer: function() {
 		return this._server;
