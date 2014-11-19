@@ -106,8 +106,12 @@ assign(SessionManager.prototype, {
 			.then(function() {
 				next();
 			})
-			.catch(function(error) {
-				next(error);
+			.catch(function(err) {
+				if (typeof err === 'string' || (err && err.reason)) {
+					next();
+				} else {
+					next(err);
+				}
 			});
 	}
 
