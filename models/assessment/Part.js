@@ -6,10 +6,22 @@ var content = require('../mixins/HasContent');
 
 var define = require('../../utils/object-define-properties');
 var withValue = require('../../utils/object-attribute-withvalue');
-
-var parseObject = require('../../utils/parse-object');
-
 var toArray = require('../../utils/toarray');
+
+var parser = require('../../utils/parse-object');
+
+function parseKey(o, key) {
+	var y = o[key];
+
+	y = o[key] = y && (Array.isArray(y) ?
+		y.map(parser.bind(o, o)) :
+		parser(o, y)
+	);
+
+	if (!y || y.length === 0) {
+		delete o[key];
+	}
+}
 
 
 function Part(service, parent, data) {
@@ -20,21 +32,18 @@ function Part(service, parent, data) {
 
 	Object.assign(this, data);
 
-	content.initMixin.call(this, data, this.__contentProperties);
 
-	if (this.wordbank) {
-		this.wordbank = parseObject(this, this.wordbank);
-	}
+	content.initMixin.call(this, data, this.__contentProperties);
 
 	//Rules:
 	// Show Hints from start if they are present. If more than one, increment which one you see every time your show.
 	// Show Solutions if the part is answered & incorrect (as apposed to correct or 'unknown'), and there are solutions
 
-	this.hints = this.hints.map(parseObject.bind(this, this));
-	this.solutions = this.solutions.map(parseObject.bind(this, this));
+	var parse = parseKey.bind(this, this);
+	parse('hints');
+	parse('solutions');
+	parse('wordbank');
 
-	if (this.hints.length === 0) { delete this.hints; }
-	if (this.solutions.length === 0) { delete this.solutions; }
 }
 
 Object.assign(Part.prototype, base, content, {
