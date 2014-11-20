@@ -46,7 +46,7 @@ Object.assign(StripeEnrollment.prototype, {
 			PurchasableID: data.purchasable.ID,
 			token: data.stripeToken.id,
 			context: {
-				AllowVendorUpdates: true
+				AllowVendorUpdates: false
 			}
 		};
 
