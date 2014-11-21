@@ -197,6 +197,23 @@ Object.assign(DataServerInterface.prototype, {
 	},
 
 
+	getPurchasables: function (ids, context) {
+		var url = '/dataserver2/store/get_purchasables';
+
+		if (ids) {
+			if (Array.isArray(ids)) {
+				ids = ids.join(',');
+			}
+
+			url += '?' + QueryString.stringify({
+				purchasables: ids
+			});
+		}
+
+		return this._get(url, context);
+	},
+
+
 	getStripeInterface: function (context) {
 		return new StripInterface(this, context);
 	},
