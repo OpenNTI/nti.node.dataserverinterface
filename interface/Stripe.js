@@ -67,6 +67,7 @@ Object.assign(StripeInterface.prototype, {
 	submitPayment: function(data) {
 		var stripeToken = data.stripeToken.id;
 		var purchasable = data.purchasable;
+		var pricing = data.pricing;
 		var giftInfo = data.giftInfo;
 		var linkRel = giftInfo ? 'gift_stripe_payment' : 'post_stripe_payment';
 		var pollUrl = giftInfo ? '/dataserver2/store/get_gift_purchase_attempt' : '/dataserver2/store/get_purchase_attempt';
@@ -82,6 +83,17 @@ Object.assign(StripeInterface.prototype, {
 		if (giftInfo) {
 			payload = Object.assign(payload, giftInfo);
 		}
+
+		if (pricing) {
+			if (pricing.coupon !== undefined) {
+				payload.coupon = pricing.coupon;
+			}
+
+			if (pricing.expected_price != undefined) {
+				payload.expectedAmount = pricing.expected_price;
+			}
+		}
+
 
 		return this.post(paymentUrl, payload)
 			.then(function(result) {
