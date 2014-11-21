@@ -65,24 +65,34 @@ Object.assign(StripeInterface.prototype, {
 	},
 
 	submitPayment: function(data) {
-
-		var paymentUrl = getLink(data.purchasable.Links, 'post_stripe_payment');
-
+		var stripeToken = data.stripeToken.id;
+		var purchasable = data.purchasable;
+		var giftInfo = data.giftInfo;
+		var linkRel = giftInfo ? 'gift_stripe_payment' : 'post_stripe_payment';
+		var pollUrl = giftInfo ? '/dataserver2/store/get_gift_purchase_attempt' : '/dataserver2/store/get_purchase_attempt';
+		var paymentUrl = getLink(purchasable.Links, linkRel);
 		var payload = {
-			PurchasableID: data.purchasable.ID,
-			token: data.stripeToken.id,
+			PurchasableID: purchasable.ID,
+			token: stripeToken,
 			context: {
-				AllowVendorUpdates: false
+				AllowVenderUpdates: false
 			}
 		};
 
+		if (giftInfo) {
+			payload = Object.assign(payload, giftInfo);
+		}
+
 		return this.post(paymentUrl, payload)
 			.then(function(result) {
-				return this._pollPurchaseAttempt(result.Items[0].ID);
+				var attempt = result.Items[0];
+
+				return this._pollPurchaseAttempt(attempt.ID, attempt.Creator, pollUrl);
 			}.bind(this));
 	},
 
-	_pollPurchaseAttempt: function(purchaseId) {
+
+	_pollPurchaseAttempt: function(purchaseId, creator, pollUrl) {
 		var me = this;
 
 		return new Promise(function(fulfill, reject) {
@@ -98,7 +108,13 @@ Object.assign(StripeInterface.prototype, {
 
 
 			function check() {
-				me.get('/dataserver2/store/get_purchase_attempt?purchaseID=' + purchaseId)
+				var params = '?purchaseId=' + purchaseId;
+
+				if (creator) {
+					params += '&creator=' + creator;
+				}
+
+				me.get(pollUrl + params)
 					.then(pollResponse)
 					.catch(reject);
 			}
