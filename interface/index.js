@@ -6,6 +6,8 @@ var btoa = global.bota || require('btoa');
 var QueryString = require('query-string');
 var request = require('../utils/request');
 
+var StripInterface = require('./Stripe');
+
 var DataCache = require('../utils/datacache');
 
 var define = require('../utils/object-define-hidden-props');
@@ -192,6 +194,11 @@ Object.assign(DataServerInterface.prototype, {
 			url: url,
 			method: 'DELETE'
 		}, context);
+	},
+
+
+	getStripeInterface: function (context) {
+		return new StripInterface(this, context);
 	},
 
 

@@ -7,17 +7,21 @@ var getLink = require('../utils/getlink');
 
 var _pollInterval = 1000;
 
-function StripeEnrollment(service) {
+function Stripe(server, context) {
 	define(this, {
-		_service: withValue(service)
+		_server: withValue(server),
+		_context: withValue(context)
 	});
 }
 
-Object.assign(StripeEnrollment.prototype, {
+Object.assign(Stripe.prototype, {
+
+
+
 	getPricing: function(purchasable) {
 		var link = getLink(purchasable.Links,'price');
 		if (link) {
-			return this._service.post(link, {
+			return this.post(link, {
 				purchasableID: purchasable.ID
 			});
 		}
@@ -50,14 +54,14 @@ Object.assign(StripeEnrollment.prototype, {
 			}
 		};
 
-		return this._service.post(paymentUrl, payload)
+		return this.post(paymentUrl, payload)
 			.then(function(result) {
 				return this._pollPurchaseAttempt(result.Items[0].ID);
 			}.bind(this));
 	},
 
 	_pollPurchaseAttempt: function(purchaseId) {
-		var service = this._service;
+		var me = this;
 
 		return new Promise(function(fulfill, reject) {
 
@@ -72,7 +76,7 @@ Object.assign(StripeEnrollment.prototype, {
 
 
 			function check() {
-				service.get('/dataserver2/store/get_purchase_attempt?purchaseID=' + purchaseId)
+				me.get('/dataserver2/store/get_purchase_attempt?purchaseID=' + purchaseId)
 					.then(pollResponse)
 					.catch(reject);
 			}
@@ -83,4 +87,4 @@ Object.assign(StripeEnrollment.prototype, {
 
 });
 
-module.exports = StripeEnrollment;
+module.exports = Stripe;
