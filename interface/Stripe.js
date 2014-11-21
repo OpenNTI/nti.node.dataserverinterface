@@ -9,14 +9,14 @@ var _pollInterval = 1000;
 
 var Service = require('../stores/Service');
 
-function Stripe(server, context) {
+function StripeInterface(server, context) {
 	define(this, {
 		_server: withValue(server),
 		_context: withValue(context)
 	});
 }
 
-Object.assign(Stripe.prototype, {
+Object.assign(StripeInterface.prototype, {
 	getServer: function () { return this._server; },
 	get: Service.prototype.get,
 	post: Service.prototype.post,
@@ -91,4 +91,4 @@ Object.assign(Stripe.prototype, {
 
 });
 
-module.exports = Stripe;
+module.exports = StripeInterface;
