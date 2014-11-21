@@ -102,6 +102,7 @@ Object.assign(ServiceDocument.prototype, {
 		return c.reduce(search, false);
 	},
 
+
 	getEnrollment: function() {
 		return this.enrollment;
 	},
@@ -143,7 +144,8 @@ Object.assign(ServiceDocument.prototype, {
 
 
 	getAppUsername: function () {
-		return this.getUserWorkspace().Title;
+		var w = this.getUserWorkspace();
+		return w && w.Title;
 	},
 
 
@@ -152,17 +154,25 @@ Object.assign(ServiceDocument.prototype, {
 		var cache = this.getDataCache();
 		var cached = cache.get(key);
 		var result;
+		var url;
 
 		if (cached) {
 			result = Promise.resolve(cached);
 		}
 		else {
-			result = this.get(this.getResolveAppUserURL())
-				.then(function(json) {
-					cache.set(key, json);
-					return json;
-				});
-			cache.setVolatile(key, result);//if this is asked for again before we resolve, reuse this promise.
+			url = this.getResolveAppUserURL();
+			if (url) {
+				result = this.get(url)
+					.then(function(json) {
+						cache.set(key, json);
+						return json;
+					});
+
+				cache.setVolatile(key, result);//if this is asked for again before we resolve, reuse this promise.
+
+			} else {
+				result = Promise.resolve(null);
+			}
 		}
 
 		return result.then(function(data) {
