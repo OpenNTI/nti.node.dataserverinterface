@@ -7,6 +7,8 @@ var getLink = require('../utils/getlink');
 
 var _pollInterval = 1000;
 
+var Service = require('../stores/Service');
+
 function Stripe(server, context) {
 	define(this, {
 		_server: withValue(server),
@@ -15,7 +17,9 @@ function Stripe(server, context) {
 }
 
 Object.assign(Stripe.prototype, {
-
+	getServer: function () { return this._server; },
+	get: Service.prototype.get,
+	post: Service.prototype.post,
 
 
 	getPricing: function(purchasable) {
