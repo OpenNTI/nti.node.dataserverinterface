@@ -4,7 +4,7 @@ var fn = module.exports = function getLink(o, rel, raw) {
 
 	if (o && o.Links) { o = o.Links; }
 
-	var v, i = o.length - 1;
+	var v, i = o && o.length - 1;
 	for (i; i>=0; i--) {
 		v = o[i];
 		if (v && v.rel === rel) {
