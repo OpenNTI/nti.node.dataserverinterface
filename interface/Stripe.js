@@ -32,6 +32,24 @@ Object.assign(StripeInterface.prototype, {
 		throw new Error('Unable to find price link for provided Purchasable');
 	},
 
+
+	getCouponPricing: function(purchasable, coupon) {
+		var link = getLink(purchasable.Links, 'price_purchasable_with_stripe_coupon');
+		var data = {
+				purchasableID: purchasable.ID
+			};
+
+		if (coupon) {
+			data.Coupon = coupon;
+		}
+
+		if (link) {
+			return this.post(link, data);
+		}
+
+		throw new Error('Unable to find price with coupon link for purchasable');
+	},
+
 	getToken: function(stripePublicKey, data) {
 		return new Promise(function(fulfill) {
 			Stripe.setPublishableKey(stripePublicKey);
