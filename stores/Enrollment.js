@@ -4,6 +4,7 @@
 
 var define = require('../utils/object-define-properties');
 var withValue = require('../utils/object-attribute-withvalue');
+var getLink = require('../utils/getlink');
 
 function Enrollment(service) {
 	define(this, {
@@ -44,6 +45,10 @@ Object.assign(Enrollment.prototype, {
 		});
 	},
 
+	_getGiftRedeemLink: function(purchasable) {
+		return getLink((purchasable||{}).Links, 'redeem_gift');
+	},
+
 	_enrollment: function() {
 		return this._service.get(this._enrolledCoursesWorkspaceItem().href);
 	},
@@ -68,6 +73,17 @@ Object.assign(Enrollment.prototype, {
 		return this._getDropLink(course_id).then(function(link) {
 			return this._service.delete(link);
 		}.bind(this));
+	},
+
+	redeemGift: function(purchasable, accessKey) {
+		var link = this._getGiftRedeemLink(purchasable);
+		if (!link) {
+			return Promise.reject('Couldn\'t find the gift redemption link for the provided purchasable');
+		}
+		return this._service.post(link, {
+			code: accessKey
+		});
+
 	}
 });
 
