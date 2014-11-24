@@ -26,13 +26,16 @@ Object.assign(Enrollment.prototype, {
 		return result;
 	},
 
+
 	_coursesWorkspace: function() {
 		return this._service.getWorkspace('Courses');
 	},
 
+
 	_openEnrollLink: function() {
 		return this._enrolledCoursesWorkspaceItem().href;
 	},
+
 
 	_getDropLink: function(course_id) {
 		return this._enrollment().then(function(enrollment) {
@@ -45,22 +48,25 @@ Object.assign(Enrollment.prototype, {
 		});
 	},
 
+
 	_getGiftRedeemLink: function(purchasable) {
-		return getLink((purchasable||{}).Links, 'redeem_gift');
+		return getLink(purchasable, 'redeem_gift');
 	},
+
 
 	_enrollment: function() {
 		return this._service.get(this._enrolledCoursesWorkspaceItem().href);
 	},
 
+
 	isEnrolled: function(course_id) {
-		return this._enrollment()
-		.then(function(result) {
+		return this._enrollment().then(function(result) {
 			return result.Items.some(function(item) {
 				return item.CourseInstance.NTIID === course_id;
 			});
 		});
 	},
+
 
 	enrollOpen: function(catalogEntryId) {
 		var link = this._openEnrollLink();
@@ -69,11 +75,13 @@ Object.assign(Enrollment.prototype, {
 		});
 	},
 
+
 	dropCourse: function(course_id) {
 		return this._getDropLink(course_id).then(function(link) {
 			return this._service.delete(link);
 		}.bind(this));
 	},
+
 
 	redeemGift: function(purchasable, accessKey) {
 		var link = this._getGiftRedeemLink(purchasable);
