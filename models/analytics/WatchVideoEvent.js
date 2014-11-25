@@ -3,9 +3,10 @@
 
 var base = require('../mixins/Base');
 
-function WatchVideoEvent(resourceId, rootContextId, context, duration, startTime, endTime, hasTranscript) {
+function WatchVideoEvent(resourceId, rootContextId, context, duration, startTime, endTime, maxDuration, hasTranscript) {
 	Object.assign(this, {
 		MimeType: 'application/vnd.nextthought.analytics.watchvideoevent',
+		MaxDuration: maxDuration,
 		type: 'video-watch',
 		resource_id: resourceId,
 		RootContextID: rootContextId,
