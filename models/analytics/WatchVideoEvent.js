@@ -14,7 +14,7 @@ function WatchVideoEvent(resourceId, rootContextId, context, duration, startTime
 		time_length: duration,
 		video_start_time: startTime,
 		video_end_time: endTime,
-		with_transcript: hasTranscript,
+		with_transcript: !!hasTranscript,
 		timestamp: Date.now()
 	});
 }

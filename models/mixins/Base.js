@@ -18,7 +18,7 @@ Object.assign(exports, {
 		for (k in this) {
 			if (!this.hasOwnProperty(k)) {continue;}
 			v = this[k];
-			if (v && !isFunction(v)) {
+			if (v !== void undefined && !isFunction(v)) {
 
 				if (v && isFunction(v.getData)) {
 					v = v.getData();
