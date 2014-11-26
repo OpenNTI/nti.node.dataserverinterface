@@ -120,10 +120,11 @@ Object.assign(StripeInterface.prototype, {
 
 
 			function check() {
-				var params = '?purchaseId=' + purchaseId;
+				console.warn('URI Encoding purchase id for polling to work with broken server.');
+				var params = '?purchaseId=' + encodeURIComponent(purchaseId);
 
 				if (creator) {
-					params += '&creator=' + creator;
+					params += '&creator=' + encodeURIComponent(creator);
 				}
 
 				me.get(pollUrl + params)
