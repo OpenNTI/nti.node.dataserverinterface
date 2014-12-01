@@ -76,7 +76,7 @@ Object.assign(StripeInterface.prototype, {
 			PurchasableID: purchasable.ID,
 			token: stripeToken,
 			context: {
-				AllowVenderUpdates: false
+				AllowVendorUpdates: data.allowVendorUpdates
 			}
 		};
 
