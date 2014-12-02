@@ -21,6 +21,8 @@ var PARSERS = {
 
 	'assessment.assignmentsubmission': require('./assessment/AssignmentSubmission'),
 	'assessment.assignmentsubmissionpendingassessment': 'assessment.assignmentsubmission',
+	'assessment.questionsetsubmission': require('./assessment/QuestionSetSubmission'),
+	'assessment.questionsubmission': require('./assessment/QuestionSubmission'),
 
 	'assessment.response': require('./assessment/Response'),
 	'assessment.dictresponse': 'assessment.response',
@@ -58,6 +60,8 @@ var PARSERS = {
 	'assessment.numericmathsolution': 'assessment.solution',
 	'assessment.orderingsolution': 'assessment.solution',
 	'assessment.symbolicmathsolution': 'assessment.solution',
+
+	'assessment.userscourseassignmentsavepointitem': require('./assessment/SavePointItem'),
 
 	'assessment.questionbank': ignored,
 	'assessment.questionmap': ignored,

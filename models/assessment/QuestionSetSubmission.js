@@ -6,6 +6,7 @@ var base = require('../mixins/Base');
 var define = require('../../utils/object-define-properties');
 var withValue = require('../../utils/object-attribute-withvalue');
 
+var parser = require('../../utils/parse-object');
 
 function QuestionSetSubmission(service, parent, data) {
 	define(this,{
@@ -19,6 +20,12 @@ function QuestionSetSubmission(service, parent, data) {
 	});
 
 	// CreatorRecordedEffortDuration: 0
+
+	this.questions = this.questions.map(function(q) {
+
+		return parser(this, q);
+
+	}.bind(this));
 }
 
 Object.assign(QuestionSetSubmission.prototype, base, {
@@ -27,6 +34,10 @@ Object.assign(QuestionSetSubmission.prototype, base, {
 		return this.questions.reduce(function(found, q) {
 			return found || (q.getID() === id && q);
 		}, null);
+	},
+
+	getQuestions: function () {
+		return this.questions.slice();
 	},
 
 	countUnansweredQuestions: function () {
@@ -38,8 +49,17 @@ Object.assign(QuestionSetSubmission.prototype, base, {
 	canSubmit: function() {
 		return this.questions.reduce(function(can, q) {
 			return can || q.canSubmit(); }, false);
-	}
+	},
 
+
+	submit: function() {
+		var target = (this._service.getCollectionFor(this) || {}).href;
+		if (!target) {
+			console.error('No where to save object: %o', this);
+		}
+
+		return this._service.post(target, this.getData());
+	}
 });
 
 

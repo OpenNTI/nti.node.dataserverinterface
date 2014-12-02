@@ -302,6 +302,10 @@ Object.assign(ServiceDocument.prototype, {
 		var result = null,
 			items = this.Items || [];
 
+		if (mimeType && typeof mimeType !== 'string') {
+			mimeType = mimeType.MimeType;
+		}
+
 		items.every(function(workspace) {
 			var items = workspace.Items || [];
 

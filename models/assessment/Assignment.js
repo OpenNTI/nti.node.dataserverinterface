@@ -8,6 +8,7 @@ var withValue = require('../../utils/object-attribute-withvalue');
 
 var AssignmentPart = require('./AssignmentPart');
 var AssignmentSubmission = require('./AssignmentSubmission');
+var SavePointItem = require('./SavePointItem');
 
 function parseDate(me, key) {
 	var v = me[key];
@@ -110,6 +111,41 @@ Object.assign(Assignment.prototype, base, {
 		});
 
 		return s;
+	},
+
+
+	loadSavePoint: function() {
+		var me = this;
+		var service = me._service;
+		var link = me.getLink('Savepoint');
+
+		if (!link) {
+			return Promise.resolve({});
+		}
+
+		return service.get(link)
+
+			.catch(function(reason) {
+				if (reason && reason.statusCode !== 404) {
+					return Promise.reject(reason);
+				}
+
+				return {};
+			})
+
+			.then(function(data) {
+				return SavePointItem.parse(service, me, data);
+			});
+	},
+
+
+	postSavePoint: function (data) {
+		var link = this.getLink('Savepoint');
+		if (!link) {
+			return Promise.resolve({});
+		}
+
+		return this._service.post(link, data);
 	}
 
 });

@@ -25,6 +25,11 @@ function QuestionSubmission(service, parent, data) {
 
 Object.assign(QuestionSubmission.prototype, base, {
 
+	getID: function() {
+		return this.NTIID || this.questionId;
+	},
+
+
 	getPartValue: function (index) {
 		return this.parts[index];
 	},
@@ -52,6 +57,16 @@ Object.assign(QuestionSubmission.prototype, base, {
 	canSubmit: function() {
 		function answered(p) { return p !== null; }
 		return this.parts.filter(answered).length > 0;
+	},
+
+
+	submit: function() {
+		var target = (this._service.getCollectionFor(this) || {}).href;
+		if (!target) {
+			console.error('No where to save object: %o', this);
+		}
+
+		return this._service.post(target, this.getData());
 	}
 
 });
