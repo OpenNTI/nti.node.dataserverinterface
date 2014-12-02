@@ -113,8 +113,12 @@ Object.assign(Library.prototype, EventEmitter.prototype, {
 });
 
 
-function get(s, url, ignoreCache) {
+function resolveCollection(s, url, ignoreCache) {
 	var cache = s.getDataCache();
+
+	if (!url) {
+		return Promise.resolve([]);
+	}
 
 	var cached = cache.get(url), result;
 	if (!cached || ignoreCache) {
@@ -142,10 +146,10 @@ Library.load = function(service, name, reload) {
 	var library;
 
 	return Promise.all([
-		get(service, service.getContentPackagesURL(), reload),
-		get(service, service.getContentBundlesURL(), reload),
-		get(service, service.getCoursesEnrolledURL(), reload),
-		get(service, service.getCoursesAdministeringURL(), reload)
+		resolveCollection(service, service.getContentPackagesURL(), reload),
+		resolveCollection(service, service.getContentBundlesURL(), reload),
+		resolveCollection(service, service.getCoursesEnrolledURL(), reload),
+		resolveCollection(service, service.getCoursesAdministeringURL(), reload)
 	]).then(function(data) {
 		library = make.apply({}, data);
 		return waitFor(library.__pending);
