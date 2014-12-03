@@ -135,6 +135,11 @@ Object.assign(DataServerInterface.prototype, {
 					if(res) {
 						res.___isResponse = true;
 						res.responseJSON = typeof body === 'object' ? body : null;
+
+						if (res.statusCode === 422 && res.responseJSON) {
+							res = res.responseJSON;
+							res.statusCode = 422;
+						}
 					}
 					return reject(error || res);
 				}
@@ -148,7 +153,7 @@ Object.assign(DataServerInterface.prototype, {
 				//may return a 406 if the Accept value is not supported
 				//or it may just return whatever it wants.  If we send
 				//Accept we check the Content-Type to see if that is what
-				//we get back.  If it's not we reject.
+				//we get back.  If it's not, we reject.
 				if (mime) {
 					if (contentType && contentType.indexOf(mime) < 0) {
 						return reject('Requested with an explicit accept value of ' +
