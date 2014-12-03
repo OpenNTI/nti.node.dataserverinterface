@@ -58,12 +58,16 @@ Object.assign(AssignmentSubmission.prototype, base, {
 
 
 	submit: function() {
-		var target = (this._service.getCollectionFor(this) || {}).href;
+		var me = this;
+		var target = (this._service.getCollectionFor(me) || {}).href;
 		if (!target) {
 			console.error('No where to save object: %o', this);
 		}
 
-		return this._service.post(target, this.getData());
+		return me._service.post(target, me.getData())
+			.then(function (data) {
+				return parser(me, data);
+			});
 	}
 });
 
