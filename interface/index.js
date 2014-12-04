@@ -121,6 +121,7 @@ Object.assign(DataServerInterface.prototype, {
 				}
 
 				var contentType = getContentType(res.headers);
+				var code = res.statusCode;
 
 				try {
 					body = JSON.parse(body);
@@ -128,17 +129,17 @@ Object.assign(DataServerInterface.prototype, {
 
 				if(!isBrowser) {
 					console.error('%s REQUEST -> %s %s %s %dms',
-						new Date().toUTCString(), opts.method, url, error || res.statusCode, Date.now() - start);
+						new Date().toUTCString(), opts.method, url, error || code, Date.now() - start);
 				}
 
-				if (error || res.statusCode >= 300 || res.statusCode === 0) {
+				if (error || code >= 300 || code === 0) {
 					if(res) {
 						res.___isResponse = true;
 						res.responseJSON = typeof body === 'object' ? body : null;
 
-						if ((res.statusCode === 422 || res.statusCode === 409) && res.responseJSON) {
+						if ((code === 422 || code === 409) && res.responseJSON) {
 							res = res.responseJSON;
-							res.statusCode = 422;
+							res.statusCode = code;
 						}
 					}
 					return reject(error || res);
