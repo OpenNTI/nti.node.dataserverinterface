@@ -35,6 +35,11 @@ Object.assign(Enrollment.prototype, base,
 	isEnrollment: true,
 
 
+	drop: function () {
+		return this._service.delete(this.href);
+	},
+
+
 	getCourseID: function() {
 		return this.CourseInstance.getID();
 	},
