@@ -136,7 +136,7 @@ Object.assign(DataServerInterface.prototype, {
 						res.___isResponse = true;
 						res.responseJSON = typeof body === 'object' ? body : null;
 
-						if (res.statusCode === 422 && res.responseJSON) {
+						if ((res.statusCode === 422 || res.statusCode === 409) && res.responseJSON) {
 							res = res.responseJSON;
 							res.statusCode = 422;
 						}
