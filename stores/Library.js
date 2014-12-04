@@ -20,7 +20,8 @@ function Library(service, name, contentPackages,
 								administeredCourses) {
 
 	define(this, {
-		_service: withValue(service)
+		_service: withValue(service),
+		_name: withValue(name)
 	});
 
 	this.onChange = this.onChange.bind(this);
