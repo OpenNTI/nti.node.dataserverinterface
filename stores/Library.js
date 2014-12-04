@@ -13,6 +13,7 @@ var Package = require('../models/content/Package');
 var Bundle = require('../models/content/Bundle');
 var Course = require('../models/courses/Enrollment');
 
+var instances = {};
 
 function Library(service, name, contentPackages,
 								contentBundles,
@@ -144,20 +145,45 @@ Library.load = function(service, name, reload) {
 		return new Library(service, name, contentPackages, contentBundles, enrolledCourses, administeredCourses);
 	}
 
-	var library;
+	var instance = instances[name];
 
-	return Promise.all([
+	return (instances[name] = Promise.all([
 		resolveCollection(service, service.getContentPackagesURL(), reload),
 		resolveCollection(service, service.getContentBundlesURL(), reload),
 		resolveCollection(service, service.getCoursesEnrolledURL(), reload),
 		resolveCollection(service, service.getCoursesAdministeringURL(), reload)
 	]).then(function(data) {
-		library = make.apply({}, data);
-		return waitFor(library.__pending);
+		instance = make.apply({}, data);
+		return waitFor(instance.__pending);
 	}).then(function() {
-		return library;
-	});
+		instances[name] = instance;
+		return instance;
+	}));
 };
 
+
+Library.get = function (service, name, reload) {
+	function reloading(i) { i.emit('reloading'); }
+
+	var instance = instances[name];
+
+	if (instance) {
+		if (!reload) {
+			return instance.then ? instance : Promise.resolve(instance);
+		}
+		else if(instance.then) {
+			instance.then(reloading);
+		} else {
+			reloading(instance);
+		}
+	}
+
+	return this.load(service, name, reload);
+};
+
+
+// Library.free = function (name) {
+// 	//TODO: Implement cleanup.
+// };
 
 module.exports = Library;
