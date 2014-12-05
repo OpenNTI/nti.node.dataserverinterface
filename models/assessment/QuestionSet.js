@@ -67,6 +67,11 @@ Object.assign(QuestionSet.prototype, base, {
 		});
 
 		return s;
+	},
+
+
+	loadPreviousSubmission: function () {
+		
 	}
 });
 

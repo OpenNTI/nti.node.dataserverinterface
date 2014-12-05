@@ -99,6 +99,12 @@ Object.assign(Assignment.prototype, base, {
 	},
 
 
+	loadPreviousSubmission: function () {
+		return this.loadHistory()
+			.catch(this.loadSavePoint.bind(this));
+	},
+
+
 	loadHistory: function () {
 		var me = this;
 		var service = me._service;
