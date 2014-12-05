@@ -8,6 +8,7 @@ var withValue = require('../../utils/object-attribute-withvalue');
 
 var AssignmentPart = require('./AssignmentPart');
 var AssignmentSubmission = require('./AssignmentSubmission');
+var AssignmentHistoryItem = require('./AssignmentHistoryItem');
 var SavePointItem = require('./SavePointItem');
 
 
@@ -98,25 +99,32 @@ Object.assign(Assignment.prototype, base, {
 	},
 
 
+	loadHistory: function () {
+		var me = this;
+		var service = me._service;
+		var link = me.getLink('History');
+
+		if (!link) {
+			return Promise.reject('No Link');
+		}
+
+		return service.get(link)
+			.then(function(data) {
+				return AssignmentHistoryItem.parse(service, me, data);
+			});
+	},
+
+
 	loadSavePoint: function() {
 		var me = this;
 		var service = me._service;
 		var link = me.getLink('Savepoint');
 
 		if (!link) {
-			return Promise.resolve({});
+			return Promise.reject('No Link');
 		}
 
 		return service.get(link)
-
-			.catch(function(reason) {
-				if (reason && reason.statusCode !== 404) {
-					return Promise.reject(reason);
-				}
-
-				return {};
-			})
-
 			.then(function(data) {
 				return SavePointItem.parse(service, me, data);
 			});

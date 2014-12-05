@@ -71,6 +71,7 @@ var PARSERS = {
 
 	'grade': require('./assessment/Grade'),
 	'assessment.userscourseassignmenthistoryitemfeedback': require('./assessment/AssignmentFeedback'),
+	'assessment.userscourseassignmenthistoryitemfeedbackcontainer': require('./assessment/AssignmentFeedbackContainer'),
 
 	'change': require('./Change'),
 
