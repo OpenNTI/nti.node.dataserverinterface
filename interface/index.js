@@ -13,12 +13,15 @@ var DataCache = require('../utils/datacache');
 var define = require('../utils/object-define-hidden-props');
 
 var isBrowser = require('../utils/browser');
+var isEmpty = require('../utils/isempty');
 var getLink = require('../utils/getlink');
 var NTIIDs = require('../utils/ntiids');
 var waitFor = require('../utils/waitfor');
 
 var Service = require('../stores/Service');
 
+var jsonContent = /(application|json)/i;
+var mightBeJson = /^(\s*)(\{|\[|"|')/i;
 
 var DataServerInterface = function (config) {
 	if (!config || !config.server) {
@@ -124,7 +127,9 @@ Object.assign(DataServerInterface.prototype, {
 				var code = res.statusCode;
 
 				try {
-					body = JSON.parse(body);
+					if (isEmpty(contentType) || jsonContent.test(contentType) || mightBeJson.test(body)) {
+						body = JSON.parse(body);
+					}
 				} catch (e) {}//Don't care... let it pass to the client as a string
 
 				if(!isBrowser) {
