@@ -2,6 +2,7 @@
 
 
 var base = require('../mixins/Base');
+var submission = require('../mixins/Submission');
 
 var define = require('../../utils/object-define-properties');
 var withValue = require('../../utils/object-attribute-withvalue');
@@ -29,7 +30,7 @@ function AssignmentSubmission(service, parent, data) {
 	// CreatorRecordedEffortDuration: 0
 }
 
-Object.assign(AssignmentSubmission.prototype, base, {
+Object.assign(AssignmentSubmission.prototype, base, submission, {
 
 	getQuestion: function (id) {
 		return this.parts.reduce(function(found, p) {
@@ -48,26 +49,6 @@ Object.assign(AssignmentSubmission.prototype, base, {
 	countUnansweredQuestions: function () {
 		return this.parts.reduce(function(sum, q) {
 			return sum + q.countUnansweredQuestions(); }, 0);
-	},
-
-
-	canSubmit: function() {
-		return this.parts.reduce(function(can, q) {
-			return can || q.canSubmit(); }, false);
-	},
-
-
-	submit: function() {
-		var me = this;
-		var target = (this._service.getCollectionFor(me) || {}).href;
-		if (!target) {
-			console.error('No where to save object: %o', this);
-		}
-
-		return me._service.post(target, me.getData())
-			.then(function (data) {
-				return parser(me, data);
-			});
 	}
 });
 
