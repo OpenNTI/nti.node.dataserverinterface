@@ -63,7 +63,9 @@ Object.assign(QuestionSet.prototype, base, {
 		});
 
 		s.questions = this.questions.map(function(q) {
-			return q.getSubmission();
+			q = q.getSubmission();
+			q.__reParent(s);
+			return q;
 		});
 
 		return s;
@@ -71,7 +73,7 @@ Object.assign(QuestionSet.prototype, base, {
 
 
 	loadPreviousSubmission: function () {
-		
+
 	}
 });
 

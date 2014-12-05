@@ -141,6 +141,14 @@ Object.assign(exports, {
 		}
 
 		me[key] = d;
+	},
+
+
+	__reParent: function(newParent) {
+		delete this._parent;
+		define(this,{
+			_parent: withValue(newParent)
+		});
 	}
 
 }, EventEmitter.prototype);

@@ -92,7 +92,9 @@ Object.assign(Assignment.prototype, base, {
 		});
 
 		s.parts = this.parts.map(function(p) {
-			return p.getSubmission();
+			p = p.getSubmission();
+			p.__reParent(s);
+			return p;
 		});
 
 		return s;
