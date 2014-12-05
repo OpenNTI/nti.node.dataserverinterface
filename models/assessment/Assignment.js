@@ -10,22 +10,6 @@ var AssignmentPart = require('./AssignmentPart');
 var AssignmentSubmission = require('./AssignmentSubmission');
 var SavePointItem = require('./SavePointItem');
 
-function parseDate(me, key) {
-	var v = me[key];
-	if (!v) {
-		return;
-	}
-
-	var d = new Date(v);
-	//if not equal to the input...
-	//toISOString includes millies, drop the millies
-	if (d.toISOString().replace(/\.\d+/,'') !== v) {
-		throw new Error('Bad Date Parse');
-	}
-
-	me[key] = d;
-}
-
 
 function Assignment(service, parent, data) {
 	var me = this;
@@ -36,8 +20,8 @@ function Assignment(service, parent, data) {
 
 	Object.assign(me, data);
 
-	parseDate(me, 'available_for_submission_beginning');
-	parseDate(me, 'available_for_submission_ending');
+	me.__parseDate('available_for_submission_beginning');
+	me.__parseDate('available_for_submission_ending');
 
 	me.parts = data.parts.map(function(p) {
 		return AssignmentPart.parse(service, me, p);

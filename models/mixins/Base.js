@@ -9,7 +9,21 @@ var CONTENT_VISIBILITY_MAP = {
 	OU: 'OUID'
 };
 
+function dateGetter(key) {
+	return function () {
+		if (typeof this[key] !== 'object') {
+			this.__parseDate(key);
+		}
+		return this[key];
+	};
+}
+
+
 Object.assign(exports, {
+
+	getCreatedTime: dateGetter('CreatedTime'),
+
+	getLastModified: dateGetter('Last Modified'),
 
 
 	getData: function() {
@@ -52,19 +66,27 @@ Object.assign(exports, {
 	},
 
 
-	up: function(query) {
+	up: function(/*query, value*/) {
 		var p = this._parent;
 
-		if (p && p._is(query)) {
+		if (p && p._is.apply(p, arguments)) {
 			return p;
 		}
 
-		return p && p.up(query);
+		return p && p.up.apply(p, arguments);
 	},
 
 
-	_is: function(attibuteQuery) {
-		return !!this[attibuteQuery];
+	_is: function(attributeQuery, attributeQueryValue) {
+		if (attributeQueryValue === undefined) {
+			return !!this[attributeQuery];
+		}
+
+		if (attributeQueryValue && attributeQueryValue.test) {
+			return attributeQueryValue.test(this[attributeQuery]);
+		}
+
+		return this[attributeQuery] === attributeQueryValue;
 	},
 
 
@@ -91,6 +113,34 @@ Object.assign(exports, {
 		// TODO: we need to define what this 'visibility' means for an AppUser in general (rather than just OU) or
 		// have a convention on how have we resolve it.
 		return !attr || u.hasOwnProperty(attr) || attr === status || (/everyone/i).test(attr);
+	},
+
+
+
+
+
+	__parseDate: function(key) {
+		var me = this;
+		var v = me[key];
+		if (!v) {
+			return;
+		}
+
+		if (typeof v === 'number') {
+			v = Math.floor(v * 1000);
+		}
+
+		var d = new Date(v);
+		//if not equal to the input...
+		//toISOString includes millies, drop the millies
+		if (typeof v === 'string' && d.toISOString().replace(/\.\d+/,'') !== v) {
+			throw new Error('Bad Date String Parse: '+ v);
+		}
+		else if (typeof v === 'number' && d.getTime() !== v) {
+			throw new Error('Bad Date Stamp Parse');
+		}
+
+		me[key] = d;
 	}
 
 }, EventEmitter.prototype);
