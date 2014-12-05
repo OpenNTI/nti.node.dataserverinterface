@@ -76,7 +76,7 @@ Object.assign(SessionManager.prototype, {
 			.then(this.setupIntitalData.bind(this, req))
 			.then(finish)
 			.catch(function(reason) {
-				if ((reason || {}).___isResponse) {
+				if ((reason || {}).hasOwnProperty('statusCode')) {
 					reason = reason.statusCode;
 				}
 

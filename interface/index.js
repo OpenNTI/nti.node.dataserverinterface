@@ -134,12 +134,11 @@ Object.assign(DataServerInterface.prototype, {
 
 				if (error || code >= 300 || code === 0) {
 					if(res) {
-						res.___isResponse = true;
-						res.responseJSON = typeof body === 'object' ? body : null;
-
-						if ((code === 422 || code === 409) && res.responseJSON) {
-							res = res.responseJSON;
-							res.statusCode = code;
+						if (typeof body === 'object') {
+							res = Object.assign(body, {
+								Message: body.Message || res.statusText,
+								statusCode: code
+							});
 						}
 					}
 					return reject(error || res);
