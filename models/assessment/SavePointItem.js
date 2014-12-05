@@ -25,7 +25,10 @@ Object.assign(SavePointItem.prototype, base, {
 
 	getQuestions: function () {
 		return this.Submission ? this.Submission.getQuestions() : [];
-	}
+	},
+
+
+	isSubmitted: function () { return false; }
 
 });
 

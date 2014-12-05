@@ -28,6 +28,11 @@ Object.assign(AssignmentHistoryItem.prototype, base, {
 
 	getQuestions: function () {
 		return this.Submission ? this.Submission.getQuestions() : [];
+	},
+
+
+	isSubmitted: function () {
+		return !!this.Submission;
 	}
 
 });
