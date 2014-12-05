@@ -79,6 +79,22 @@ Object.assign(exports, {
 	},
 
 
+	parents: function(/*query, value*/) {
+		var matches = [];
+		var p = this._parent;
+
+		if (p && p.parents) {
+
+			matches = p.parents.apply(p, arguments);
+			if (p._is.apply(p, arguments)) {
+				matches.push(p);
+			}
+		}
+
+		return matches;
+	},
+
+
 	_is: function(attributeQuery, attributeQueryValue) {
 		if (attributeQueryValue === undefined) {
 			return !!this[attributeQuery];
