@@ -4,6 +4,8 @@ var EventEmitter = require('events').EventEmitter;
 var getLink = require('../../utils/getlink');
 var isFunction = require('../../utils/isfunction');
 
+var define = require('../../utils/object-define-properties');
+var withValue = require('../../utils/object-attribute-withvalue');
 
 var CONTENT_VISIBILITY_MAP = {
 	OU: 'OUID'
