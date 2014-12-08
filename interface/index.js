@@ -6,7 +6,7 @@ var btoa = global.bota || require('btoa');
 var QueryString = require('query-string');
 var request = require('../utils/request');
 
-var StripInterface = require('./Stripe');
+var StripeInterface = require('./Stripe');
 var FiveMinuteInterface = require('./FiveMinuteInterface');
 
 var DataCache = require('../utils/datacache');
@@ -226,7 +226,7 @@ Object.assign(DataServerInterface.prototype, {
 
 
 	getStripeInterface: function (context) {
-		return new StripInterface(this, context);
+		return new StripeInterface(this, context);
 	},
 
 	getFiveMinuteInterface: function(context) {
