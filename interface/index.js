@@ -7,6 +7,7 @@ var QueryString = require('query-string');
 var request = require('../utils/request');
 
 var StripInterface = require('./Stripe');
+var FiveMinuteInterface = require('./FiveMinuteInterface');
 
 var DataCache = require('../utils/datacache');
 
@@ -228,6 +229,9 @@ Object.assign(DataServerInterface.prototype, {
 		return new StripInterface(this, context);
 	},
 
+	getFiveMinuteInterface: function(context) {
+		return new FiveMinuteInterface(this, context);
+	},
 
 	getServiceDocument: function(context) {
 		var cache = DataCache.getForContext(context),
