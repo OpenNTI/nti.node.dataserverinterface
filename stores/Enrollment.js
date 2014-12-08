@@ -1,7 +1,5 @@
 'use strict';
 
-/* jshint -W098 */ //Delete this comment-line once Promise is referenced.
-
 var define = require('../utils/object-define-properties');
 var withValue = require('../utils/object-attribute-withvalue');
 var getLink = require('../utils/getlink');
