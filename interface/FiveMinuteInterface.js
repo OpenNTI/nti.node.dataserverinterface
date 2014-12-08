@@ -22,3 +22,5 @@ Object.assign(FiveMinuteInterface.prototype, {
 		console.debug('TODO: five minute preflight');
 	}
 });
+
+module.exports = FiveMinuteInterface;
