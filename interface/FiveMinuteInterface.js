@@ -1,3 +1,10 @@
+/**
+ * This is an OU API, perhaps we should bury this deeper in to the package?
+ *
+ * Like:
+ *	/interface/thirdparties/ou/FiveMinute.js
+ *
+ */
 'use strict';
 
 var define = require('../utils/object-define-properties');
