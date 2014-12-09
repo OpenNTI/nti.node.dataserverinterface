@@ -37,8 +37,23 @@ Object.assign(FiveMinuteInterface.prototype, {
 		});
 	},
 
+	_getUserLink: function(rel) {
+		return this._getAppUser().then(function(user) {
+			return getLink(user, rel);
+		});
+	},
+
 	preflight: function(data) {
 		console.debug('TODO: five minute preflight');
+		// get the preflight link.
+		var p = this._getUserLink('fmaep.admission.preflight');
+
+		// post the data to the link
+		var r = p.then(function(link) {
+			return this.post(link, data);
+		}.bind(this));
+
+		return r;
 	}
 });
 
