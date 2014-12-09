@@ -25,6 +25,18 @@ Object.assign(FiveMinuteInterface.prototype, {
 	get: Service.prototype.get,
 	post: Service.prototype.post,
 
+	_getAppUser: function() {
+		return this._server.getServiceDocument().then(function(doc) {
+			return doc.getAppUser();
+		});
+	},
+
+	getAdmissionStatus: function() {
+		return this._getAppUser().then(function(user) {
+			return (user||{}).fmaep_admission_state;
+		});
+	},
+
 	preflight: function(data) {
 		console.debug('TODO: five minute preflight');
 	}
