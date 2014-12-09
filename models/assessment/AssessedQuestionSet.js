@@ -24,6 +24,16 @@ function AssessedQuestionSet(service, parent, data) {
 
 Object.assign(AssessedQuestionSet.prototype, base, {
 
+
+	getQuestions: function () {
+		return this.questions.slice();
+	},
+	
+	isSubmitted: function () {
+		return true;
+	},
+
+
 	getTotal: function () {
 		return (this.questions || []).length;
 	},

@@ -24,6 +24,11 @@ function AssessedQuestion(service, parent, data) {
 
 Object.assign(AssessedQuestion.prototype, base, {
 
+	getID: function () {
+		return this.questionId || this.NTIID;
+	},
+
+
 	isCorrect: function() {
 		var p = this.parts || [],
 			i = p.length - 1, v;
