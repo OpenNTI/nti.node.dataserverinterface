@@ -12,6 +12,15 @@
 *  @param {String} separator - the separator to be used between the namespace and value; defaults to ':'
 */
 module.exports = function namespacedKeyMirror(namespace, object, separator) {
+
+	if(namespace && typeof namespace !== 'string') {
+		throw new Error('If namespace is provided it must be a string.');
+	}
+
+	if(!object || typeof object !== 'object') {
+		throw new Error('object parameter is required and should be an object.');
+	}
+
 	var separator = separator||':';
 	var prefix = namespace ? namespace.concat(separator||':') : '';
 	var result = {};

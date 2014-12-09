@@ -39,4 +39,12 @@ describe('namespaced-key-mirror', function () {
 		expect(nsKeyMirror(namespace, input, separator)).toEqual(expectedOutput);
 	});
 
+	it('should throw if handed a non-string namespace', function() {
+		expect(nsKeyMirror.bind(null,input)).toThrow();
+	});
+
+	it('should throw if handed a non-object', function() {
+		expect(nsKeyMirror.bind(null, namespace, 'bad input')).toThrow();
+	});
+
 });
