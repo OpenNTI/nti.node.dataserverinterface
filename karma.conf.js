@@ -50,7 +50,23 @@ module.exports = function (config) {
 		// - PhantomJS
 		// - IE (only Windows)
 		browsers: ['PhantomJS'],
-		reporters: ['progress'],
+
+
+		//coverageReporter: { type: 'html', dir: 'reports/coverage/' },
+
+		htmlReporter: {
+			//templatePath: __dirname+'/jasmine_template.html',
+			outputDir: 'reports/test-results'
+		},
+
+		junitReporter: {
+			outputFile: 'reports/test-results.xml',
+			suite: ''
+		},
+
+
+		// other possible values: 'dots', 'progress', 'junit', 'html', 'coverage'
+		reporters: ['mocha'],
 		captureTimeout: 60000,
 		singleRun: true,
 
