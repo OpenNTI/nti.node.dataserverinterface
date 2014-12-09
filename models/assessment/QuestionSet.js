@@ -28,10 +28,10 @@ Object.assign(QuestionSet.prototype, base, {
 	isSubmittable: true,
 
 	/**
-	 * Checks to see if the NTIID is within this QuestionSet
-	 *
-	 * @param {String} id NTIID
-	 */
+	* Checks to see if the NTIID is within this QuestionSet
+	*
+	* @param {String} id NTIID
+	*/
 	containsId: function(id) {
 		return !!this.getQuestion(id);
 	},
