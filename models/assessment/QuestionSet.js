@@ -9,6 +9,7 @@ var base = require('../mixins/Base');
 var define = require('../../utils/object-define-properties');
 var withValue = require('../../utils/object-attribute-withvalue');
 
+var SUBMITTED_TYPE = 'application/vnd.nextthought.assessment.assessedquestionset';
 
 function QuestionSet(service, parent, data) {
 	var me = this;
@@ -73,7 +74,12 @@ Object.assign(QuestionSet.prototype, base, {
 
 
 	loadPreviousSubmission: function () {
+		var dataProvider = this.up('getUserDataLastOfType');
+		if (!dataProvider) {
+			return Promise.reject('Nothing to do');
+		}
 
+		return dataProvider.getUserDataLastOfType(SUBMITTED_TYPE);
 	}
 });
 
