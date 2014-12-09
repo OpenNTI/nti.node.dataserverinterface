@@ -225,6 +225,10 @@ Object.assign(DataServerInterface.prototype, {
 	},
 
 
+	// Instead of having a method like this on the server interface directly,
+	// we should just import the module and construct them in the place we need them.
+	// Also, add factory method (.create()) to them so we can require(..).create();
+
 	getStripeInterface: function (context) {
 		return new StripeInterface(this, context);
 	},
@@ -232,6 +236,8 @@ Object.assign(DataServerInterface.prototype, {
 	getFiveMinuteInterface: function(context) {
 		return new FiveMinuteInterface(this, context);
 	},
+
+
 
 	getServiceDocument: function(context) {
 		var cache = DataCache.getForContext(context),

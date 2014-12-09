@@ -25,12 +25,15 @@ Object.assign(FiveMinuteInterface.prototype, {
 	post: Service.prototype.post,
 
 	_getAppUser: function() {
+		//This doesn't leverage our instance cache. This will create a new Service Doc instance (as
+		// well as a new App User model instance)
 		return this._server.getServiceDocument().then(function(doc) {
 			return doc.getAppUser();
 		});
 	},
 
 	getAdmissionStatus: function() {
+
 		return this._getAppUser().then(function(user) {
 			return (user||{}).fmaep_admission_state;
 		});
