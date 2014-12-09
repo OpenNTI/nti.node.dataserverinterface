@@ -9,7 +9,6 @@
 
 var define = require('../utils/object-define-properties');
 var withValue = require('../utils/object-attribute-withvalue');
-var getLink = require('../utils/getlink');
 
 var Service = require('../stores/Service');
 
@@ -39,7 +38,7 @@ Object.assign(FiveMinuteInterface.prototype, {
 
 	_getUserLink: function(rel) {
 		return this._getAppUser().then(function(user) {
-			return getLink(user, rel);
+			return user.getLink(rel);
 		});
 	},
 
