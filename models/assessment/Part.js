@@ -8,21 +8,7 @@ var define = require('../../utils/object-define-properties');
 var withValue = require('../../utils/object-attribute-withvalue');
 var toArray = require('../../utils/toarray');
 
-var parser = require('../../utils/parse-object');
-
-function parseKey(o, key) {
-	var y = o[key];
-
-	y = o[key] = y && (Array.isArray(y) ?
-		y.map(parser.bind(o, o)) :
-		parser(o, y)
-	);
-
-	if (!y || y.length === 0) {
-		delete o[key];
-	}
-}
-
+var parseKey = require('../../utils/parse-object-at-key');
 
 function Part(service, parent, data) {
 	define(this,{

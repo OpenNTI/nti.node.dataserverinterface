@@ -6,6 +6,8 @@ var base = require('../mixins/Base');
 var define = require('../../utils/object-define-properties');
 var withValue = require('../../utils/object-attribute-withvalue');
 
+var parseKey = require('../../utils/parse-object-at-key');
+
 
 function AssessedPart(service, parent, data) {
 	define(this,{
@@ -13,11 +15,23 @@ function AssessedPart(service, parent, data) {
 		_parent: withValue(parent)
 	});
 
-
 	Object.assign(this, data);
+
+	parseKey(this, 'solutions');
 }
 
 Object.assign(AssessedPart.prototype, base, {
+
+
+	getQuestionId: function() {
+		return this._parent.getID();
+	},
+
+
+	getPartIndex: function() {
+		return this._parent.parts.indexOf(this);
+	},
+
 
 	isCorrect: function() {
 		var a = this.assessedValue;
