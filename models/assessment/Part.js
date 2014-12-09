@@ -64,6 +64,27 @@ Object.assign(Part.prototype, base, content, {
 		});
 
 		return out;
+	},
+
+
+	updateFromAssessed: function (assessedPart) {
+		if (assessedPart.getQuestionId() !== this.getQuestionId() ||
+			assessedPart.getPartIndex() !== this.getPartIndex()) {
+			throw new Error('[Assessment Fillin]: Miss-Matched Question/Part');
+		}
+		var me = this;
+		['hints', 'solutions'].forEach(function(p) {
+			//Only update this[p] if its blank, or assessedPart[p] is truthy
+			// (do not blank out this[p] if its set and assessedPart[p] is not.)
+			if (!me[p] || assessedPart[p]) {
+				me[p] = assessedPart[p];
+			}
+		});
+
+		if (assessedPart.explanation) {
+			delete this.explanation;
+			content.initMixin.call(this, assessedPart, ['explanation']);
+		}
 	}
 });
 
