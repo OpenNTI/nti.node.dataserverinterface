@@ -2,6 +2,24 @@
 
 var webpack = require('webpack');
 
+var stat = {
+	version: false,
+	hash: false,
+	timings: false,
+	assets: false,
+	chunks: false,
+	chunkModules: false,
+	chunkOrigins: false,
+	modules: false,
+	cached: false,
+	cachedAssets: false,
+	showChildren: false,
+	source: false,
+
+	colors: true,
+	reasons: true,
+	errorDetails: true
+};
 
 module.exports = function (config) {
 	config.set({
@@ -14,12 +32,12 @@ module.exports = function (config) {
 		],
 
 		preprocessors: {
-			'tests/specs/**/*.js': ['webpack', 'sourcemaps']
+			'tests/specs/**/*.js': ['webpack', 'sourcemap']
 		},
 
 		exclude: [],
 
-		port: 8086,
+		port: 8090,
 		logLevel: config.LOG_INFO,
 		colors: true,
 		autoWatch: false,
@@ -36,21 +54,19 @@ module.exports = function (config) {
 		captureTimeout: 60000,
 		singleRun: true,
 
+
 		webpackServer: {
-			stats: {
-				colors: true
-			}
+			stats: stat,
+			quiet: true
 		},
 
 		webpack: {
+			quiet: true,
 			cache: true,
 			debug: true,
 			devtool: 'inline-source-map',
 
-			stats: {
-				colors: true,
-				reasons: true
-			},
+			stats: stat,
 
 			node: {
 				net: 'empty',
