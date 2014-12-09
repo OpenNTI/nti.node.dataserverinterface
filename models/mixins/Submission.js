@@ -21,10 +21,10 @@ exports = module.exports = {
 		var p;
 
 		//Test if we are explicitly marked submitted
-		return this.__submitted ||
+		return Boolean(this.__submitted ||
 
 			//Then check parent for submitted
-			((p = this.up('isSubmitted')) && p.isSubmitted());
+			((p = this.up('isSubmitted')) && p.isSubmitted()));
 
 	},
 
