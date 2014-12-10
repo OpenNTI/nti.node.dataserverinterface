@@ -2,6 +2,7 @@
 
 
 var base = require('../mixins/Base');
+var assessed = require('../mixins/AssessedAssessmentPart');
 
 var define = require('../../utils/object-define-properties');
 var withValue = require('../../utils/object-attribute-withvalue');
@@ -20,7 +21,7 @@ function AssessedPart(service, parent, data) {
 	parseKey(this, 'solutions');
 }
 
-Object.assign(AssessedPart.prototype, base, {
+Object.assign(AssessedPart.prototype, base, assessed, {
 
 
 	getQuestionId: function() {

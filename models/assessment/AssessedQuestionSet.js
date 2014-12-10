@@ -2,6 +2,7 @@
 
 
 var base = require('../mixins/Base');
+var assessed = require('../mixins/AssessedAssessmentPart');
 
 var define = require('../../utils/object-define-properties');
 var withValue = require('../../utils/object-attribute-withvalue');
@@ -22,13 +23,13 @@ function AssessedQuestionSet(service, parent, data) {
 	});
 }
 
-Object.assign(AssessedQuestionSet.prototype, base, {
+Object.assign(AssessedQuestionSet.prototype, base, assessed, {
 
 
 	getQuestions: function () {
 		return this.questions.slice();
 	},
-	
+
 	isSubmitted: function () {
 		return true;
 	},

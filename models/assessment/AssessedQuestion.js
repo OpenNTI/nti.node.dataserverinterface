@@ -2,6 +2,7 @@
 
 
 var base = require('../mixins/Base');
+var assessed = require('../mixins/AssessedAssessmentPart');
 
 var define = require('../../utils/object-define-properties');
 var withValue = require('../../utils/object-attribute-withvalue');
@@ -22,7 +23,7 @@ function AssessedQuestion(service, parent, data) {
 	});
 }
 
-Object.assign(AssessedQuestion.prototype, base, {
+Object.assign(AssessedQuestion.prototype, base, assessed, {
 
 	getID: function () {
 		return this.questionId || this.NTIID;
