@@ -25,10 +25,17 @@ function AssessedQuestionSet(service, parent, data) {
 
 Object.assign(AssessedQuestionSet.prototype, base, assessed, {
 
+	getQuestion: function (id) {
+		return this.questions.reduce(function(found, q) {
+			return found || (q.getID() === id && q);
+		}, null);
+	},
+
 
 	getQuestions: function () {
 		return this.questions.slice();
 	},
+
 
 	isSubmitted: function () {
 		return true;
@@ -38,6 +45,7 @@ Object.assign(AssessedQuestionSet.prototype, base, assessed, {
 	getTotal: function () {
 		return (this.questions || []).length;
 	},
+
 
 	getCorrect: function() {
 		function addCorrect(sum, question) {
