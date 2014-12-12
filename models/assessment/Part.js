@@ -68,6 +68,10 @@ Object.assign(Part.prototype, base, content, {
 
 
 	updateFromAssessed: function (assessedPart) {
+		if (!assessedPart) {
+			throw new Error('[Assessment Fillin]: Invalid Argument');
+		}
+
 		if (assessedPart.getQuestionId() !== this.getQuestionId() ||
 			assessedPart.getPartIndex() !== this.getPartIndex()) {
 			throw new Error('[Assessment Fillin]: Miss-Matched Question/Part');
