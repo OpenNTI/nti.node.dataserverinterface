@@ -1,4 +1,8 @@
 'use strict';
-/*jshint -W054*/
-exports = module.exports =
-	new Function('a', 'return a?Array.prototype.slice.call(a):[];');
+var isEmpty = require('./isempty');
+
+exports = module.exports = function(a) {
+	return isEmpty(a) ? [] :
+		Array.isArray(a) ? a :
+			Array.prototype.slice.call(a);
+};
