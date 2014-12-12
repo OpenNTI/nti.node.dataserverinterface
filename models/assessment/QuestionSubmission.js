@@ -46,6 +46,12 @@ Object.assign(QuestionSubmission.prototype, base, submission, {
 	},
 
 
+	addRecordedEffortTime: function (duration) {
+		var old = this.CreatorRecordedEffortDuration || 0;
+		this.CreatorRecordedEffortDuration = old + duration;
+	},
+
+
 	isAnswered: function() {
 		function answered(p) { return p !== null; }
 
