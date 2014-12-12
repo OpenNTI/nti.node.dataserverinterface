@@ -1,0 +1,11 @@
+#!/bin/sh
+FILES=`git diff --cached --name-only | grep -i ".js$"`
+
+for f in $FILES
+do
+	if [ ! -f $f ]; then  #file was deleted
+		continue
+	fi
+
+	jshint $(pwd)/$f || exit 1;
+done
