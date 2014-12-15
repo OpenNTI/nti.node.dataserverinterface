@@ -15,6 +15,7 @@ var PARSERS = {
 	'naquestionfillintheblankwordbank': 'naquestion',
 
 	'assessment.assignment': require('./assessment/Assignment'),
+	'assessment.timedassignment': require('./assessment/TimedAssignment'),
 
 	'assessment.randomizedquestionset': 'naquestionset',
 	'assessment.fillintheblankwithwordbankquestion': 'naquestion',

@@ -13,25 +13,29 @@ var SavePointItem = require('./SavePointItem');
 
 
 function Assignment(service, parent, data) {
-	var me = this;
-	define(me,{
+	define(this,{
 		_service: withValue(service),
 		_parent: withValue(parent)
 	});
 
-	Object.assign(me, data);
-
-	me.__parseDate('available_for_submission_beginning');
-	me.__parseDate('available_for_submission_ending');
-
-	me.parts = data.parts.map(function(p) {
-		return AssignmentPart.parse(service, me, p);
-	});
+	this.__setup(data);
 }
 
 
 Object.assign(Assignment.prototype, base, {
 	isSubmittable: true,
+
+	__setup: function (data) {
+		var me = this;
+		Object.assign(me, data);
+
+		me.__parseDate('available_for_submission_beginning');
+		me.__parseDate('available_for_submission_ending');
+
+		me.parts = (data.parts || []).map(function(p) {
+			return AssignmentPart.parse(me._service, me, p);
+		});
+	},
 
 
 	is: function(id) {
@@ -51,8 +55,14 @@ Object.assign(Assignment.prototype, base, {
 	},
 
 
+	isNonSubmit: function () {
+		var p = this.parts;
+		return !p || p.length === 0;
+	},
+
+
 	isLate: function(date) {
-		return date > this.available_for_submission_ending;
+		return date > this.getDueDate();
 	},
 
 
