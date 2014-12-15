@@ -23,7 +23,9 @@ function Grade(service, parent, data) {
 
 Object.assign(Grade.prototype, base, names, {
 
-
+	getValue: function () {
+		return this.value;
+	}
 });
 
 

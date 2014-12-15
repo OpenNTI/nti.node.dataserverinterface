@@ -26,6 +26,7 @@ function AssignmentHistoryItem(service, parent, data) {
 
 Object.assign(AssignmentHistoryItem.prototype, base, {
 
+
 	getQuestions: function () {
 		return this.Submission ? this.Submission.getQuestions() : [];
 	},
@@ -33,6 +34,12 @@ Object.assign(AssignmentHistoryItem.prototype, base, {
 
 	isSubmitted: function () {
 		return !!this.Submission;
+	},
+
+
+	getGradeValue: function () {
+		var g = this.Grade;
+		return g && g.getValue();
 	}
 
 });
