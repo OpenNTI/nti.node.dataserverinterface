@@ -65,6 +65,16 @@ Object.assign(FiveMinuteInterface.prototype, {
 			return this.post(link, data);
 		}.bind(this));
 		return r;
+	},
+
+	getPayAndEnroll: function(link, ntiCrn, ntiTerm) {
+		console.debug(link);
+		var r = this.get(link, {
+			crn: ntiCrn,
+			term: ntiTerm,
+			return_url: 'http://google.com'
+		});
+		return r;
 	}
 });
 
