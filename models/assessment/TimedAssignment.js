@@ -37,7 +37,9 @@ Object.assign(TimedAssignment.prototype, {
 
 
 	isOverTime: function () {
-
+		var max = this.getMaximumTimeAllowed();
+		var dur = this.getDuration() || (new Date() - this.getStartTime());
+		return max < dur;
 	},
 
 
