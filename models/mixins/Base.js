@@ -63,6 +63,11 @@ Object.assign(exports, {
 	},
 
 
+	hasLink: function (rel) {
+		return rel in getLink.asMap(this);
+	},
+
+
 	onChange: function(who) {
 		this.emit('changed', this, who);
 	},
