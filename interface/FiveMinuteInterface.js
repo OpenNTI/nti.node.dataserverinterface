@@ -67,12 +67,12 @@ Object.assign(FiveMinuteInterface.prototype, {
 		return r;
 	},
 
-	getPayAndEnroll: function(link, ntiCrn, ntiTerm) {
+	getPayAndEnroll: function(link, ntiCrn, ntiTerm, returnUrl) {
 		console.debug(link);
-		var r = this.get(link, {
+		var r = this.post(link, {
 			crn: ntiCrn,
 			term: ntiTerm,
-			return_url: 'http://google.com'
+			return_url: returnUrl
 		});
 		return r;
 	}
