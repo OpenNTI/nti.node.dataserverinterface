@@ -36,6 +36,11 @@ Object.assign(TimedAssignment.prototype, {
 	},
 
 
+	isNonSubmit: function () {
+		return false;
+	},
+
+
 	isOverTime: function () {
 		var max = this.getMaximumTimeAllowed();
 		var dur = this.getDuration() || (new Date() - this.getStartTime());

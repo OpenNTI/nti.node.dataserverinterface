@@ -57,7 +57,12 @@ Object.assign(Assignment.prototype, base, {
 
 	isNonSubmit: function () {
 		var p = this.parts;
-		return !p || p.length === 0;
+		return !p || p.length === 0 || /no_submit/.test(this.category_name);
+	},
+
+
+	canBeSubmitted: function () {
+		return !this.isNonSubmit();
 	},
 
 
