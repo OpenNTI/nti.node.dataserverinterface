@@ -1,5 +1,6 @@
 'use strict';
 /* jshint -W016*/ //Allow bitwise operators
+/* jshint -W121*/ //Allow adding to prototype of System objects
 
 
 if (!Array.prototype.find) {

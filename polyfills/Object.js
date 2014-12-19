@@ -1,4 +1,5 @@
 'use strict';
+/* jshint -W121*/ //Allow adding to prototype of System objects
 
 function noop(o) {return o;}
 

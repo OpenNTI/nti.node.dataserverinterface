@@ -1,4 +1,5 @@
 'use strict';
+/* jshint -W121*/ //Allow adding to prototype of System objects
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind
 if (!Function.prototype.bind) {
