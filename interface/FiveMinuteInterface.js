@@ -67,6 +67,13 @@ Object.assign(FiveMinuteInterface.prototype, {
 		return r;
 	},
 
+	requestConcurrentEnrollment: function(data) {
+		return this._getUserLink('concurrent.enrollment.notify')
+		.then(function(link) {
+			return this.post(link, data);
+		}.bind(this));
+	},
+
 	getPayAndEnroll: function(link, ntiCrn, ntiTerm, returnUrl) {
 		console.debug(link);
 		var r = this.post(link, {
