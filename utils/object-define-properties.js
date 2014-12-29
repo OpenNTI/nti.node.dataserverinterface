@@ -1,10 +1,12 @@
 'use strict';
 
+var emptyFunction = require('./empty-function');
+
 module.exports = function defineProperties(obj, props) {
 	var hasDefineProp = Boolean(Object.defineProperty),
 		hasDefinePropBad = Boolean(Object.prototype.__defineSetter__),
 		cfg, getter, setter, property,
-		empty = function() {},
+		empty = emptyFunction,
 		val = function(v) {return function(){return v;};};
 
 	if (!hasDefineProp && !hasDefinePropBad) {

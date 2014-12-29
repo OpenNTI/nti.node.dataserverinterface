@@ -11,6 +11,9 @@ var define = require('../../utils/object-define-properties');
 var withValue = require('../../utils/object-attribute-withvalue');
 var encodeForURI = require('../../utils/ntiids').encodeForURI;
 
+var emptyFunction = require('../../utils/empty-function');
+var emptyCourseObject = {getID:emptyFunction};
+
 function OutlineNode(service, parent, data) {
 	define(this,{
 		_service: withValue(service),
@@ -50,7 +53,7 @@ Object.assign(OutlineNode.prototype, base, {
 
 
 	__getHref: function() {
-		var courseId = (this.__getCourse() || {getID:function(){}}).getID();
+		var courseId = (this.__getCourse() || emptyCourseObject).getID();
 		var ref = this.ref;
 
 		if (!ref) {

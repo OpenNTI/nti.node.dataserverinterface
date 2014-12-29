@@ -8,12 +8,16 @@ var pluck = require('../../utils/array-pluck');
 var define = require('../../utils/object-define-properties');
 var withValue = require('../../utils/object-attribute-withvalue');
 
+var emptyFunction = require('../../utils/empty-function');
+
 var base = require('../mixins/Base');
 var VideoIndex = require('../VideoIndex');
 var Bundle = require('../content/Bundle');
 var CatalogEntry = require('./CatalogEntry');
 var Outline = require('./OutlineNode');
 var AssessmentCollection = require('../assessment/Collection');
+
+var emptyCatalogEntry = {getAuthorLine: emptyFunction};
 
 function Instance(service, parent, data) {
 	define(this, {
@@ -38,7 +42,7 @@ Object.assign(Instance.prototype, base, {
 
 
 	getPresentationProperties: function() {
-		var cce = this.CatalogEntry || {getAuthorLine: function(){}},
+		var cce = this.CatalogEntry || emptyCatalogEntry,
 			bundle = this.ContentPackageBundle;
 
 		return {
@@ -138,7 +142,7 @@ Object.assign(Instance.prototype, base, {
 						Promise.reject('Preview') :
 						Promise.all([
 							me._service.get(link),
-							me.getAssignments().catch(function(){}) ])
+							me.getAssignments().catch(emptyFunction) ])
 						.then(buildOutline);
 				});
 		}

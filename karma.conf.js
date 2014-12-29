@@ -32,7 +32,7 @@ module.exports = function (config) {
 		],
 
 		preprocessors: {
-			'tests/specs/**/*.js': ['webpack', 'sourcemap']
+			'tests/**/*.js': ['webpack', 'sourcemap']
 		},
 
 		exclude: [],

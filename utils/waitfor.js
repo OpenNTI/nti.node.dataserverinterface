@@ -1,8 +1,10 @@
 'use strict';
 
+var emptyFunction = require('./empty-function');
+
 
 function neverFail(thenable) {
-	var x = function() {};
+	var x = emptyFunction;
 	return thenable.then(x, x);
 }
 
@@ -15,7 +17,7 @@ module.exports =  function(pending, timeout) {
 	return new Promise(function(resolve, reject) {
 
 		function onTimeout() {
-			resolve = function() {};
+			resolve = emptyFunction;
 			reject('Timeout');
 		}
 
