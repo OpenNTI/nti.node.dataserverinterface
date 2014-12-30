@@ -30,9 +30,14 @@ Object.assign(PageInfo.prototype, base, {
 
 		url.pathname = path.dirname(url.pathname) + '/';
 
+		// images and other resources will be resolved relative
+		// to this url; ensure there's no hash or query string.
+		url.hash = null;
+		url.query = null;
+		url.search = null;
+
 		return url.format();
 	},
-
 
 	getContent: function() {
 		var url = this.getLink('content');
