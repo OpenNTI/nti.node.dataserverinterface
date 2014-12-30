@@ -164,6 +164,17 @@ Object.assign(OutlineNode.prototype, base, {
 	getContent: function() {
 		var src = this.getLink('overview-content') || getSrc(this);
 		return src ? this._service.get(src).then(collateVideo) : getContentFallback(this);
+	},
+
+
+	getProgress: function() {
+		var link = this.getLink('Progress');
+
+		if (!link) {
+			return Promise.resolve(null);
+		}
+
+		return this._service.get(link);
 	}
 });
 
