@@ -33,8 +33,8 @@ Object.assign(DataServerInterface.prototype, {
 	/**
 	 * Makes a request to the dataserver.
 	 *   It should be noted that this is intented to facilitate and abstract the act
-	 *   of making a request to the dataserve so it is transparent between nodejs and a
-	 *   web browser.  Do not use this directly.  Only use the interface methods NOT
+	 *   of making a request to the dataserver so it is transparent between nodejs and a
+	 *   web browser. Do not use this directly. Only use the interface methods NOT
 	 *   prefixed with underscores.
 	 *
 	 * @param {Object/String} [options] - Request options or URL.
@@ -382,6 +382,7 @@ Object.assign(DataServerInterface.prototype, {
 		return this.ping(context)
 			.then(function(result) {
 				return this._post(result.links['logon.reset.passcode'], {
+					_asFORM: true,
 					username: username,
 					id: id,
 					password: newpw
