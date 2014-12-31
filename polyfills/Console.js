@@ -1,17 +1,7 @@
 'use strict';
 
-function applyIf(dest, src) {
-	for(var i in src) {
-		if (src.hasOwnProperty(i)) {
-			if (!dest[i]) {
-				dest = src[i];
-			}
-		}
-	}
-}
-
-function noop() {}
-
+var applyIf = require('../utils/applyif');
+var noop = require('../utils/empty-function');
 var con = global.console || (global.console = { log: noop });
 
 applyIf(con, {
