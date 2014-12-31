@@ -5,3 +5,4 @@ require('./Console');
 require('./Function');
 require('./Object');
 require('./Promise');
+require('./Set');
