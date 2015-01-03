@@ -26,10 +26,9 @@ module.exports = function namespacedKeyMirror(namespace, object, separator) {
 	var result = {};
 	var key;
 	for(key in object) {
-		if (!object.hasOwnProperty(key)) {
-			continue;
+		if (object.hasOwnProperty(key)) {
+			result[key] = prefix.concat(key);
 		}
-		result[key] = prefix.concat(key);
 	}
 	return result;
 };
