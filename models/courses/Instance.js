@@ -7,7 +7,7 @@ var waitFor = require('../../utils/waitfor');
 var pluck = require('../../utils/array-pluck');
 var define = require('../../utils/object-define-properties');
 var withValue = require('../../utils/object-attribute-withvalue');
-
+var parseKey = require('../../utils/parse-object-at-key');
 var emptyFunction = require('../../utils/empty-function');
 
 var base = require('../mixins/Base');
@@ -30,9 +30,14 @@ function Instance(service, parent, data) {
 
 	b.on('changed', this.onChange.bind(this));
 
+
+	var parse = parseKey.bind(this, this);
+	parse('ParentDiscussions');
+	parse('Discussions');
+
 	this.__pending = [
 
-		this._resolveCatalogEntry()
+		resolveCatalogEntry(this)
 
 	].concat(b.__pending || []);
 }
@@ -52,35 +57,6 @@ Object.assign(Instance.prototype, base, {
 			icon: cce.icon || bundle.icon,
 			thumb: cce.thumb || bundle.thumb
 		};
-	},
-
-
-	_resolveCatalogEntry: function() {
-
-		function parseCCE(cce) {
-			cce = CatalogEntry.parse(service, cce);
-			me.CatalogEntry = cce;
-			return waitFor(cce.__pending);
-		}
-
-		function cacheIt(data) {
-			cache.set(url, data);
-			return data;
-		}
-
-		var me = this,
-			service = me._service,
-			cache = service.getDataCache(),
-			url = getLink(me, 'CourseCatalogEntry'),
-			cached = cache.get(url), work;
-
-		if (cached) {
-			work = Promise.resolve(cached);
-		} else {
-			work = service.get(url).then(cacheIt);
-		}
-
-		return work.then(parseCCE);
 	},
 
 
@@ -116,6 +92,28 @@ Object.assign(Instance.prototype, base, {
 		}
 
 		return p;
+	},
+
+
+	getDiscussions: function () {
+		var NOT_DEFINED = {reason: 'Not defined'};
+		function contents(o) {
+			return o ? o.getContents() : Promise.reject(NOT_DEFINED);
+		}
+
+		function logAndResume(reason) {
+			if (reason !== NOT_DEFINED) {
+				console.warn('Could not load board: %o', reason);
+			}
+		}
+
+		return Promise.all([
+			contents(this.Discussions).catch(logAndResume),
+			contents(this.ParentDiscussions).catch(logAndResume)
+		]).then(function(data) {
+			return binDiscussions.apply(null, data);
+		})
+		.then(console.debug.bind(console));
 	},
 
 
@@ -200,3 +198,88 @@ function parse(service, parent, data) {
 Instance.parse = parse;
 
 module.exports = Instance;
+
+//Private methods
+
+function resolveCatalogEntry(me) {
+
+	function parseCCE(cce) {
+		cce = CatalogEntry.parse(service, cce);
+		me.CatalogEntry = cce;
+		return waitFor(cce.__pending);
+	}
+
+	function cacheIt(data) {
+		cache.set(url, data);
+		return data;
+	}
+
+	var service = me._service,
+	cache = service.getDataCache(),
+	url = getLink(me, 'CourseCatalogEntry'),
+	cached = cache.get(url), work;
+
+	if (cached) {
+		work = Promise.resolve(cached);
+	} else {
+		work = service.get(url).then(cacheIt);
+	}
+
+	return work.then(parseCCE);
+}
+
+
+/**
+ * Takes two arrays of forums and bins then
+ *
+ *	1.) by for credit or open
+ *	2.) by if they are for this section or the parent
+ *
+ * returns an object that looks like:
+ *
+ *	{
+ *		ForCredit: {
+ *			Section: [],
+ *			Parent: []
+ *		},
+ *		Open: {
+ *			Section: [],
+ *			Parent: []
+ *		},
+ *		Other: []
+ *	}
+ *
+ * @param  {Array} section Array of forums in this section
+ * @param  {Array} parent  Array of forums in the parent if there are any
+ * @return {Object}        The binned forums
+ */
+function binDiscussions (section, parent) {
+	var openBin = RegExp.prototype.test.bind(/open/i);
+	var forCreditBin = RegExp.prototype.test.bind(/in\-class/i);
+	var bins = {
+		ForCredit: { Section: [], Parent: [] },
+		Open: { Section: [], Parent: [] },
+		Other: { Section: [], Parent: [] }
+	};
+
+
+	function getBin(item) {
+		var title = ((item && item.title) || '');
+		return	openBin(title) ?		'Open' :
+				forCreditBin(title) ?	'ForCredit' :
+										'Other';
+	}
+
+
+	function addTo(key, group) {
+		var items = (group && group.Items) || [];
+		items.forEach(function(item) {
+			bins[getBin(item)][key].push(item);
+		});
+	}
+
+	addTo('Section', section);
+	addTo('Parent', parent);
+
+	return bins;
+}

@@ -26,7 +26,8 @@ function Enrollment(service, data, admin) {
 Object.assign(Enrollment.prototype, base,
 	forwardFunctions([
 		'getPresentationProperties',
-		'getOutline'
+		'getOutline',
+		'getDiscussions'
 
 		//From:
 	], 'CourseInstance'), {

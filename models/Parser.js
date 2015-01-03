@@ -76,6 +76,29 @@ var PARSERS = {
 
 	'change': require('./Change'),
 
+	'forums.board': require('./forums/Board'),
+	'forums.topic': require('./forums/Topic'),
+	'forums.forum': require('./forums/Forum'),
+	'forums.post': require('./forums/Post'),
+	'forums.comment': require('./forums/Comment'),
+
+	'forums.headlinepost': 'forums.post',
+	'forums.headlinetopic': 'forums.topic',
+
+	'forums.communityboard': 'forums.board',
+	'forums.communityforum': 'forums.forum',
+	'forums.communityheadlinetopic': 'forums.topic',
+	'forums.communityheadlinepost': 'forums.post',
+	'forums.communitytopic': 'forums.topic',
+
+	'forums.contentboard': 'forums.board',
+	'forums.contentforum': 'forums.forum',
+	'forums.contentheadlinetopic': 'forums.topic',
+	'forums.contentheadlinepost': 'forums.post',
+
+	'forums.generalforumcomment': 'forums.comment',
+	'forums.contentforumcomment': 'forums.comment',
+
 	'messageinfo': null,//Need To Model
 	'openbadges.badge': null//Need To Model
 };
