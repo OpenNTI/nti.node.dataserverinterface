@@ -8,7 +8,7 @@ var define = require('../../utils/object-define-properties');
 var parseKey = require('../../utils/parse-object-at-key');
 var withValue = require('../../utils/object-attribute-withvalue');
 
-function Forum(service, parent, data) {
+function Topic(service, parent, data) {
 	define(this,{
 		_service: withValue(service),
 		_parent: withValue(parent)
@@ -25,13 +25,13 @@ function Forum(service, parent, data) {
 	parseKey(this, 'NewestDescendant');
 }
 
-Object.assign(Forum.prototype, Base, GetContents, /*SharedWithList,*/ {});
+Object.assign(Topic.prototype, Base, GetContents, /*SharedWithList,*/ {});
 
 
 function parse(service, parent, data) {
-	return new Forum(service, parent, data);
+	return new Topic(service, parent, data);
 }
 
-Forum.parse = parse;
+Topic.parse = parse;
 
-module.exports = Forum;
+module.exports = Topic;
