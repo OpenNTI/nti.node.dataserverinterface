@@ -37,8 +37,9 @@ var PARSERS = {
 	'assessment.texthint': 'assessment.hint',
 
 	'assessment.filepart': require('./assessment/parts/File'),
-	'assessment.fillintheblankshortanswerpart': 'assessment.part',
-	'assessment.fillintheblankwithwordbankpart': 'assessment.part',
+	'assessment.fillintheblank': require('./assessment/parts/FillInTheBlank'),
+	'assessment.fillintheblankshortanswerpart': 'assessment.fillintheblank',
+	'assessment.fillintheblankwithwordbankpart': 'assessment.fillintheblank',
 	'assessment.freeresponsepart': 'assessment.part',
 	'assessment.matchingpart': require('./assessment/parts/Matching'),
 	'assessment.mathpart': 'assessment.part',
