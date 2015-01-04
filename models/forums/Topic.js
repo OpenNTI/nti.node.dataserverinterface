@@ -23,6 +23,7 @@ function Topic(service, parent, data) {
 	// NewestDescendantCreatedTime
 
 	parseKey(this, 'NewestDescendant');
+	parseKey(this, 'headline');
 }
 
 Object.assign(Topic.prototype, Base, GetContents, /*SharedWithList,*/ {});
