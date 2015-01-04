@@ -112,8 +112,7 @@ Object.assign(Instance.prototype, base, {
 			contents(this.ParentDiscussions).catch(logAndResume)
 		]).then(function(data) {
 			return binDiscussions.apply(null, data);
-		})
-		.then(console.debug.bind(console));
+		});
 	},
 
 
