@@ -255,11 +255,7 @@ function resolveCatalogEntry(me) {
 function binDiscussions (section, parent) {
 	var openBin = RegExp.prototype.test.bind(/open/i);
 	var forCreditBin = RegExp.prototype.test.bind(/in\-class/i);
-	var bins = {
-		ForCredit: { Section: [], Parent: [] },
-		Open: { Section: [], Parent: [] },
-		Other: { Section: [], Parent: [] }
-	};
+	var bins = {};
 
 
 	function getBin(item) {
@@ -273,7 +269,11 @@ function binDiscussions (section, parent) {
 	function addTo(key, group) {
 		var items = (group && group.Items) || [];
 		items.forEach(function(item) {
-			bins[getBin(item)][key].push(item);
+			var bin = getBin(item);
+			if (!bins[bin]) {
+				bins[bin] = { Section: [], Parent: [] };
+			}
+			bins[bin][key].push(item);
 		});
 	}
 
