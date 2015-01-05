@@ -22,6 +22,13 @@ function WordBank(service, parent, data) {
 
 Object.assign(WordBank.prototype, base, {
 
+	getEntry: function (id) {
+		function find(found, x){
+			return found || (x.wid === id && x);
+		}
+
+		return this.entries.reduce(find, null);
+	}
 
 });
 

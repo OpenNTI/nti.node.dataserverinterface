@@ -67,6 +67,17 @@ Object.assign(Part.prototype, base, content, {
 	},
 
 
+	getWordBankEntry: function (wid) {
+		var p = this._parent || {};
+		var wordbanks = [this.wordbank, p.wordbank].filter(function(x){return x;});
+
+		function get(found, x){
+			return found || x && x.getEntry(wid);
+		}
+
+		return wordbanks.reduce(get, null);
+	},
+
 	updateFromAssessed: function (assessedPart) {
 		if (!assessedPart) {
 			throw new Error('[Assessment Fillin]: Invalid Argument');
