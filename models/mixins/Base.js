@@ -102,7 +102,7 @@ Object.assign(exports, {
 
 	_is: function(attributeQuery, attributeQueryValue) {
 		if (attributeQueryValue === undefined) {
-			return !!this[attributeQuery];
+			return this[attributeQuery] !== undefined;
 		}
 
 		if (attributeQueryValue && attributeQueryValue.test) {
