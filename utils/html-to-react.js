@@ -2,8 +2,15 @@
 var ensureArray = require('./ensure-array');
 var et = require('elementtree');
 
+var UNARY_ELEMENTS = [
+	'br',
+	'img'
+];
+
 module.exports = function (html, isWidgetCallback) {
-	var root = et.parse('<root>'+html+'</root>').getroot();
+	var xml = ensureUnaryTagsAreClosedXML(html);
+
+	var root = et.parse('<root>'+xml+'</root>').getroot();
 	var children = processChildren(root, isWidgetCallback);
 
 	/*jshint -W054*/
@@ -75,4 +82,28 @@ function processChildren(n, isWidget) {
 	}
 
 	return c;
+}
+
+
+function ensureUnaryTagsAreClosedXML(html) {
+	var output = html;
+
+	function getMatcher(tag) {
+		var c = getMatcher,
+			m = c[tag] || (c[tag] = new RegExp('(<'+tag+')([^>]*)(>)', 'igm'));
+		return m;
+	}
+
+	function fix(o, tag, attrs, closer) {
+		if (attrs.length === 0 || attrs.charAt(attrs.length-1) !== '/') {
+			return tag + attrs + '/' + closer;
+		}
+		return o;
+	}
+
+	UNARY_ELEMENTS.forEach(function(tagName) {
+		output = output.replace(getMatcher(tagName), fix);
+	});
+
+	return output;
 }
