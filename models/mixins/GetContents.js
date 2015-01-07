@@ -1,6 +1,6 @@
 'use strict';
 
-var parseKey = require('../../utils/parse-object-at-key');
+var parse = require('../../utils/parse-object');
 
 module.exports = {
 	getContents: function () {
@@ -10,9 +10,9 @@ module.exports = {
 		}
 
 		return this._service.get(link)
-		.then(function(wrapper){
-			parseKey(wrapper, 'Items');
-			return wrapper;
-		});
+			.then(function(wrapper){
+				wrapper.Items = parse(this, wrapper.Items);
+				return wrapper;
+			}.bind(this));
 	}
 };

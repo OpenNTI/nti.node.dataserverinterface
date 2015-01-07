@@ -116,7 +116,7 @@ function getParser(type) {
 
 module.exports = function parser(service, parent, obj) {
 	if (Array.isArray(obj)) {
-		return obj.map(parser.bind(this, service));
+		return obj.map(parser.bind(this, service, parent));
 	}
 	var Cls = getParser(obj.MimeType.replace(/^application\/vnd.nextthought./, ''));
 	var args = [service];
