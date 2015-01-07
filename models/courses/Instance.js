@@ -107,11 +107,24 @@ Object.assign(Instance.prototype, base, {
 			}
 		}
 
+		function getId(o) {
+			return o ? o.getID(): null;
+		}
+
+		var sectionId = getId(this.Discussions);
+		var parentId = getId(this.ParentDiscussions);
+
 		return Promise.all([
 			contents(this.Discussions).catch(logAndResume),
 			contents(this.ParentDiscussions).catch(logAndResume)
 		]).then(function(data) {
-			return binDiscussions.apply(null, data);
+			var section = data[0];
+			var parent = data[1];
+
+			section.NTIID = sectionId;
+			parent.NTIID = parentId;
+
+			return binDiscussions(section, parent);
 		});
 	},
 
@@ -238,18 +251,18 @@ function resolveCatalogEntry(me) {
  *
  *	{
  *		ForCredit: {
- *			Section: [],
- *			Parent: []
+ *			Section: {id: String, items: Array[Forum]},
+ *			Parent: {id: String, items: Array[Forum]}
  *		},
  *		Open: {
- *			Section: [],
- *			Parent: []
+ *			Section: {id: String, items: Array[Forum]},
+ *			Parent: {id: String, items: Array[Forum]}
  *		},
- *		Other: []
+ *		Other: ...(same as above)
  *	}
  *
- * @param  {Array} section Array of forums in this section
- * @param  {Array} parent  Array of forums in the parent if there are any
+ * @param  {Object} section Object of forums in this section
+ * @param  {Object} parent  Object of forums in the parent if there are any
  * @return {Object}        The binned forums
  */
 function binDiscussions (section, parent) {
@@ -267,13 +280,24 @@ function binDiscussions (section, parent) {
 
 
 	function addTo(key, group) {
+
 		var items = (group && group.Items) || [];
 		items.forEach(function(item) {
 			var bin = getBin(item);
 			if (!bins[bin]) {
-				bins[bin] = { Section: [], Parent: [] };
+				bins[bin] = {};
 			}
-			bins[bin][key].push(item);
+
+			bin = bins[bin];
+			if (!bin[key]) {
+				bin[key] = {id: group.NTIID, forums:[]};
+			}
+
+			if (bin[key].id !== group.NTIID) {
+				console.error('Bad ID match');
+			}
+
+			bin[key].forums.push(item);
 		});
 	}
 
