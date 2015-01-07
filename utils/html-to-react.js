@@ -13,11 +13,12 @@ module.exports = function (html, isWidgetCallback) {
 	var root = et.parse('<root>'+xml+'</root>').getroot();
 	var children = processChildren(root, isWidgetCallback);
 
-	/*jshint -W054*/
-	return new Function('React, renderWidget',
-		'renderWidget = renderWidget || React.createElement.bind(React);' +
-		'return ' + reactifyElement('"div"', {}, children)
-	);
+	var out = 'return ' + reactifyElement('"div"', {}, children);
+	/*jshint -W054*///Not evil in this case. Building a Template function.
+	return new Function(
+		'React, renderWidget', //arguments
+		'renderWidget = renderWidget || React.createElement.bind(React);' + out // function body
+		);
 };
 
 
@@ -25,6 +26,11 @@ function getLiteral(str) {
 	if (typeof str !== 'string') {
 		return String(str);
 	}
+
+	str = str
+		.replace(/"/g, '\\"') //escape double quotes
+		.replace(/\n/g, '\\n')//escape new lines
+		.replace(/\r/g, '\\r');//escape carage returns
 
 	return '"' + str + '"';
 }
