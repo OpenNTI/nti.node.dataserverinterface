@@ -14,15 +14,12 @@ var define = require('../../utils/object-define-properties');
 var withValue = require('../../utils/object-attribute-withvalue');
 var objectEach = require('../../utils/object-each');
 
-var Assignment = require('./Assignment');
-var Assessment = require('./Assessment');
+var parser = require('../../utils/parse-object');
 
-function f(Cls, service, parent) {
+function f(parent) {
 	return function (v, k, o) {
 		if (Array.isArray(v)) {
-			o[k] = v.map(function(p){
-				return Cls.parse(service, parent, p);
-			});
+			o[k] = parser(parent, v);
 		}
 	};
 }
@@ -48,8 +45,8 @@ function Collection(service, parent, assignments, assessments, tables) {
 	});
 
 
-	this._visibleAssignments = objectEach(assignments, f(Assignment, service, this));
-	this._notAssignments = objectEach(assessments, f(Assessment, service, this));
+	this._visibleAssignments = objectEach(assignments, f(this));
+	this._notAssignments = objectEach(assessments, f(this));
 }
 
 Object.assign(Collection.prototype, base, {
@@ -101,8 +98,11 @@ module.exports = Collection;
 
 
 function find(list, id) {
-	return list.reduce(function(found, assessment){
-		return found || (assessment.is(id) && assessment); }, null);
+	return list.reduce(function(found, item){
+
+		return found || (
+			(item.getID()===id || (item.containsId && item.containsId(id))) ? item : null
+		); }, null);
 }
 
 
