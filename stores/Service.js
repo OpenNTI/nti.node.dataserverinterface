@@ -8,6 +8,7 @@ var User = require('../models/User');
 var PageInfo = require('../models/PageInfo');
 var Capabilities = require('../models/Capabilities');
 var Enrollment = require('./Enrollment');
+var Forums = require('./Forums');
 
 var DataCache = require('../utils/datacache');
 
@@ -32,6 +33,7 @@ var ServiceDocument = function (json, server, context) {
 
 	this.capabilities = new Capabilities(this, caps);
 	this.enrollment = new Enrollment(this);
+	this.forums = new Forums(this);
 
 	this.__pending = [
 		this.getAppUser().then(function(u) {
