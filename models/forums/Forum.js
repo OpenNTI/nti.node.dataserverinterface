@@ -32,8 +32,8 @@ function Forum(service, parent, data) {
 
 Object.assign(Forum.prototype, Base, GetContents, /*SharedWithList,*/ {
 	getBoard: function() {
-		// if this._parent is an instance of Board and its ID matches this.containerId, return this._parent;
-		if (this._parent instanceof Board && this._parent.getID() === this.containerId) {
+		// if this._parent is an instance of Board and its ID matches this.ContainerId, return this._parent;
+		if (this._parent instanceof Board && this._parent.getID() === this.ContainerId) {
 			return Promise.resolve(this._parent);
 		}
 		else { // otherwise fetch the container by id.
