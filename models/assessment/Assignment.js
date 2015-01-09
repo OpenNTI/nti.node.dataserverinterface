@@ -38,10 +38,6 @@ Object.assign(Assignment.prototype, base, {
 	},
 
 
-	is: function(id) {
-		return this.getID() === id || this.containsId(id);
-	},
-
 	/**
 	 * Checks to see if the NTIID is within this Assignment (Checking the QuestionSet's id and all questions id's)
 	 *
