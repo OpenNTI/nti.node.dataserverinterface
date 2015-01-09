@@ -155,6 +155,12 @@ Object.assign(OutlineNode.prototype, base, {
 	},
 
 
+	isAssignment: function (assessmentId) {
+		var collection = this.__getRoot()._assignments;
+		return collection && collection.isAssignment(this.getID(), assessmentId);
+	},
+
+
 	getAssignment: function (assignmentId) {
 		var collection = this.__getRoot()._assignments;
 		return collection && collection.getAssignment(this.getID(), assignmentId);

@@ -19,6 +19,9 @@ function Assessment(service, parent, data) {
 
 Object.assign(Assessment.prototype, base, {
 
+	is: function(id) {
+		return this.getID() === id || this.containsId(id);
+	}
 
 });
 

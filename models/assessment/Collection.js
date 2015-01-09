@@ -15,7 +15,7 @@ var withValue = require('../../utils/object-attribute-withvalue');
 var objectEach = require('../../utils/object-each');
 
 var Assignment = require('./Assignment');
-//var Assessment = require('./Assignment');
+var Assessment = require('./Assessment');
 
 function f(Cls, service, parent) {
 	return function (v, k, o) {
@@ -49,7 +49,7 @@ function Collection(service, parent, assignments, assessments, tables) {
 
 
 	this._visibleAssignments = objectEach(assignments, f(Assignment, service, this));
-	//this._notAssignments = objectEach(assessments, f(Assessment, service, this));
+	this._notAssignments = objectEach(assessments, f(Assessment, service, this));
 }
 
 Object.assign(Collection.prototype, base, {
@@ -66,17 +66,44 @@ Object.assign(Collection.prototype, base, {
 	},
 
 
+	getAssessments: function(outlineNodeID) {
+		var node = this._tables.getNode(outlineNodeID);
+		var v = this._notAssignments;
+		return nodeToNTIIDs(node).reduce(function(agg, id) {
+			if (v[id]) {
+				agg = (agg || []).concat(v[id]);
+			}
+			return agg;
+		}, null);
+	},
+
+
+	isAssignment: function (outlineNodeID, assessmentId) {
+		var maybe = this.getAssignment(outlineNodeID, assessmentId);
+		if (maybe) {
+			return null;
+		}
+
+		maybe = this.getAssessments(outlineNodeID, assessmentId);
+		return !maybe || !find(maybe, assessmentId);
+	},
+
+
 	getAssignment: function(outlineNodeID, assignmentId) {
 		var maybe = this.getAssignments(outlineNodeID);
-		return maybe && maybe.reduce(function(found, assignment){
-				return found || (assignment.is(assignmentId) && assignment);
-			}, null);
+		return maybe && find(maybe, assignmentId);
 	}
 });
 
 
 
 module.exports = Collection;
+
+
+function find(list, id) {
+	return list.reduce(function(found, assessment){
+		return found || (assessment.is(id) && assessment); }, null);
+}
 
 
 function nodeToNTIIDs(node) {
