@@ -11,7 +11,7 @@ module.exports = function parseObject(parent, data) {
 		parser = require('../models/Parser');
 	}
 	try {
-		return parser(parent._service, parent, data);
+		return data && parser(parent._service, parent, data);
 	} catch (e) {
 		m = e;
 		if (e.NoParser) {
