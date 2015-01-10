@@ -7,9 +7,9 @@ var GetContents = require('../mixins/GetContents');
 var Board = require('./Board');
 
 var define = require('../../utils/object-define-properties');
+var parse = require('../../utils/parse-object');
 var parseKey = require('../../utils/parse-object-at-key');
 var withValue = require('../../utils/object-attribute-withvalue');
-var parser = require('../Parser');
 
 function Forum(service, parent, data) {
 	define(this,{
@@ -38,9 +38,11 @@ Object.assign(Forum.prototype, Base, GetContents, /*SharedWithList,*/ {
 		}
 		else { // otherwise fetch the container by id.
 			return this._service.getObject(this.containerId)
-				.then(function(result) {
-					var p = parser(this._service, null, result);
-					return p;
+				.then(parse.bind(this, this))
+				//A board semantically should not have a Forum as a parent :P
+				.then(function(board) {
+					delete board._parent;
+					return board;
 				});
 		}
 	}
