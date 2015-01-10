@@ -28,7 +28,8 @@ Object.assign(AssignmentHistoryItem.prototype, base, {
 
 
 	getQuestions: function () {
-		return this.Submission ? this.Submission.getQuestions() : [];
+		var submission = this.pendingAssessment || this.Submission;
+		return submission ? submission.getQuestions() : [];
 	},
 
 
