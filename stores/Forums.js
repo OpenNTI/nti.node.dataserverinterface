@@ -3,7 +3,7 @@
 var define = require('../utils/object-define-properties');
 var withValue = require('../utils/object-attribute-withvalue');
 
-var parser = require('../utls/parse-object');
+var parser = require('../utils/parse-object');
 var NTIID = require('../utils/ntiids');
 
 function Forums(service) {
