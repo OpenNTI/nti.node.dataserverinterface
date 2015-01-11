@@ -4,12 +4,13 @@ var Base = require('../mixins/Base');
 var GetContents = require('../mixins/GetContents');
 //var SharedWithList = require('../mixins/SharedWithList');
 
-var Board = require('./Board');
-
 var define = require('../../utils/object-define-properties');
-var parse = require('../../utils/parse-object');
+
+var parseObject = require('../../utils/parse-object');
 var parseKey = require('../../utils/parse-object-at-key');
 var withValue = require('../../utils/object-attribute-withvalue');
+var getLink = require('../../utils/getlink');
+
 
 function Forum(service, parent, data) {
 	define(this,{
@@ -31,21 +32,17 @@ function Forum(service, parent, data) {
 }
 
 Object.assign(Forum.prototype, Base, GetContents, /*SharedWithList,*/ {
-	getBoard: function() {
-		// if this._parent is an instance of Board and its ID matches this.ContainerId, return this._parent;
-		if (this._parent instanceof Board && this._parent.getID() === this.ContainerId) {
-			return Promise.resolve(this._parent);
+
+	getTopTopics: function() {
+		var link = getLink(this, 'TopTopics');
+		if (!link) {
+			return Promise.reject('Forum doesn\'t have a \'TopTopics\' link.');
 		}
-		else { // otherwise fetch the container by id.
-			return this._service.getObject(this.containerId)
-				.then(parse.bind(this, this))
-				//A board semantically should not have a Forum as a parent :P
-				.then(function(board) {
-					delete board._parent;
-					return board;
-				});
-		}
+		return this._service.get(link).then(function(result) {
+			return parseObject(this, result.Items);
+		}.bind(this));
 	}
+
 });
 
 
