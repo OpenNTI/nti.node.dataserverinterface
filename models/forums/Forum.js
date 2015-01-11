@@ -9,7 +9,6 @@ var define = require('../../utils/object-define-properties');
 var parseObject = require('../../utils/parse-object');
 var parseKey = require('../../utils/parse-object-at-key');
 var withValue = require('../../utils/object-attribute-withvalue');
-var getLink = require('../../utils/getlink');
 
 
 function Forum(service, parent, data) {
@@ -34,7 +33,7 @@ function Forum(service, parent, data) {
 Object.assign(Forum.prototype, Base, GetContents, /*SharedWithList,*/ {
 
 	getTopTopics: function() {
-		var link = getLink(this, 'TopTopics');
+		var link = this.getLink('TopTopics');
 		if (!link) {
 			return Promise.reject('Forum doesn\'t have a \'TopTopics\' link.');
 		}
