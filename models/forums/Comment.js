@@ -14,7 +14,7 @@ Object.assign(Comment.prototype, {
 	getReplies: function() {
 		var link = this.getLink('replies');
 		if (!link) {
-			return parseObject(this,[]);
+			return Promise.resolve([]);
 		}
 
 		var params = {
@@ -23,10 +23,10 @@ Object.assign(Comment.prototype, {
 			filter: 'TopLevel'
 		};
 
-		this._service.get(link, params)
+		return this._service.get(link, params)
 			.then(function(result) {
-				return parseObject(result);
-			});
+				return parseObject(this, result);
+			}.bind(this));
 	}
 });
 
@@ -37,5 +37,3 @@ function parse(service, parent, data) {
 
 Comment.parse = parse;
 module.exports = Comment;
-
-
