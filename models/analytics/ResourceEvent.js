@@ -17,6 +17,10 @@ Object.assign(ResourceEvent.prototype, base, {
 
 	setContextPath: function(path) {
 		this.context_path = path;
+	},
+
+	getDuration: function () {
+		return this.time_length;
 	}
 });
 
