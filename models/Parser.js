@@ -47,6 +47,7 @@ var PARSERS = {
 	'assessment.multiplechoicepart': require('./assessment/parts/MultipleChoice'),
 	'assessment.multiplechoicemultipleanswerpart': 'assessment.multiplechoicepart',
 	'assessment.randomizedmultiplechoicepart': 'assessment.multiplechoicepart',
+	'assessment.randomizedmultiplechoicemultipleanswerpart': 'assessment.multiplechoicepart',
 	'assessment.numericmathpart': 'assessment.part',
 	'assessment.orderingpart': 'assessment.part',
 	'assessment.symbolicmathpart': 'assessment.part',
