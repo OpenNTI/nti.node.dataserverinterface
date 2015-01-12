@@ -9,7 +9,7 @@ var define = require('../../utils/object-define-properties');
 var parseObject = require('../../utils/parse-object');
 var parseKey = require('../../utils/parse-object-at-key');
 var withValue = require('../../utils/object-attribute-withvalue');
-
+var toQueryString = require('../../utils/object-to-querystring');
 
 function Forum(service, parent, data) {
 	define(this,{
@@ -32,7 +32,6 @@ function Forum(service, parent, data) {
 
 Object.assign(Forum.prototype, Base, GetContents, /*SharedWithList,*/ {
 
-
 	getBin: function () {
 		var openBin = RegExp.prototype.test.bind(/open/i);
 		var forCreditBin = RegExp.prototype.test.bind(/in\-class/i);
@@ -43,12 +42,16 @@ Object.assign(Forum.prototype, Base, GetContents, /*SharedWithList,*/ {
 										'Other';
 	},
 
-
-	getTopTopics: function() {
+	getTopTopics: function(size) {
 		var link = this.getLink('TopTopics');
 		if (!link) {
 			return Promise.reject('Forum doesn\'t have a \'TopTopics\' link.');
 		}
+		var params = { 
+			batchStart: 0,
+			batchSize: size||3
+		};
+		link = link.concat('?', toQueryString(params));
 		return this._service.get(link).then(function(result) {
 			return parseObject(this, result.Items);
 		}.bind(this));
