@@ -121,8 +121,13 @@ Object.assign(Instance.prototype, base, {
 			var section = data[0];
 			var parent = data[1];
 
-			section.NTIID = sectionId;
-			parent.NTIID = parentId;
+			if (section) {
+				section.NTIID = sectionId;
+			}
+
+			if (parent) {
+				parent.NTIID = parentId;
+			}
 
 			return binDiscussions(section, parent);
 		});
