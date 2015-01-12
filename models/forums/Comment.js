@@ -27,7 +27,7 @@ Object.assign(Comment.prototype, {
 
 		return this._service.get(link)
 			.then(function(result) {
-				return parseObject(this, result);
+				return parseObject(this, result.Items);
 			}.bind(this));
 	}
 });
