@@ -32,6 +32,18 @@ function Forum(service, parent, data) {
 
 Object.assign(Forum.prototype, Base, GetContents, /*SharedWithList,*/ {
 
+
+	getBin: function () {
+		var openBin = RegExp.prototype.test.bind(/open/i);
+		var forCreditBin = RegExp.prototype.test.bind(/in\-class/i);
+		var title = this.title || '';
+
+		return	openBin(title) ?		'Open' :
+				forCreditBin(title) ?	'ForCredit' :
+										'Other';
+	},
+
+
 	getTopTopics: function() {
 		var link = this.getLink('TopTopics');
 		if (!link) {

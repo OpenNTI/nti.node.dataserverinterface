@@ -266,24 +266,13 @@ function resolveCatalogEntry(me) {
  * @return {Object}        The binned forums
  */
 function binDiscussions (section, parent) {
-	var openBin = RegExp.prototype.test.bind(/open/i);
-	var forCreditBin = RegExp.prototype.test.bind(/in\-class/i);
 	var bins = {};
-
-
-	function getBin(item) {
-		var title = ((item && item.title) || '');
-		return	openBin(title) ?		'Open' :
-				forCreditBin(title) ?	'ForCredit' :
-										'Other';
-	}
-
 
 	function addTo(key, group) {
 
 		var items = (group && group.Items) || [];
 		items.forEach(function(item) {
-			var bin = getBin(item);
+			var bin = item.getBin();
 			if (!bins[bin]) {
 				bins[bin] = {};
 			}
