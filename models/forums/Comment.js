@@ -2,6 +2,7 @@
 
 var Base = require('./Post');
 var parseObject = require('../../utils/parse-object');
+var toQueryString = require('../../utils/object-to-querystring');
 
 function Comment(service, parent, data) {
 	Base.call(this, service, parent, data);
@@ -19,11 +20,12 @@ Object.assign(Comment.prototype, {
 
 		var params = {
 			sortOn: 'CreatedTime',
-			sortOrder: 'ascending',
-			filter: 'TopLevel'
+			sortOrder: 'ascending'
 		};
 
-		return this._service.get(link, params)
+		link = link.concat('?',toQueryString(params));
+
+		return this._service.get(link)
 			.then(function(result) {
 				return parseObject(this, result);
 			}.bind(this));
