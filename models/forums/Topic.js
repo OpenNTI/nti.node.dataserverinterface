@@ -26,7 +26,27 @@ function Topic(service, parent, data) {
 	parseKey(this, 'headline');
 }
 
-Object.assign(Topic.prototype, Base, GetContents, /*SharedWithList,*/ {});
+Object.assign(Topic.prototype, Base, GetContents, /*SharedWithList,*/ {
+	addComment: function(comment, inReplyTo) {
+		var link = this.getLink('add');
+		if (!link) {
+			return Promise.reject('Cannot post comment. Item has no \'add\' link.');
+		}
+
+		var payload = {
+			MimeType: 'application/vnd.nextthought.forums.post',
+			tags: [],
+			body: Array.isArray(comment) ? comment : [comment]
+		};
+
+		if (inReplyTo) {
+			inReplyTo = typeof inReplyTo === 'object' ? inReplyTo.NTIID : inReplyTo;
+			payload.inReplyTo = inReplyTo;
+		}
+
+		return this._service.post(link, payload);
+	}
+});
 
 
 function parse(service, parent, data) {
