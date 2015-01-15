@@ -1,5 +1,3 @@
-require('./polyfills');
-
 var Session = require('./session');
 var Interface = require('./interface');
 var cache = require('./utils/datacache');
