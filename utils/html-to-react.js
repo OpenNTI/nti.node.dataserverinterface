@@ -39,6 +39,7 @@ function getLiteral(str) {
 function reactifyElement(element, props, children, customFunc) {
 	//TODO: translate html attribute names to JS propertyNames
 
+	delete props.style; // TODO: convert styles to react
 	props = JSON.stringify(props);
 
 	children = ensureArray(children);
