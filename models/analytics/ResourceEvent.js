@@ -9,7 +9,7 @@ function ResourceEvent(resourceId, courseId, duration) {
 		resource_id: resourceId,
 		course: courseId,
 		time_length: duration,
-		timestamp: Date.now()
+		timestamp: Date.now() / 1000 //the server is expecting seconds
 	});
 }
 

@@ -12,10 +12,10 @@ function WatchVideoEvent(resourceId, rootContextId, context, duration, startTime
 		RootContextID: rootContextId,
 		context_path: context,
 		time_length: duration,
-		video_start_time: startTime,
-		video_end_time: endTime,
+		video_start_time: startTime,//the server is expecting seconds
+		video_end_time: endTime, //the server is expecting seconds
 		with_transcript: !!hasTranscript,
-		timestamp: Date.now()
+		timestamp: Date.now() / 1000 //the server is expecting seconds
 	});
 }
 
