@@ -33,7 +33,18 @@ Object.assign(TableOfContents.prototype, base,
 	getNode: function(id) {
 		var n = this._root,
 			r = n._root;
-		return r.get('ntiid') === id ? r : n.find('.//*[@ntiid="' + id + '"]');
+
+		if (r.get('ntiid') === id) {
+			return r;
+		}
+
+		let list = n.findall('.//*[@ntiid="' + id + '"]') || [];
+
+		if (list.length > 1) {
+			console.warn('Found multiple elements for id %s: %o', id, list);
+		}
+
+		return list[0];
 	},
 
 
