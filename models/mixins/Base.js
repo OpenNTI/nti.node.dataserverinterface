@@ -73,25 +73,47 @@ Object.assign(exports, {
 	},
 
 
-	up: function(/*query, value*/) {
+	/**
+	 * Returns the first parent that matches the given query. If no query is given, the immediate parent is returned.
+	 *
+	 * If only one argument is given, it will look for the first parent that has that attribute (ignoring value)
+	 * If two argumetns are given, then it will look for the first parent that has that attribute and matches the
+	 * attibuteValue test.
+	 *
+	 * @param  {String} attribute
+	 * @param  {String|RegExp} [attributeValue]
+	 *
+	 * @return {Model}
+	 */
+	up: function(...query) {
 		var p = this._parent;
 
-		if (p && p._is.apply(p, arguments)) {
+		if (p && (query.length === 0 || p._is(...query))) {
 			return p;
 		}
 
-		return p && p.up.apply(p, arguments);
+		return p && p.up(...query);
 	},
 
 
-	parents: function(/*query, value*/) {
+	/**
+	 * Returns a list of parents that match the given query. If no query is given, all parents are returned.
+	 *
+	 * @see #up()
+	 *
+	 * @param  {String} attribute
+	 * @param  {String|RegExp} [attributeValue]
+	 *
+	 * @return {Model[]}
+	 */
+	parents: function(...query) {
 		var matches = [];
 		var p = this._parent;
 
 		if (p && p.parents) {
 
-			matches = p.parents.apply(p, arguments);
-			if (p._is.apply(p, arguments)) {
+			matches = p.parents(...query);
+			if (query.length === 0 || p._is(...query)) {
 				matches.push(p);
 			}
 		}

@@ -1,7 +1,7 @@
 {
     "node": true,
     "browser": false,
-    "esnext": false,
+    "esnext": true,
     "strict": true,
     "bitwise": true,
     "camelcase": false,
