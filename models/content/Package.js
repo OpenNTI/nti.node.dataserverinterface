@@ -107,8 +107,8 @@ Object.assign(Package.prototype, base, assets, {
 
 
 	__parseVideoIndex: function(toc, json) {
-		var vi, n, keys, keyOrder = [],
-			containers, root = this.root;
+		var keyOrder = [];
+		var root = this.root;
 
 		function prefix(o) {
 			o.src = urlJoin(root, o.src);
@@ -116,26 +116,30 @@ Object.assign(Package.prototype, base, assets, {
 			return o;
 		}
 
-		containers = (json && json.Containers) || {};
-		keys = Object.keys(containers);
-
-		try {
-			keys.sort(function(a, b) {
-				var c = toc.getSortPosition(a),
-					d = toc.getSortPosition(b),
-					p = c > d;
-				return p ? 1 : -1;
-			});
-		} catch (e) {
-			console.warn('Potentially unsorted:', e.stack || e.message || e);
+		function tocOrder(a, b) {
+			// Since the <[topic|object] ntiid="..." is not guaranteed to be unique,
+			// this will just order by first occurance of any element that has an
+			// ntiid attribute with value of what is asked for (a & b)
+			var c = toc.getSortPosition(a),
+				d = toc.getSortPosition(b),
+				p = c > d;
+			return p ? 1 : -1;
 		}
 
-		keys.forEach(function(k) {
-			keyOrder.push.apply(keyOrder, containers[k]);
-		});
+		let containers = (json && json.Containers) || {};
+		let keys = Object.keys(containers);
 
-		vi = (json && json.Items) || json;
-		for (n in vi) {
+		try {
+			keys.sort(tocOrder);
+		} catch (e) {
+			console.warn('Potentially unsorted: %o', e.stack || e.message || e);
+		}
+
+		keys.forEach(k => keyOrder.push(...containers[k]));
+
+		let vi = (json && json.Items) || json;
+
+		for (let n in vi) {
 			if (vi.hasOwnProperty(n)) {
 				n = vi[n];
 				if (n && !isEmpty(n.transcripts)) {
