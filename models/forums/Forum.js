@@ -49,6 +49,34 @@ Object.assign(Forum.prototype, Base, GetContents, /*SharedWithList,*/ {
 		};
 
 		return this.getContents(params).then(function(result) { return result.Items; });
+	},
+
+	createTopic: function(data) {
+		var link = this.getLink('add');
+		if (!link) {
+			return Promise.reject('Cannot post comment. Item has no \'add\' link.');
+		}
+
+		var {title,body} = data;
+
+		var payload = {
+			MimeType: 'application/vnd.nextthought.forums.post',
+			tags: [],
+			title: title,
+			body: Array.isArray(body) ? body : [body]
+		};
+
+		return this._service.post(link, payload).then(
+			result => {
+				console.group('Create Topic');
+				console.debug(result);
+				console.groupEnd();
+				// post to @@publish url?
+			},
+			reason => {
+				console.error(reason);
+			}
+		);
 	}
 
 });
