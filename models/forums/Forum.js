@@ -6,6 +6,7 @@ var GetContents = require('../mixins/GetContents');
 
 var define = require('../../utils/object-define-properties');
 var parseKey = require('../../utils/parse-object-at-key');
+var parseObject = require('../../utils/parse-object');
 var withValue = require('../../utils/object-attribute-withvalue');
 
 function Forum(service, parent, data) {
@@ -66,17 +67,10 @@ Object.assign(Forum.prototype, Base, GetContents, /*SharedWithList,*/ {
 			body: Array.isArray(body) ? body : [body]
 		};
 
-		return this._service.post(link, payload).then(
-			result => {
-				console.group('Create Topic');
-				console.debug(result);
-				console.groupEnd();
-				// post to @@publish url?
-			},
-			reason => {
-				console.error(reason);
-			}
-		);
+		return this._service.post(link, payload).then(result => {
+			return parseObject(this, result);
+		});
+
 	}
 
 });
