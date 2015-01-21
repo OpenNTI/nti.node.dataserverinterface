@@ -8,6 +8,7 @@ var define = require('../../utils/object-define-properties');
 var parseKey = require('../../utils/parse-object-at-key');
 var parseObject = require('../../utils/parse-object');
 var withValue = require('../../utils/object-attribute-withvalue');
+var getLink = require('../../utils/getlink');
 
 function Forum(service, parent, data) {
 	define(this,{
@@ -68,7 +69,9 @@ Object.assign(Forum.prototype, Base, GetContents, /*SharedWithList,*/ {
 		};
 
 		return this._service.post(link, payload).then(result => {
-			return parseObject(this, result);
+			return this._service.post(getLink(result, 'publish')).then(result => {
+				return parseObject(this, result);
+			});
 		});
 
 	}
