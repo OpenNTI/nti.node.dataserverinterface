@@ -21,6 +21,7 @@ function Assignment(service, parent, data) {
 	this.__setup(data);
 }
 
+const ActiveSavePointPost = Symbol('ActiveSavePointPost');
 
 Object.assign(Assignment.prototype, base, {
 	isSubmittable: true,
@@ -156,7 +157,20 @@ Object.assign(Assignment.prototype, base, {
 			return Promise.resolve({});
 		}
 
-		return this._service.post(link, data);
+		var last = this[ActiveSavePointPost];
+		if (last && last.abort) {
+			last.abort();
+		}
+
+		var result = this[ActiveSavePointPost] = this._service.post(link, data);
+
+		result.catch(()=>{}).then(()=>{
+			if (result === this[ActiveSavePointPost]) {
+				delete this[ActiveSavePointPost];
+			}
+		});
+
+		return result;
 	}
 
 });
