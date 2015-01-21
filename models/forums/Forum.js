@@ -50,7 +50,7 @@ Object.assign(Forum.prototype, Base, GetContents, /*SharedWithList,*/ {
 			sortOn: 'NewestDescendantCreatedTime'
 		};
 
-		return this.getContents(params).then(function(result) { return result.Items; });
+		return this.getContents(params); //.then(function(result) { return result.Items; });
 	},
 
 	createTopic: function(data) {
