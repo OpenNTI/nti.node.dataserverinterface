@@ -46,9 +46,14 @@ Object.assign(AssignmentSubmission.prototype, base, submission, {
 	},
 
 
-	countUnansweredQuestions: function () {
-		return this.parts.reduce(function(sum, q) {
-			return sum + q.countUnansweredQuestions(); }, 0);
+	countUnansweredQuestions: function (assignment) {
+		//Verify argument is an Assignment model
+		if (!assignment || !assignment.parts || assignment.parts.length !== this.parts.length) {
+			throw new Error('Invalid Argument');
+		}
+
+		return this.parts.reduce((sum, q, i) =>
+			sum + q.countUnansweredQuestions(assignment.parts[i].question_set), 0);
 	}
 });
 

@@ -50,17 +50,8 @@ Object.assign(QuestionSubmission.prototype, base, submission, {
 		// var old = this.CreatorRecordedEffortDuration || 0;
 		// this.CreatorRecordedEffortDuration = old + duration;
 
-		//Force/Blank this out for now. 
+		//Force/Blank this out for now.
 		this.CreatorRecordedEffortDuration = null;
-	},
-
-
-	isAnswered: function() {
-		function answered(p) { return p !== null; }
-
-		var expect = this.parts.length;
-
-		return this.parts.filter(answered).length === expect;
 	},
 
 

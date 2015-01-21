@@ -45,6 +45,11 @@ Object.assign(Part.prototype, base, content, {
 	},
 
 
+	isAnswered (partValue) {
+		return partValue != null;
+	},
+
+
 	getVideos: function () {
 		if (!global.DOMParser) {
 			console.error('Environment does not support DOMParser() no related videos');

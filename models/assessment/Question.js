@@ -45,8 +45,17 @@ Object.assign(Question.prototype, base, content, {
 			ContainerId: this.containerId,
 			NTIID: this.getID(),
 			questionId: this.getID(),
-			parts: this.parts.map(function() {return null;})
+			parts: this.parts.map(()=>null)
 		});
+	},
+
+
+
+	isAnswered: function(questionSubmission) {
+		var expect = this.parts.length;
+		var {parts} = questionSubmission;
+
+		return this.parts.filter((p,i)=>p.isAnswered(parts[i])).length === expect;
 	}
 
 });

@@ -41,9 +41,13 @@ Object.assign(QuestionSetSubmission.prototype, base, submission, {
 		return this.questions.slice();
 	},
 
-	countUnansweredQuestions: function () {
-		return this.questions.reduce(function(sum, q) {
-			return sum + (q.isAnswered() ? 0 : 1); }, 0);
+	countUnansweredQuestions: function (questionSet) {
+		if (!questionSet || !questionSet.questions || questionSet.questions.length !== this.questions.length) {
+			throw new Error('Invalid Argument');
+		}
+
+		return this.questions.reduce((sum, q) =>
+			sum + (questionSet.getQuestion(q.getID()).isAnswered(q) ? 0 : 1), 0);
 	}
 });
 
