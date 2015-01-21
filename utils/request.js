@@ -2,16 +2,15 @@
 'use strict';
 
 var XMLHttpFactories = [
-	function() {return new XMLHttpRequest();},
-	function() {return new ActiveXObject('Msxml2.XMLHTTP');},
-	function() {return new ActiveXObject('Msxml3.XMLHTTP');},
-	function() {return new ActiveXObject('Microsoft.XMLHTTP');}
+	() => new XMLHttpRequest(),
+	() => new ActiveXObject('Msxml2.XMLHTTP'),
+	() => new ActiveXObject('Msxml3.XMLHTTP'),
+	() => new ActiveXObject('Microsoft.XMLHTTP')
 ];
 
 
 function createXMLHTTPObject() {
-	var i = 0;
-	for (i; i < XMLHttpFactories.length; i++) {
+	for (let i = 0; i < XMLHttpFactories.length; i++) {
 		try { return XMLHttpFactories[i](); }
 		catch (e) { }
 	}
@@ -20,20 +19,17 @@ function createXMLHTTPObject() {
 
 
 function copy(dest, src, keys) {
-	(keys || []).forEach(function(key) {
+	(keys || []).forEach(key => {
 		if (src[key]) {
 			dest[key] = src[key];
 		}
 	});
 }
 
+
 function keysToLowerCase(o) {
-	var k, out = {};
-	for (k in o) {
-		if (o.hasOwnProperty(k)) {
-			out[k.toLowerCase()] = o[k];
-		}
-	}
+	var out = {};
+	Object.keys(o).forEach(k=> out[k.toLowerCase()] = o[k]);
 	return out;
 }
 
@@ -44,14 +40,16 @@ module.exports = exports = SERVER ? //SERVER is declared in th WebPack config fi
 
 	//Mimic request() node package in the browser...
 	function (options, callback) {
+		var headersNormalized = keysToLowerCase(options.headers || {});
+		var req, headers, formType,
+			defaultType = 'application/x-www-form-urlencoded';
+
 		try {
-			var headers,
-				headersNormalized = keysToLowerCase(options.headers || {}),
-				formType, defaultType = 'application/x-www-form-urlencoded',
-				req = createXMLHTTPObject();
+			req = createXMLHTTPObject();
 
 			if (!req) {
-				return callback('No XHR');
+				callback('No XHR');
+				return req;
 			}
 
 
@@ -88,7 +86,7 @@ module.exports = exports = SERVER ? //SERVER is declared in th WebPack config fi
 			}
 
 
-			req.onreadystatechange = function() {
+			req.onreadystatechange = () => {
 				if (req.readyState !== 4 || !callback) {
 					return;
 				}
@@ -136,11 +134,14 @@ module.exports = exports = SERVER ? //SERVER is declared in th WebPack config fi
 
 			if (req.readyState === 4) {
 				req.onreadystatechange();
-				return;
+				return req;
 			}
 
 			req.send(options.form);
+
 		} catch(e) {
 			callback(e, null, e.message);
 		}
+
+		return req;
 	};

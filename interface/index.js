@@ -53,6 +53,7 @@ Object.assign(DataServerInterface.prototype, {
 	_request: function(options, context) {
 
 		var result;
+		var abortMethod;
 		var pending = context ? (context.__pendingServerRequests = (context.__pendingServerRequests || [])) : [];
 		var start = Date.now();
 		var url = (options || {}).url;
@@ -104,21 +105,19 @@ Object.assign(DataServerInterface.prototype, {
 
 		function getContentType(headers) {
 			var reg = /Content-Type/i;
-			var key = Object.keys(headers).reduce(function(i, k) {
-				return i || (reg.test(k) && k);
-			}, null);
+			var key = Object.keys(headers).reduce((i, k) => i || (reg.test(k) && k), null);
 
 			if (key) {
 				return headers[key];
 			}
 		}
 
-		result = new Promise(function(fulfill, reject) {
+		result = new Promise((fulfill, reject) => {
 			if(!isBrowser) {
 				console.error('%s REQUEST <- %s %s', new Date().toUTCString(), opts.method, url);
 			}
 
-			request(opts, function(error, res, body) {
+			let active = request(opts, (error, res, body) => {
 				if (!res) {
 					console.error('%s Request Options: ', new Date().toUTCString(), opts, arguments);
 					res = {headers:{}};
@@ -170,7 +169,12 @@ Object.assign(DataServerInterface.prototype, {
 
 				fulfill(body);
 			});
+
+
+			abortMethod = ()=> active.abort();
 		});
+
+		result.abort = abortMethod || ()=> console.error('Attempting to abourt request, but missing abort() method.');
 
 		pending.push(result);
 		return result;
