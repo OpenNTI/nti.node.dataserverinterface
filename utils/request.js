@@ -48,8 +48,7 @@ module.exports = exports = SERVER ? //SERVER is declared in th WebPack config fi
 			req = createXMLHTTPObject();
 
 			if (!req) {
-				callback('No XHR');
-				return req;
+				throw 'No XHR';
 			}
 
 
@@ -143,5 +142,16 @@ module.exports = exports = SERVER ? //SERVER is declared in th WebPack config fi
 			callback(e, null, e.message);
 		}
 
-		return req;
+		return req && {
+			abort () {
+				try {
+					if (!this.aborted) {
+						this.aborted = true;
+						req.abort();
+					}
+				} catch(e) {
+					console.warn(e.stack || e.message || e);
+				}
+			}
+		};
 	};
