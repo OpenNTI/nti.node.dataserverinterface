@@ -7,6 +7,8 @@ var isFunction = require('../../utils/isfunction');
 var define = require('../../utils/object-define-properties');
 var withValue = require('../../utils/object-attribute-withvalue');
 
+var parse = require('../../utils/parse-object');
+
 var CONTENT_VISIBILITY_MAP = {
 	OU: 'OUID'
 };
@@ -45,6 +47,37 @@ Object.assign(exports, {
 		}
 
 		return d;
+	},
+
+
+	refresh () {
+		return this._service.getObject(this.getID())
+			.then(o => {
+				if (this.NTIID !== o.NTIID) {
+					throw new Error('Mismatch!');
+				}
+
+				for(let prop in o) {
+					if (o.hasOwnProperty(prop)) {
+
+						let current = this[prop];
+						let value = o[prop];
+						if (current && current._service) {
+							value = parse(this, value);
+						}
+
+						if (typeof current === 'function') {
+							throw new Error('a value was named as one of the methods on this model.');
+						}
+
+						this[prop] = value;
+
+					}
+				}
+
+				return this;
+			});
+
 	},
 
 
