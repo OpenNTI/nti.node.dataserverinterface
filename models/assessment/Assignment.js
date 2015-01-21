@@ -54,6 +54,15 @@ Object.assign(Assignment.prototype, base, {
 
 	isNonSubmit: function () {
 		var p = this.parts;
+
+		if (this.hasOwnProperty('NoSubmit')) {
+			return this.NoSubmit;
+		}
+
+		if (this.hasOwnProperty('no_submit')) {
+			return this.no_submit;
+		}
+
 		return !p || p.length === 0 || /no_submit/.test(this.category_name);
 	},
 
