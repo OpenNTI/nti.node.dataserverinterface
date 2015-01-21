@@ -55,13 +55,15 @@ Object.assign(Part.prototype, base, content, {
 			dom = new global.DOMParser().parseFromString(this.content, 'text/xml'),
 			nodes = toArray(dom.querySelectorAll('object.naqvideo'));
 
-		nodes.forEach(function (i) {
-			var o = {};
-			toArray(i.getElementsByTagName('param')).forEach(function(p) {
+		for(let i of nodes) {
+			let o = {};
+
+			for(let p of toArray(i.getElementsByTagName('param'))) {
 				o[p.getAttribute('name')] = p.getAttribute('value');
-			});
+			}
+
 			out.push(o);
-		});
+		}
 
 		return out;
 	},
@@ -87,14 +89,14 @@ Object.assign(Part.prototype, base, content, {
 			assessedPart.getPartIndex() !== this.getPartIndex()) {
 			throw new Error('[Assessment Fillin]: Miss-Matched Question/Part');
 		}
-		var me = this;
-		['hints', 'solutions'].forEach(function(p) {
+
+		for(let p of ['hints', 'solutions']) {
 			//Only update this[p] if its blank, or assessedPart[p] is truthy
 			// (do not blank out this[p] if its set and assessedPart[p] is not.)
-			if (!me[p] || assessedPart[p]) {
-				me[p] = assessedPart[p];
+			if (!this[p] || assessedPart[p]) {
+				this[p] = assessedPart[p];
 			}
-		});
+		}
 
 		if (assessedPart.explanation) {
 			delete this.explanation;

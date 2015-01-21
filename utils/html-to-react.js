@@ -108,9 +108,9 @@ function ensureUnaryTagsAreClosedXML(html) {
 		return o;
 	}
 
-	UNARY_ELEMENTS.forEach(function(tagName) {
+	for(let tagName of UNARY_ELEMENTS) {
 		output = output.replace(getMatcher(tagName), fix);
-	});
+	}
 
 	return output;
 }

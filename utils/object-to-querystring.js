@@ -7,6 +7,7 @@
  * @return {String} Serialized, URI-encoded, querystring form of the given object.
  */
 module.exports = function toQueryString(o) {
+	console.error('[DEPRECATED] use `query-string`');
 	var k, t,string = [];
 	for(k in o){
 		if(o.hasOwnProperty(k)){

@@ -127,10 +127,9 @@ module.exports = function buildFromToc (element, outlineNode) {
 	var sections = {},
 		items = [];
 
-	element.getchildren().forEach(function(node) {
-		var obj = getConfigForNode(node, outlineNode);
-		var type = obj && (obj.section || SECTION_TYPE_MAP[obj.MimeType] || 'Unknown');
-		var grouping;
+	for(let node of element.getchildren()) {
+		let obj = getConfigForNode(node, outlineNode);
+		let type = obj && (obj.section || SECTION_TYPE_MAP[obj.MimeType] || 'Unknown');
 
 		if (!type) { return; }
 
@@ -139,7 +138,7 @@ module.exports = function buildFromToc (element, outlineNode) {
 			return;
 		}
 
-		grouping = sections[type];
+		let grouping = sections[type];
 
 		if (!grouping) {
 			grouping = sections[type] = {
@@ -161,7 +160,7 @@ module.exports = function buildFromToc (element, outlineNode) {
 		}
 
 		grouping.Items.push(obj);
-	});
+	}
 
 
 

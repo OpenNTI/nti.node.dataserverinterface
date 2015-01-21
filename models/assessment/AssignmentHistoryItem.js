@@ -9,18 +9,16 @@ var withValue = require('../../utils/object-attribute-withvalue');
 var parser = require('../../utils/parse-object');
 
 function AssignmentHistoryItem(service, parent, data) {
-	var me = this;
-	define(me,{
+	define(this,{
 		_service: withValue(service),
 		_parent: withValue(parent)
 	});
 
-	Object.assign(me, data);
+	Object.assign(this, data);
 
-	['Feedback','Grade','Submission','pendingAssessment']
-		.forEach(function(prop) {
-			me[prop] = data[prop] && parser(me, data[prop]);
-		});
+	for(let prop of ['Feedback','Grade','Submission','pendingAssessment']) {
+		this[prop] = data[prop] && parser(this, data[prop]);
+	}
 }
 
 

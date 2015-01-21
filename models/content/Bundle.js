@@ -24,12 +24,12 @@ function Bundle(service, parent, data) {
 
 	var pending = this.__pending = [];
 
-	this.ContentPackages = this.ContentPackages.map(function(pkg) {
+	this.ContentPackages = this.ContentPackages.map(pkg => {
 		pkg = Package.parse(service, this, pkg);
 		pkg.on('changed', this.onChange.bind(this));
 		pending.push.apply(pending, pkg.__pending || []);
 		return pkg;
-	}.bind(this));
+	});
 
 	pending.push(
 		this.getAsset('landing').then(setAndEmit(this, 'icon')),
@@ -41,14 +41,14 @@ Object.assign(Bundle.prototype, base, assets,
 	forwardFunctions(['every','filter','forEach','map','reduce'], 'ContentPackages'), {
 	isBundle: true,
 
-	getDefaultAssetRoot: function() {
+	getDefaultAssetRoot () {
 		var root = ([this].concat(this.ContentPackages))
-				.reduce(function(agg, o) { return agg || o.root; }, null);
+				.reduce((agg, o) => agg || o.root, null);
 
 		if (!root) {
 			console.error('No root for bundle: ',
 				this.getID(),
-				this.ContentPackages.map(function(o){return o.getID();})
+				this.ContentPackages.map(o => o.getID())
 				);
 			return '';
 		}
@@ -57,19 +57,18 @@ Object.assign(Bundle.prototype, base, assets,
 	},
 
 
-	getTablesOfContents: function() {
-		var me = this;
-		return Promise.all(this.ContentPackages.map(function(p) {
-			return p.getTableOfContents().then(function(t){
-				return { id: p.getID(), toc: t }; });
-		}))
-			.then(function (tables){
+	getTablesOfContents () {
+
+		return Promise.all(this.ContentPackages.map(p =>
+			p.getTableOfContents().then(t => ({ id: p.getID(), toc: t }))))
+
+			.then(tables => {
 				var result = tables.slice();
 
-				tables.forEach(function(v, i) {
-					result[v.id] = result[i] = v.toc; });
+				tables.forEach((v, i) =>
+					result[v.id] = result[i] = v.toc);
 
-				return new TablesOfContents(me._service, me, result);
+				return new TablesOfContents(this._service, this, result);
 			});
 	}
 

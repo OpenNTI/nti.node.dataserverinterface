@@ -10,8 +10,8 @@ var XMLHttpFactories = [
 
 
 function createXMLHTTPObject() {
-	for (let i = 0; i < XMLHttpFactories.length; i++) {
-		try { return XMLHttpFactories[i](); }
+	for (let factory of XMLHttpFactories) {
+		try { return factory(); }
 		catch (e) { }
 	}
 	return null;
@@ -19,17 +19,19 @@ function createXMLHTTPObject() {
 
 
 function copy(dest, src, keys) {
-	(keys || []).forEach(key => {
+	for(let key of keys) {
 		if (src[key]) {
 			dest[key] = src[key];
 		}
-	});
+	}
 }
 
 
 function keysToLowerCase(o) {
 	var out = {};
-	Object.keys(o).forEach(k=> out[k.toLowerCase()] = o[k]);
+	for(let k of Object.keys(o)) {
+		out[k.toLowerCase()] = o[k];
+	}
 	return out;
 }
 
@@ -67,7 +69,7 @@ module.exports = exports = SERVER ? //SERVER is declared in th WebPack config fi
 			if (options.form && (!formType || formType === defaultType)) {
 				req.setRequestHeader('Content-type', defaultType);
 				if (typeof options.form === 'object') {
-					options.form = Object.keys(options.form).reduce(function(str, v) {
+					options.form = Object.keys(options.form).reduce((str, v) => {
 						var joiner = str.length === 0 || str[str.length - 1] === '&' ? '' : '&';
 						return str + joiner + encodeURIComponent(v) + '=' + encodeURIComponent(options.form[v]);
 					}, '');
@@ -79,9 +81,9 @@ module.exports = exports = SERVER ? //SERVER is declared in th WebPack config fi
 
 			headers = options.headers;
 			if (headers) {
-				Object.keys(headers).forEach(function(key) {
+				for(let key of Object.keys(headers)) {
 					req.setRequestHeader(key, headers[key]);
-				});
+				}
 			}
 
 
@@ -97,9 +99,7 @@ module.exports = exports = SERVER ? //SERVER is declared in th WebPack config fi
 					var headers = req.getAllResponseHeaders()
 									.trim()
 									.split('\n')
-									.map(function(i) {
-										return i.split(':')[0];
-									});
+									.map(i => i.split(':')[0]);
 
 					var response = {
 						statusCode: status,
@@ -116,8 +116,9 @@ module.exports = exports = SERVER ? //SERVER is declared in th WebPack config fi
 						'statusText'
 					]);
 
-					headers.forEach(function(i) {
-						response.headers[i] = req.getResponseHeader(i); });
+					for(let i of headers) {
+						response.headers[i] = req.getResponseHeader(i);
+					}
 
 					try {
 						callback(false, response, req.responseText);

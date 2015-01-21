@@ -55,17 +55,16 @@ Object.assign(Enrollment.prototype, base,
 		var status = this.LegacyEnrollmentStatus;
 
 
-		toc.findall('*[@visibility]')
-			.forEach(function (e) {
-				if (/everyone/i.test(e.get('visibility'))) {
-					return;
-				}
+		for(let e of toc.findall('*[@visibility]')) {
+			if (/everyone/i.test(e.get('visibility'))) {
+				continue;
+			}
 
-				if (!this.hasVisibility(e, status)) {
-					this.__getToCNodesReferencing(e.get('target-ntiid'), toc)
-						.forEach(remove);
-				}
-			}.bind(this));
+			if (!this.hasVisibility(e, status)) {
+				this.__getToCNodesReferencing(e.get('target-ntiid'), toc)
+					.forEach(remove);
+			}
+		}
 	},
 
 
@@ -77,9 +76,9 @@ Object.assign(Enrollment.prototype, base,
 		function getNodesForKey(keys) {
 			var nodes = [];
 
-			keys.forEach(function(k) {
+			for(let k of keys) {
 				nodes = unique(nodes.concat(toc.findall('*[@' + k + '="' + ntiid + '"]')));
-			});
+			}
 
 			return nodes;
 		}

@@ -15,9 +15,9 @@ describe('ensure-array', function () {
 
 	it('should return [arg0] when arg0 is not an array', function () {
 		var tests = [0, 1, '', 'a', false, true, NaN, Infinity, -Infinity, {}];
-		tests.forEach(function (x) {
+		for(let x of tests) {
 			expect(ensureArray(x)).toEqual([x]);
-		});
+		}
 	});
 
 

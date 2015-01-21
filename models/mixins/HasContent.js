@@ -16,17 +16,21 @@ Object.assign(exports, {
 define(exports, {
 	initMixin: withValue(
 		function (data, keys) {
-			var props = {}, clean = exports.cleanupContentString.bind(this);
+			var props = {};
+			var clean = exports.cleanupContentString.bind(this);
 			if (keys === undefined) {
 				keys = ['content'];
 			}
 
-			keys.forEach(function(key) {
-				var content = data[key] || '';
+
+			for(let key of keys) {
+				let content = data[key] || '';
 				props[key] = {
 					enumerable: true,
 					configurable: true,
-					get: function() {
+					/*jshint -W083*/
+					get: function () {
+
 						if (Array.isArray(content)) {
 							content = content.map(clean);
 						} else {
@@ -40,8 +44,9 @@ define(exports, {
 						define(this, newValue);
 						return content;
 					}
+					/*jshint +W083*/
 				};
-			});
+			}
 
 			define(this, props);
 		}

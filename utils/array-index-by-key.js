@@ -14,8 +14,10 @@
  */
 module.exports = function indexArrayByKey(arr, key) {
 	var result = {};
-	arr.forEach(function(item) {
+
+	for(let item of arr) {
 		result[item[key]] = item;
-	});
+	}
+
 	return result;
 };

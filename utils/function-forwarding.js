@@ -2,9 +2,11 @@
 
 function reflect(fn, key) {
 
-	return function() {
-		var a = this[key] || [];
-		return a[fn].apply(a, arguments);
+	return function(...args) {
+		//`this` needs to be the object the returned
+		// function is injected into, _not_ a job for
+		// the arrow function
+		return (this[key] || [])[fn](...args);
 	};
 }
 
@@ -20,9 +22,9 @@ function reflect(fn, key) {
 module.exports = function forwardFunctions(fns, key) {
 	var result = {};
 
-	fns.forEach(function(fn) {
+	for(let fn of fns) {
 		result[fn] = reflect(fn, key);
-	});
+	}
 
 	return result;
 };

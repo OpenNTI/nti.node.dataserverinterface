@@ -1,8 +1,8 @@
 'use strict';
 
 module.exports = function each(object, f) {
-	Object.keys(object).forEach(function(key) {
+	for(let key of Object.keys(object)) {
 		f(object[key], key, object);
-	});
+	}
 	return object;
 };

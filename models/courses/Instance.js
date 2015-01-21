@@ -276,8 +276,8 @@ function binDiscussions (section, parent) {
 	function addTo(key, group) {
 
 		var items = (group && group.Items) || [];
-		items.forEach(function(item) {
-			var bin = item.getBin();
+		for(let item of items) {
+			let bin = item.getBin();
 			if (!bins[bin]) {
 				bins[bin] = {};
 			}
@@ -292,7 +292,7 @@ function binDiscussions (section, parent) {
 			}
 
 			bin[key].forums.push(item);
-		});
+		}
 	}
 
 	addTo('Section', section);

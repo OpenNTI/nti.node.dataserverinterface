@@ -32,9 +32,9 @@ Object.assign(Question.prototype, base, content, {
 
 	getVideos: function() {
 		var all = Part.prototype.getVideos.call(this);
-		this.parts.forEach(function(p) {
+		for(let p of this.parts) {
 			all.push.apply(all, p.getVideos());
-		});
+		}
 		return all;
 	},
 
