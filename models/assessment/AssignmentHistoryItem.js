@@ -36,6 +36,12 @@ Object.assign(AssignmentHistoryItem.prototype, base, {
 	},
 
 
+	isGradeExcused () {
+		var g = this.Grade || false;
+		return g && g.isExcused();
+	},
+
+
 	getGradeValue: function () {
 		var g = this.Grade;
 		return g && g.getValue();
