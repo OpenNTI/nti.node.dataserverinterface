@@ -102,6 +102,7 @@ module.exports = function (config) {
 
 			module: {
 				loaders: [
+					{ test: /\.js(x)?$/, loader: '6to5' },
 					{ test: /\.json$/, loader: 'json' }
 				]
 			}

@@ -1,4 +1,5 @@
-require('polyfills');
+require('6to5/browser-polyfill');
+require('6to5/polyfill');
 
 (function() {
     'use strict';
