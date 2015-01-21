@@ -23,8 +23,12 @@ function Grade(service, parent, data) {
 
 Object.assign(Grade.prototype, base, names, {
 
-	getValue: function () {
+	getValue () {
 		return this.value;
+	},
+
+	isExcused () {
+		return !!this.IsExcused;
 	}
 });
 
