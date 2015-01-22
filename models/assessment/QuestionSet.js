@@ -74,7 +74,7 @@ Object.assign(QuestionSet.prototype, base, {
 
 
 	loadPreviousSubmission: function () {
-		var dataProvider = this.up('getUserDataLastOfType');
+		var dataProvider = this.parent('getUserDataLastOfType');
 		if (!dataProvider) {
 			return Promise.reject('Nothing to do');
 		}

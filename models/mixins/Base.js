@@ -118,14 +118,14 @@ Object.assign(exports, {
 	 *
 	 * @return {Model}
 	 */
-	up: function(...query) {
+	parent: function(...query) {
 		var p = this._parent;
 
 		if (p && (query.length === 0 || p._is(...query))) {
 			return p;
 		}
 
-		return p && p.up(...query);
+		return p && p.parent(...query);
 	},
 
 

@@ -100,7 +100,7 @@ function cleanNodes(x, o) {
 		return x.find('*[@' + key + '="' + id + '"]/..');
 	}
 
-	var p = o.up('__cleanToCNodes');
+	var p = o.parent('__cleanToCNodes');
 
 	if (p) {
 		p.__cleanToCNodes(x, remove);

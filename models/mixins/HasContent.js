@@ -8,7 +8,7 @@ var clean = require('../../utils/sanitize-markup');
 Object.assign(exports, {
 
 	getContentRoot: function () {
-		return this.ContentRoot || this.up('getContentRoot').getContentRoot();
+		return this.ContentRoot || this.parent('getContentRoot').getContentRoot();
 	}
 });
 

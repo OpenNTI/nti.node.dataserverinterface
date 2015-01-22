@@ -19,7 +19,7 @@ __resolveNames: function (service) {
 
 
 	//If this model has an assignment parent model instance,
-	a = this.up('MimeType', /assessment.assignment$/i);
+	a = this.parent('MimeType', /assessment.assignment$/i);
 	a = (a ?
 	//... the assignment title is already known... use it.
 		Promise.resolve(a) :

@@ -24,7 +24,7 @@ exports = module.exports = {
 		return Boolean(this.__submitted ||
 
 			//Then check parent for submitted
-			((p = this.up('isSubmitted')) && p.isSubmitted()));
+			((p = this.parent('isSubmitted')) && p.isSubmitted()));
 
 	},
 
