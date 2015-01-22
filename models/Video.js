@@ -1,34 +1,42 @@
-'use strict';
+import isEmpty from '../utils/isempty';
+import parser from '../utils/parse-object';
 
-var define = require('../utils/object-define-properties');
-var withValue = require('../utils/object-attribute-withvalue');
-var isEmpty = require('../utils/isempty');
+const Parent = Symbol.for('Parent');
+const Service = Symbol.for('Service');
 
-var MediaSource = require('./MediaSource');
+const NO_TRANSCRIPT = 'No Transcript';
+const NO_TRANSCRIPT_LANG = 'No Transcript for the requested language.';
 
-var NO_TRANSCRIPT = 'No Transcript';
-var NO_TRANSCRIPT_LANG = 'No Transcript for the requested language.';
+export default class Video {
+	static parse (service, parent, data) {
+		return new this(service, parent, data);
+	}
 
-function Video(service, parent, data) {
-	define(this, {
-		_service: withValue(service),
-		_parent: withValue(parent)
-	});
+	constructor (service, parent, data) {
+		this[Service] = service;
+		this[Parent] = parent;
 
-	var sources = data.sources;
+		Object.assign(this, {
+			NO_TRANSCRIPT,
+			NO_TRANSCRIPT_LANG
+		});
 
-	Object.assign(this, data);
+		var sources = data.sources;
 
-	this.sources = sources.map(function(item) {
-		return MediaSource.parse(service, this, item);
-	}.bind(this));
-}
+		Object.assign(this, data);
 
-Object.assign(Video.prototype, {
+		var MediaSource = parser.getModel('mediasource');
 
-	getID: function() {
+		this.sources = sources.map(item =>
+			MediaSource.parse(service, this, item)
+		);
+	}
+
+
+
+	getID () {
 		return this.ntiid;
-	},
+	}
 
 
 	/**
@@ -36,7 +44,7 @@ Object.assign(Video.prototype, {
 	 *                        nothing is provided, it will default to english.
 	 * @return {Promise}
 	 */
-	getTranscript: function(lang) {
+	getTranscript (lang) {
 		var target = lang || 'en';
 		var scripts = this.transcripts;
 
@@ -54,28 +62,10 @@ Object.assign(Video.prototype, {
 		}
 
 		return this._service.get(target.src);
-	},
+	}
 
 
-	getPageSource: function() {
+	getPageSource () {
 		return this._parent.getPageSource();
 	}
-
-});
-
-
-function parse(service, parent, data) {
-	if (data instanceof Video) {
-		return data;
-	}
-
-	return new Video(service, parent, data);
 }
-
-
-//Static defs
-Video.NO_TRANSCRIPT = NO_TRANSCRIPT;
-Video.NO_TRANSCRIPT_LANG = NO_TRANSCRIPT_LANG;
-Video.parse = parse;
-
-module.exports = Video;

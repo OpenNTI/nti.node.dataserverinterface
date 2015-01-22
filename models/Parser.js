@@ -5,6 +5,9 @@ var ignored = {parse: require('../utils/identity')};
 var PARSERS = {
 	'user': require('./User'),
 	'pageinfo': require('./PageInfo'),
+	'mediasource': require('./MediaSource'),
+	'video': require('./Video'),
+	'ntivideo': 'video',
 
 	'assessment.assessedquestionset': require('./assessment/AssessedQuestionSet'),
 	'assessment.assessedquestion': require('./assessment/AssessedQuestion'),
@@ -106,20 +109,21 @@ var PARSERS = {
 };
 
 
-function getParser(type) {
+export function getModelByType(type) {
+	type = type.replace(/^application\/vnd.nextthought./, '');
 	var p = PARSERS[type];
 	if (typeof p === 'string') {
-		p = p !== type ? getParser(p) : undefined;
+		p = p !== type ? getModelByType(p) : undefined;
 	}
 	return p;
 }
 
 
-module.exports = function parser(service, parent, obj) {
+export default function parser(service, parent, obj) {
 	if (Array.isArray(obj)) {
 		return obj.map(parser.bind(this, service, parent));
 	}
-	var Cls = getParser(obj.MimeType.replace(/^application\/vnd.nextthought./, ''));
+	var Cls = getModelByType(obj.MimeType);
 	var args = [service];
 
 	if (Cls && Cls.parse.length > 2) {
@@ -129,7 +133,7 @@ module.exports = function parser(service, parent, obj) {
 	args.push(obj);
 
 	return (Cls && Cls.parse && Cls.parse.apply(Cls, args)) || error(obj);
-};
+}
 
 
 
