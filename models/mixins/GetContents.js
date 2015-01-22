@@ -1,7 +1,7 @@
 'use strict';
 
 var parse = require('../../utils/parse-object');
-var toQueryString = require('../../utils/object-to-querystring');
+var QueryString = require('query-string');
 
 module.exports = {
 	getContents: function (params) {
@@ -10,7 +10,7 @@ module.exports = {
 			return Promise.reject('No Link!?');
 		}
 		if (typeof params === 'object') {
-			link = link.concat('?',toQueryString(params));
+			link = link.concat('?',QueryString.stringify(params));
 		}
 		return this._service.get(link)
 			.then(function(wrapper){

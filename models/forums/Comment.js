@@ -2,7 +2,7 @@
 
 var Base = require('./Post');
 var parseObject = require('../../utils/parse-object');
-var toQueryString = require('../../utils/object-to-querystring');
+var QueryString = require('query-string');
 
 function Comment(service, parent, data) {
 	Base.call(this, service, parent, data);
@@ -23,7 +23,7 @@ Object.assign(Comment.prototype, {
 			sortOrder: 'ascending'
 		};
 
-		link = link.concat('?',toQueryString(params));
+		link = link.concat('?',QueryString.stringify(params));
 
 		return this._service.get(link)
 			.then(function(result) {
