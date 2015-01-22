@@ -17,7 +17,6 @@ function TableOfContents(service, parent, data) {
 	});
 
 	cleanNodes(this._root, this);
-	//deepFreeze(this._root)
 }
 
 

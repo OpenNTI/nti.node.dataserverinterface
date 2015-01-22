@@ -1,10 +1,8 @@
 'use strict';
 
 
-//var isBrowser = require('../../utils/browser');
 var urlJoin = require('../../utils/urljoin');
 var isEmpty = require('../../utils/isempty');
-//var isThenable = require('../../utils/isthenable');
 
 var ASSET_MAP = {
 	thumb: 'contentpackage-thumb-60x60.png',
@@ -73,31 +71,6 @@ Object.assign(exports, {
 		}
 
 		return Promise.resolve(url);
-		// var p = cache.get(cacheKey);
-		// if (p === undefined) {
-		// 	p = this._service.head(url)
-		// 		.then(
-		// 			function() {
-		// 				cache.set(cacheKey, true);
-		// 			},
-		// 			function(r) {
-		// 				cache.set(cacheKey, false);
-		// 				return Promise.reject(r);
-		// 			});
-		// 	cache.setVolatile(cacheKey, p);
-		// } else {
-		//
-		// 	if (isThenable(p)) {
-		// 		p = Promise.resolve(p);
-		// 	} else {
-		// 		p = Promise[p ? 'resolve' : 'reject']();
-		// 	}
-		// }
-		//
-		// return p
-		// 	.then(
-		// 		function() { return url; },
-		// 		function() { return Promise.reject(name + ' asset not found'); });
 	}
 
 });
