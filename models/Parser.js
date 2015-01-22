@@ -5,9 +5,16 @@ var ignored = {parse: require('../utils/identity')};
 var PARSERS = {
 	'user': require('./User'),
 	'pageinfo': require('./PageInfo'),
+
+	'ContentPackage': require('./content/Package'),
+
 	'mediasource': require('./MediaSource'),
 	'video': require('./Video'),
 	'ntivideo': 'video',
+
+	'videoindex-pagesource': require('./VideoIndexBackedPageSource'),
+
+	'courseware.courseinstanceenrollment': require('./course/Enrollment'),
 
 	'assessment.assessedquestionset': require('./assessment/AssessedQuestionSet'),
 	'assessment.assessedquestion': require('./assessment/AssessedQuestion'),
@@ -67,7 +74,8 @@ var PARSERS = {
 	'assessment.orderingsolution': 'assessment.solution',
 	'assessment.symbolicmathsolution': 'assessment.solution',
 
-	'assessment.userscourseassignmentsavepointitem': require('./assessment/SavePointItem'),
+	'assessment.savepointitem': require('./assessment/SavePointItem'),
+	'assessment.userscourseassignmentsavepointitem': 'assessment.savepointitem',
 
 	'assessment.questionbank': ignored,
 	'assessment.questionmap': ignored,
@@ -76,6 +84,8 @@ var PARSERS = {
 	'naqwordentry': require('./assessment/WordEntry'),
 
 	'grade': require('./assessment/Grade'),
+	'assessment.assignmenthistoryitem': require('./assessment/AssignmentHistoryItem'),
+	'assessment.userscourseassignmenthistoryitem': 'assessment.assignmenthistoryitem',
 	'assessment.userscourseassignmenthistoryitemfeedback': require('./assessment/AssignmentFeedback'),
 	'assessment.userscourseassignmenthistoryitemfeedbackcontainer': require('./assessment/AssignmentFeedbackContainer'),
 
@@ -115,6 +125,14 @@ export function getModelByType(type) {
 	if (typeof p === 'string') {
 		p = p !== type ? getModelByType(p) : undefined;
 	}
+
+
+	if (p && !p.parse) {
+		p.parse = (p.prototype.constructor.length > 2) ?
+			ConstructorFuncWithParent :
+			ConstructorFunc;
+	}
+
 	return p;
 }
 
@@ -123,7 +141,7 @@ export default function parser(service, parent, obj) {
 	if (Array.isArray(obj)) {
 		return obj.map(parser.bind(this, service, parent));
 	}
-	var Cls = getModelByType(obj.MimeType);
+	var Cls = getModelByType(obj.MimeType || obj.mimeType || obj.Class);
 	var args = [service];
 
 	if (Cls && Cls.parse.length > 2) {
@@ -141,4 +159,16 @@ function error(obj) {
 	var e = new Error('No Parser for object: ' + (obj && obj.MimeType));
 	e.NoParser = true;
 	throw e;
+}
+
+//Default Constructors
+function ConstructorFuncWithParent (service, parent, data) {
+	return (this.prototype.isPrototypeOf(data)) ? data :
+	new this(service, parent, data);
+}
+
+
+function ConstructorFunc (service, data) {
+	return (this.prototype.isPrototypeOf(data)) ? data :
+	new this(service, data);
 }

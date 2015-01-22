@@ -8,10 +8,6 @@ const NO_TRANSCRIPT = 'No Transcript';
 const NO_TRANSCRIPT_LANG = 'No Transcript for the requested language.';
 
 export default class Video {
-	static parse (service, parent, data) {
-		return new this(service, parent, data);
-	}
-
 	constructor (service, parent, data) {
 		this[Service] = service;
 		this[Parent] = parent;
@@ -28,8 +24,7 @@ export default class Video {
 		var MediaSource = parser.getModel('mediasource');
 
 		this.sources = sources.map(item =>
-			MediaSource.parse(service, this, item)
-		);
+			MediaSource.parse(service, this, item));
 	}
 
 
@@ -52,20 +47,19 @@ export default class Video {
 			return Promise.reject(NO_TRANSCRIPT);
 		}
 
-		function find(result, potential) {
-			return result || (potential.lang === target && potential);
-		}
+		target = this.transcripts.reduce(
+			(result, potential)=>
+				result || (potential.lang === target && potential), null);
 
-		target = this.transcripts.reduce(find, null);
 		if (!target) {
 			return Promise.reject(NO_TRANSCRIPT_LANG);
 		}
 
-		return this._service.get(target.src);
+		return this[Service].get(target.src);
 	}
 
 
 	getPageSource () {
-		return this._parent.getPageSource();
+		return this[Parent].getPageSource(this);
 	}
 }

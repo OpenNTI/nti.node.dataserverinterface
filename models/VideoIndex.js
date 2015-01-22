@@ -1,104 +1,99 @@
-'use strict';
+import parser from '../utils/parse-object';
 
-var defineProperties = require('../utils/object-define-properties');
-var withValue = require('../utils/object-attribute-withvalue');
+const Parent = Symbol.for('Parent');
+const Service = Symbol.for('Service');
 
-var PageSource = require('./VideoIndexBackedPageSource');
-var Video = require('./Video');
+const PageSource = Symbol('PageSource');
+const Order = Symbol('Order');
+const Data = Symbol('Data');
 
-function VideoIndex(service, parent, data) {
-	defineProperties(this, {
-		_service: withValue(service),
-		_parent: withValue(parent),
-		_order: withValue(data._order || []),
-		length: {
-			enumerable: true,
-			configurable: false,
-			get: this.__getLength.bind(this)
-		},
-	});
+export default class VideoIndex {
+	static parse (service, parent, data, order) {
+		return new this(service, parent, data, order);
+	}
 
-	delete data._order;
+	constructor (service, parent, data, order) {
 
-	this.data = {};
+		this[Service] = service;
+		this[Parent] = parent;
+		this[Order] = order || data[Order] || [];
+		this[Data] = {};
 
-	for(var index in data) {
-		if (data.hasOwnProperty(index)) {
-			this.data[index] = Video.parse(service, this, data[index]);
+		delete data[Order];
+		delete data._order;
+
+		for(var key in data) {
+			if (data.hasOwnProperty(key)) {
+				this[Data][key] = parser(this, data[key]);
+			}
 		}
 	}
-}
-
-Object.assign(VideoIndex.prototype, {
-	__getLength: function () { return this._order.length; },
 
 
-	asJSON: function() {
-		return Object.assign({}, this.data, {_order: this._order});
-	},
+	get length () { return this[Order].length; }
 
 
-	filter: function(fn) {
+	asJSON () {
+		console.log('Still used?');
+		return Object.assign({}, this[Data]);
+	}
+
+
+	combine (that) {
+		var order = this[Order].concat(that[Order]);
+		var data = Object.assign({}, this[Data], that[Data]);
+
+		return new this.constructor(this[Service], this[Parent], data, order);
+	}
+
+
+	filter (fn) {
 		var data = {};
-		var order = this._order.filter(function(v, i, a) {
-			var o = this.data[v];
+		var order = this[Order].filter((v, i, a) => {
+			var o = this[Data][v];
 			var pass = fn(o, i, a);
 			if (pass) {
 				data[v] = o;
 			}
 			return pass;
-		}.bind(this));
+		});
 
-		data._order = order;
+		data[Order] = order;
 
-		return new VideoIndex(this._service, data, this._parent);
-	},
-
-
-	map: function(fn) {
-		return this._order.map(function(v, i, a) {
-			return fn(this.data[v], i, a);
-		}.bind(this));
-	},
-
-
-	reduce: function(fn, initial) {
-		var data = this.data;
-
-		function reducer(agg, v, i, a) {
-			return fn(agg, data[v], i, a);
-		}
-
-		return this._order.reduce(reducer, initial);
-	},
-
-
-	indexOf: function(id) { return this._order.indexOf(id); },
-
-
-	get: function(id) { return this.data[id]; },
-
-
-	getAt: function (index) {
-		var id = this._order[index];
-		return id && this.get(id);
-	},
-
-
-	getPageSource: function() {
-		if (!this._pageSource) {
-			this._pageSource = new PageSource(this);
-		}
-		return this._pageSource;
+		return new this.constructor(this[Service], this[Parent], data);
 	}
-});
 
 
+	map (fn) {
+		return this[Order].map((v, i, a) =>fn(this[Data][v], i, a));
+	}
 
-function parse(service, parent, data) {
-	return new VideoIndex(service, parent, data);
+
+	reduce (fn, initial) {
+		return this[Order].reduce((agg, v, i, a)=>fn(agg, this[Data][v], i, a), initial);
+	}
+
+
+	indexOf (id) { return this[Order].indexOf(id); }
+
+
+	get(id) { return this[Data][id]; }
+
+
+	getAt (index) {
+		var id = this[Order][index];
+		return id && this.get(id);
+	}
+
+
+	getPageSource (at=null) {
+		if (!this[PageSource]) {
+			let PageSourceModel = parser.getModel('videoindex-pagesource');
+			this[PageSource] = new PageSourceModel(this);
+		}
+
+		if(at){console.log('Asked to set current page to: %o',at);}
+
+		return this[PageSource];
+	}
 }
-
-VideoIndex.parse = parse;
-
-module.exports = VideoIndex;
