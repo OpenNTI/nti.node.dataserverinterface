@@ -14,7 +14,7 @@ var getLink = require('../utils/getlink');
 var forwardFunctions = require('../utils/function-forwarding');
 var withValue = require('../utils/object-attribute-withvalue');
 var defineProperties = require('../utils/object-define-properties');
-var objectToQuery = require('../utils/object-to-querystring');
+var QueryString = require('query-string');
 
 var waitFor = require('../utils/waitfor');
 
@@ -142,7 +142,7 @@ Notifications.load = function(service, reload) {
 
 			url = Url.parse(url);
 
-			url.search = objectToQuery({
+			url.search = QueryString.stringify({
 				batchSize: BATCH_SIZE,
 				batchStart: 0
 			});
