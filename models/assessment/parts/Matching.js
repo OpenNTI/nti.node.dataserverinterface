@@ -19,7 +19,7 @@ Object.assign(Matching.prototype, {
 
 		for(let i = 0; partValue && i < length; i++) {
 			//all values have to be non-nully
-			partValue = partValue[i] != null;
+			maybe = maybe && partValue[i] != null;
 		}
 
 		return maybe;
