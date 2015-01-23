@@ -132,7 +132,7 @@ function setupAssessmentItems(items, pageInfo) {
 	items = items.map(o=>parseObject(pageInfo, o));
 	items.sort(assessmentItemOrder);
 
-	var sets = items.filter(o=>o.containsId);
+	var sets = items.filter(o=>o && o.containsId);
 
 	//Remove questions & questionsets that are embedded within Assignments and QuestionSets...leave only top-level items.
 	items = items.filter(o=>

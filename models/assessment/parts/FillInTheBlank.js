@@ -26,7 +26,8 @@ function FillInTheBlank(service, parent, data) {
 
 	Base.call(this, service, parent, data);
 
-	this[ValueKeys] = this.input.match(tags).map(s=>(s.match(keyName)||{})[1]);
+	this[ValueKeys] = (this.input.match(tags) || [])
+		.map(s=>(s.match(keyName)||{})[1]);
 }
 
 
