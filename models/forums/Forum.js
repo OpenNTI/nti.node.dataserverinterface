@@ -42,8 +42,8 @@ Object.assign(Forum.prototype, Base, GetContents, /*SharedWithList,*/ {
 	},
 
 	getRecentActivity: function(size) {
-		
-		var params = { 
+
+		var params = {
 			batchStart: 0,
 			batchSize: size||5,
 			sortOrder: 'descending',
@@ -78,11 +78,5 @@ Object.assign(Forum.prototype, Base, GetContents, /*SharedWithList,*/ {
 
 });
 
-
-function parse(service, parent, data) {
-	return new Forum(service, parent, data);
-}
-
-Forum.parse = parse;
 
 module.exports = Forum;

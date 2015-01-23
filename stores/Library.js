@@ -9,9 +9,7 @@ var identity = require('../utils/identity');
 var waitFor = require('../utils/waitfor');
 var unique = require('../utils/array-unique');
 
-var Package = require('../models/content/Package');
-var Bundle = require('../models/content/Bundle');
-var Course = require('../models/courses/Enrollment');
+var parse = require('../models/Parser');
 
 var instances = {};
 
@@ -30,46 +28,42 @@ function Library(service, name, contentPackages,
 	var pending = this.__pending = [];
 
 	function queue(p) {
-		pending.push.apply(pending, p && p.__pending);
+		var list = (p && p.__pending) || [];
+		return pending.push( ...list) && p;
 	}
 
-	this.packages = contentPackages.map(function(pkg) {
-		if (pkg.isCourse) {return null;}
+	var parseList = list=> {
+		return list.map(o=> {
+			try {
+				o = queue(parse(service, null, o));
+				if(o && o.on){
+					o.on('changed', this.onChange);
+				}
+			} catch(e) {
+				console.error(e.stack || e.message || e);
+				o = null;
+			}
 
-		pkg = Package.parse(service, null, pkg);
-		queue(pkg);
-		pkg.on('changed', this.onChange);
-		return pkg;
-	}.bind(this)).filter(identity);//strip falsy items
+			return o;
+		})
+		.filter(identity);
+	};
 
-
-	this.bundles = contentBundles.map(function(bdl) {
-		if (!bdl.ContentPackages || !bdl.ContentPackages.length) {
-			console.warn('%o Bundle is empty. Missing packages.', bdl);
-			return null;
+	contentBundles = contentBundles.filter(o => {
+		let invalid = !o.ContentPackages || !o.ContentPackages.length;
+		if (invalid) {
+			console.warn('%o Bundle is empty. Missing packages.', o);
 		}
+		return !invalid;
+	});
 
-		bdl = Bundle.parse(service, null, bdl);
-		queue(bdl);
-		bdl.on('changed', this.onChange);
-		return bdl;
-	}.bind(this)).filter(identity);//strip falsy items
+	contentPackages = contentPackages.filter(pkg => !pkg.isCourse);
 
 
-	this.courses = enrolledCourses.map(function(course) {
-		course = Course.parse(service, course);
-		queue(course);
-		course.on('changed', this.onChange);
-		return course;
-	}.bind(this)).filter(identity);//strip falsy items
-
-
-	this.coursesAdmin = administeredCourses.map(function(course) {
-		course = Course.parse(service, course, true);
-		queue(course);
-		course.on('changed', this.onChange);
-		return course;
-	}.bind(this)).filter(identity);//strip falsy items
+	this.packages = parseList(contentPackages);
+	this.bundles = parseList(contentBundles);
+	this.courses = parseList(enrolledCourses);
+	this.coursesAdmin = parseList(administeredCourses);
 }
 
 
@@ -152,13 +146,13 @@ Library.load = function(service, name, reload) {
 		resolveCollection(service, service.getContentBundlesURL(), reload),
 		resolveCollection(service, service.getCoursesEnrolledURL(), reload),
 		resolveCollection(service, service.getCoursesAdministeringURL(), reload)
-	]).then(function(data) {
-		instance = make.apply({}, data);
-		return waitFor(instance.__pending);
-	}).then(function() {
-		instances[name] = instance;
-		return instance;
-	}));
+	])
+	.then(data=>waitFor((instance = make(...data)).__pending))
+	.then(()=>instances[name] = instance))
+	.catch(e=> {
+		console.error(e.stack||e.message||e);
+		return Promise.reject(e);
+	});
 };
 
 

@@ -27,10 +27,4 @@ Object.assign(AssignmentFeedback.prototype, base, names, {
 });
 
 
-function parse(service, parent, data) {
-	return new AssignmentFeedback(service, parent, data);
-}
-
-AssignmentFeedback.parse = parse;
-
 module.exports = AssignmentFeedback;

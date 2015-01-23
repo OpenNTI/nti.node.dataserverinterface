@@ -7,6 +7,7 @@ var PARSERS = {
 	'pageinfo': require('./PageInfo'),
 
 	'ContentPackage': require('./content/Package'),
+	'ContentPackageBundle': require('./content/Bundle'),
 
 	'mediasource': require('./MediaSource'),
 	'video': require('./Video'),
@@ -14,7 +15,20 @@ var PARSERS = {
 
 	'videoindex-pagesource': require('./VideoIndexBackedPageSource'),
 
-	'courseware.courseinstanceenrollment': require('./course/Enrollment'),
+	'courses.catalogentry': require('./courses/CatalogEntry'),
+	'courses.courseinstance': require('./courses/Instance'),
+	'courses.courseenrollment': require('./courses/Enrollment'),
+	'courses.courseoutlinenode': require('./courses/OutlineNode'),
+	'courses.courseoutline': 'courses.courseoutlinenode',
+	'courses.courseoutlinecontentnode': 'courses.courseoutlinenode',
+	'courses.courseoutlinecalendarnode': 'courses.courseoutlinenode',
+
+	'courses.coursecataloglegacyentry': 'courses.catalogentry',//Really?! Two packages?! :P
+	'courseware.coursecataloglegacyentry': 'courses.catalogentry',
+
+	'courses.legacycommunitybasedcourseinstance': 'courses.courseinstance',
+	'courseware.courseinstanceenrollment':'courses.courseenrollment',
+
 
 	'assessment.assessedquestionset': require('./assessment/AssessedQuestionSet'),
 	'assessment.assessedquestion': require('./assessment/AssessedQuestion'),
@@ -26,6 +40,8 @@ var PARSERS = {
 
 	'assessment.assignment': require('./assessment/Assignment'),
 	'assessment.timedassignment': require('./assessment/TimedAssignment'),
+
+	'assessment.assignmentpart': require('./assessment/AssignmentPart'),
 
 	'assessment.randomizedquestionset': 'naquestionset',
 	'assessment.fillintheblankwithwordbankquestion': 'naquestion',
@@ -141,7 +157,7 @@ export default function parser(service, parent, obj) {
 	if (Array.isArray(obj)) {
 		return obj.map(parser.bind(this, service, parent));
 	}
-	var Cls = getModelByType(obj.MimeType || obj.mimeType || obj.Class);
+	var Cls = getModelByType(getType(obj));
 	var args = [service];
 
 	if (Cls && Cls.parse.length > 2) {
@@ -154,9 +170,13 @@ export default function parser(service, parent, obj) {
 }
 
 
+function getType(o) {
+	return o.MimeType || o.mimeType || o.Class;
+}
+
 
 function error(obj) {
-	var e = new Error('No Parser for object: ' + (obj && obj.MimeType));
+	var e = new Error('No Parser for object: ' + (obj && getType(obj)));
 	e.NoParser = true;
 	throw e;
 }

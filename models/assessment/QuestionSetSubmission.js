@@ -22,26 +22,20 @@ function QuestionSetSubmission(service, parent, data) {
 
 	// CreatorRecordedEffortDuration: 0
 
-	this.questions = this.questions.map(function(q) {
-
-		return parser(this, q);
-
-	}.bind(this));
+	this.questions = this.questions.map(q =>parser(this, q));
 }
 
 Object.assign(QuestionSetSubmission.prototype, base, submission, {
 
-	getQuestion: function (id) {
-		return this.questions.reduce(function(found, q) {
-			return found || (q.getID() === id && q);
-		}, null);
+	getQuestion (id) {
+		return this.questions.reduce((found, q) => found || (q.getID() === id && q), null);
 	},
 
-	getQuestions: function () {
+	getQuestions () {
 		return this.questions.slice();
 	},
 
-	countUnansweredQuestions: function (questionSet) {
+	countUnansweredQuestions (questionSet) {
 		if (!questionSet || !questionSet.questions || questionSet.questions.length !== this.questions.length) {
 			throw new Error('Invalid Argument');
 		}
@@ -51,16 +45,10 @@ Object.assign(QuestionSetSubmission.prototype, base, submission, {
 	}
 });
 
-
-function parse(service, parent, data) {
-	return new QuestionSetSubmission(service, parent, data);
-}
-
 function build(service, data) {
 	return new QuestionSetSubmission(service, null, data);
 }
 
-QuestionSetSubmission.parse = parse;
 QuestionSetSubmission.build = build;
 
 module.exports = QuestionSetSubmission;

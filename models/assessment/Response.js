@@ -22,10 +22,4 @@ Object.assign(Response.prototype, base, {
 });
 
 
-function parse(service, parent, data) {
-	return new Response(service, parent, data);
-}
-
-Response.parse = parse;
-
 module.exports = Response;

@@ -148,20 +148,10 @@ Object.assign(Package.prototype, base, assets, {
 			}
 		}
 
-		vi._order = keyOrder;
-
-		return VideoIndex.parse(this._service, this, vi);
+		return VideoIndex.parse(this._service, this, vi, keyOrder);
 	}
 
 
 });
-
-
-
-function parse(service, parent, data) {
-	return new Package(service, parent, data);
-}
-
-Package.parse = parse;
 
 module.exports = Package;

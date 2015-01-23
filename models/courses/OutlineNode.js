@@ -7,6 +7,7 @@ var base = require('../mixins/Base');
 var makeFallbackOverview = require('./_fallbacks.OverviewFromToC');
 var PageSource = require('./OutlineNodeBackedPageSource');
 
+var parser = require('../../utils/parse-object');
 var define = require('../../utils/object-define-properties');
 var withValue = require('../../utils/object-attribute-withvalue');
 var encodeForURI = require('../../utils/ntiids').encodeForURI;
@@ -32,7 +33,7 @@ function OutlineNode(service, parent, data) {
 	Object.assign(this, data);
 
 	var c = this.contents;
-	this.contents = (c && c.map(parse.bind(this, service, this))) || [];
+	this.contents = (c && c.map(o => parser(this, o))) || [];
 }
 
 Object.assign(OutlineNode.prototype, base, {
@@ -184,16 +185,6 @@ Object.assign(OutlineNode.prototype, base, {
 	}
 });
 
-
-
-function parse(service, parent, data) {
-	if (Array.isArray(data)) {
-		return data.map(parse.bind(OutlineNode, service, parent));
-	}
-	return new OutlineNode(service, parent, data);
-}
-
-OutlineNode.parse = parse;
 
 module.exports = OutlineNode;
 

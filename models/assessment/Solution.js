@@ -21,11 +21,4 @@ Object.assign(Solution.prototype, base, {
 
 });
 
-
-function parse(service, parent, data) {
-	return new Solution(service, parent, data);
-}
-
-Solution.parse = parse;
-
 module.exports = Solution;

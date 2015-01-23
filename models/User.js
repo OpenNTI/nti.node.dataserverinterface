@@ -28,11 +28,4 @@ Object.assign(User.prototype, base, {
 });
 
 
-
-function parse(service, data) {
-	return new User(service, data);
-}
-
-User.parse = parse;
-
 module.exports = User;

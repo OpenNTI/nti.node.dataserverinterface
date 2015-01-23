@@ -17,7 +17,7 @@ function AssignmentFeedbackContainer(service, parent, data) {
 
 	Object.assign(this, data);
 
-	this.Items = data.Items.map(parser.bind(this, this));
+	this.Items = data.Items.map(p=>parser(this, p));
 }
 
 Object.assign(AssignmentFeedbackContainer.prototype, base, {
@@ -25,11 +25,5 @@ Object.assign(AssignmentFeedbackContainer.prototype, base, {
 
 });
 
-
-function parse(service, parent, data) {
-	return new AssignmentFeedbackContainer(service, parent, data);
-}
-
-AssignmentFeedbackContainer.parse = parse;
 
 module.exports = AssignmentFeedbackContainer;

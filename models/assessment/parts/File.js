@@ -74,12 +74,4 @@ Object.assign(File.prototype, {
 });
 
 
-function parse(service, parent, data) {
-	return new File(service, parent, data);
-}
-
-
-File.parse = parse;
-
-
 module.exports = File;

@@ -28,10 +28,4 @@ Object.assign(Board.prototype, Base, GetContents, /*SharedWithList,*/ {
 });
 
 
-function parse(service, parent, data) {
-	return new Board(service, parent, data);
-}
-
-Board.parse = parse;
-
 module.exports = Board;

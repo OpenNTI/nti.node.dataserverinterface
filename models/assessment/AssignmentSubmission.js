@@ -58,15 +58,11 @@ Object.assign(AssignmentSubmission.prototype, base, submission, {
 });
 
 
-function parse(service, parent, data) {
-	return new AssignmentSubmission(service, parent, data);
-}
 
 function build(service, data) {
 	return new AssignmentSubmission(service, null, data);
 }
 
-AssignmentSubmission.parse = parse;
 AssignmentSubmission.build = build;
 
 module.exports = AssignmentSubmission;

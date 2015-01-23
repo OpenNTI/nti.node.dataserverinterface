@@ -110,11 +110,4 @@ Object.assign(Part.prototype, base, content, {
 	}
 });
 
-
-function parse(service, parent, data) {
-	return new Part(service, parent, data);
-}
-
-Part.parse = parse;
-
 module.exports = Part;

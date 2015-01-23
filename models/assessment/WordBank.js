@@ -5,8 +5,7 @@ var base = require('../mixins/Base');
 
 var define = require('../../utils/object-define-properties');
 var withValue = require('../../utils/object-attribute-withvalue');
-
-var WordEntry = require('./WordEntry');
+var parser = require('../../utils/parse-object');
 
 function WordBank(service, parent, data) {
 	define(this,{
@@ -17,7 +16,7 @@ function WordBank(service, parent, data) {
 
 	Object.assign(this, data);
 
-	this.entries = data.entries.map(WordEntry.parse.bind(this, service, this));
+	this.entries = data.entries.map(e=>parser(this, e));
 }
 
 Object.assign(WordBank.prototype, base, {
@@ -32,11 +31,5 @@ Object.assign(WordBank.prototype, base, {
 
 });
 
-
-function parse(service, parent, data) {
-	return new WordBank(service, parent, data);
-}
-
-WordBank.parse = parse;
 
 module.exports = WordBank;

@@ -4,18 +4,19 @@ var base = require('./mixins/Base');
 var Url = require('url');
 var path = require('path');
 
+var QueryString = require('query-string');
+
 var constants = require('../constants');
 var parseObject = require('../utils/parse-object');
 
-var define = require('../utils/object-define-properties');
-var withValue = require('../utils/object-attribute-withvalue');
-var toQueryString = require('../utils/object-to-querystring');
+
 var fixRefs = require('../utils/rebase-references');
 
 
+const Service = Symbol.for('Service');
 
 function PageInfo(service, data) {
-	define(this, {_service: withValue(service)});
+	this[Service] = service;
 	Object.assign(this, data);
 
 	if (data.AssessmentItems) {
@@ -43,13 +44,13 @@ Object.assign(PageInfo.prototype, base, {
 		var url = this.getLink('content');
 		var root = this.getContentRoot();
 
-		return this._service.get(url)
+		return this[Service].get(url)
 			.then(function (html){ return fixRefs(html, root); });
 	},
 
 
 	getResource: function(url) {
-		return this._service.get(url);
+		return this[Service].get(url);
 	},
 
 
@@ -90,23 +91,13 @@ Object.assign(PageInfo.prototype, base, {
 			return Promise.reject('No Link');
 		}
 
-		url.search = toQueryString(o);
+		url.search = QueryString.stringify(o);
 
 		return this.getResource(url.format())
-			.then(function(objects) {
-				var item = objects.Items[0];
-				return parseObject(this, item);
-			}.bind(this));
+			.then(objects=>	parseObject(this, objects.Items[0]));
 	}
 });
 
-
-
-function parse(service, data) {
-	return new PageInfo(service, data);
-}
-
-PageInfo.parse = parse;
 
 module.exports = PageInfo;
 
@@ -138,18 +129,16 @@ function assessmentItemOrder(a, b) {
 
 
 function setupAssessmentItems(items, pageInfo) {
-	items = items.map(parseObject.bind(pageInfo, pageInfo));
+	items = items.map(o=>parseObject(pageInfo, o));
 	items.sort(assessmentItemOrder);
 
-	var sets = items.filter(function(o) {return o.containsId;});
+	var sets = items.filter(o=>o.containsId);
 
 	//Remove questions & questionsets that are embedded within Assignments and QuestionSets...leave only top-level items.
-	items = items.filter(function(o) {
-		function findReferences(found, set) {
-			return found || set.containsId(o.getID()); }
-
-		return !sets.reduce(findReferences, null);
-	});
+	items = items.filter(o=>
+		!sets.reduce((found, set) =>
+			found || set.containsId(o.getID()), null)
+	);
 
 	return items;
 }

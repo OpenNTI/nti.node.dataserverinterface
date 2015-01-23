@@ -6,10 +6,10 @@ var urlJoin = require('../../utils/urljoin');
 var forwardFunctions = require('../../utils/function-forwarding');
 var define = require('../../utils/object-define-properties');
 var withValue = require('../../utils/object-attribute-withvalue');
+var parser = require('../../utils/parse-object');
 
 var base = require('../mixins/Base');
 var assets = require('../mixins/PresentationResources');
-var Package = require('./Package');
 
 var TablesOfContents = require('../TablesOfContents');
 
@@ -25,9 +25,9 @@ function Bundle(service, parent, data) {
 	var pending = this.__pending = [];
 
 	this.ContentPackages = this.ContentPackages.map(pkg => {
-		pkg = Package.parse(service, this, pkg);
+		pkg = parser(this, pkg);
 		pkg.on('changed', this.onChange.bind(this));
-		pending.push.apply(pending, pkg.__pending || []);
+		pending.push(...pkg.__pending);
 		return pkg;
 	});
 
@@ -74,12 +74,5 @@ Object.assign(Bundle.prototype, base, assets,
 
 });
 
-
-
-function parse(service, parent, data) {
-	return new Bundle(service, parent, data);
-}
-
-Bundle.parse = parse;
 
 module.exports = Bundle;

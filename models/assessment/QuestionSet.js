@@ -1,28 +1,22 @@
 'use strict';
 
-
-var Question = require('./Question');
-var QuestionSetSubmission = require('./QuestionSetSubmission');
-
 var base = require('../mixins/Base');
 
 var define = require('../../utils/object-define-properties');
 var withValue = require('../../utils/object-attribute-withvalue');
+var parser = require('../../utils/parse-object');
 
 var SUBMITTED_TYPE = 'application/vnd.nextthought.assessment.assessedquestionset';
 
 function QuestionSet(service, parent, data) {
-	var me = this;
-	define(me,{
+	define(this,{
 		_service: withValue(service),
 		_parent: withValue(parent)
 	});
 
-	Object.assign(me, data);
+	Object.assign(this, data);
 
-	me.questions = data.questions.map(function(q) {
-		return Question.parse(service, me, q);
-	});
+	this.questions = data.questions.map(q=>parser(this, q));
 }
 
 Object.assign(QuestionSet.prototype, base, {
@@ -56,7 +50,8 @@ Object.assign(QuestionSet.prototype, base, {
 
 
 	getSubmission: function () {
-		var s = QuestionSetSubmission.build(this._service, {
+		let Model = parser.getModel('assessment.questionsetsubmission');
+		var s = Model.build(this._service, {
 			questionSetId: this.getID(),
 			ContainerId: this.containerId,
 			CreatorRecordedEffortDuration: null,
@@ -83,11 +78,5 @@ Object.assign(QuestionSet.prototype, base, {
 	}
 });
 
-
-function parse(service, parent, data) {
-	return new QuestionSet(service, parent, data);
-}
-
-QuestionSet.parse = parse;
 
 module.exports = QuestionSet;

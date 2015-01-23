@@ -20,10 +20,4 @@ Object.assign(WordEntry.prototype, base, {
 });
 
 
-function parse(service, parent, data) {
-	return new WordEntry(service, parent, data);
-}
-
-WordEntry.parse = parse;
-
 module.exports = WordEntry;

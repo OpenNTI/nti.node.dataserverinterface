@@ -27,12 +27,4 @@ Object.assign(Matching.prototype, {
 });
 
 
-function parse(service, parent, data) {
-	return new Matching(service, parent, data);
-}
-
-
-Matching.parse = parse;
-
-
 module.exports = Matching;

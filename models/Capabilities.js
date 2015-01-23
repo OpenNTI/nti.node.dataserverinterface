@@ -1,9 +1,5 @@
-'use strict';
 
-var define = require('../utils/object-define-properties');
-var withValue = require('../utils/object-attribute-withvalue');
-
-var capabilities = {
+const CAPABILITIES = {
 	canUploadAvatar: 'nti.platform.customization.avatar_upload',
 	canBlog: 'nti.platform.blogging.createblogentry',
 	canChat: 'nti.platform.p2p.chat',
@@ -16,60 +12,56 @@ var capabilities = {
 
 	canShareRedaction: false,
 
-	canSeeBlogs: function() {
-		return Boolean(this._service.getCollection('Blog'));
+	canSeeBlogs () {
+		return Boolean(this[Service].getCollection('Blog'));
 	},
 
-	canRedact: function() {
-		return !!this._service.getCollectionFor(
+	canRedact () {
+		return !!this[Service].getCollectionFor(
 			'application/vnd.nextthought.redaction',
 			'Pages');
 	},
 
-	canCanvasURL: function() {
-		return !!this._service.getCollectionFor(
+	canCanvasURL () {
+		return !!this[Service].getCollectionFor(
 			'application/vnd.nextthought.canvasurlshape',
 			'Pages');
 	},
 
-	canEmbedVideo: function() {
-		return !!this._service.getCollectionFor(
+	canEmbedVideo () {
+		return !!this[Service].getCollectionFor(
 			'application/vnd.nextthought.embeddedvideo',
 			'Pages');
-	},
+	}
 
 };
 
 
+const Service = Symbol.for('Service');
+const list = Symbol('lsit');
 
+export default class Capabilities{
+	constructor (service, caps) {
+		this[Service]= service;
+		this[list] = caps || [];
 
+		for (let cap in CAPABILITIES) {
+			if (!CAPABILITIES.hasOwnProperty(cap)) {continue;}
+			let test = CAPABILITIES[cap];
 
-function Capabilities(service, list) {
-	define(this,{
-		_service: withValue(service),
-		_list: withValue(list || [])
-	});
+			if (typeof test === 'string') {
+				test = this.hasCapability(test);
+			}
+			else if (test.call){
+				test = test.call(this);
+			}
 
-	var cap, test;
-
-	for (cap in capabilities) {
-		if (!capabilities.hasOwnProperty(cap)) {continue;}
-		test = capabilities[cap];
-		if (typeof test === 'string') {
-			test = this.hasCapability(test);
-		} else if (test.call){
-			test = test.call(this);
+			this[cap] = test;
 		}
+	}
 
-		this[cap] = test;
+
+	hasCapability (c) {
+		return this[list].indexOf(c) >= 0;
 	}
 }
-
-Object.assign(Capabilities.prototype, {
-	hasCapability: function(c) {
-		return this._list.indexOf(c) >= 0;
-	}
-});
-
-
-module.exports = Capabilities;

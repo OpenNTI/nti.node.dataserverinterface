@@ -23,10 +23,4 @@ Object.assign(Hint.prototype, base, content, {
 });
 
 
-function parse(service, parent, data) {
-	return new Hint(service, parent, data);
-}
-
-Hint.parse = parse;
-
 module.exports = Hint;

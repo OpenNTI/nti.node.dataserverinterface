@@ -1,60 +1,59 @@
 'use strict';
 
+import parse from '../utils/parse-object';
 
-// var Path = require('path');
-// var Url = require('url');
+import Capabilities from '../models/Capabilities';
 
-var User = require('../models/User');
-var PageInfo = require('../models/PageInfo');
-var Capabilities = require('../models/Capabilities');
-var Enrollment = require('./Enrollment');
-var Forums = require('./Forums');
+import Enrollment from './Enrollment';
+import Forums from './Forums';
 
-var DataCache = require('../utils/datacache');
+import DataCache from '../utils/datacache';
 
-var constants = require('../constants');
-var getLink = require('../utils/getlink');
-var define = require('../utils/object-define-properties');
-var withValue = require('../utils/object-attribute-withvalue');
-var joinWithURL = require('../utils/urljoin');
+import constants from '../constants';
+import getLink from '../utils/getlink';
+import joinWithURL from '../utils/urljoin';
 
-var inflight = {};
+const inflight = {};
 
-var ServiceDocument = function (json, server, context) {
-	define(this,{
-		_server: withValue(server),
-		_context: withValue(context)
-	});
-	var caps = json.CapabilityList || [];
+const Server = Symbol.for('Server');
+const Service = Symbol.for('Service');
+const Context = Symbol.for('Context');
+const AppUser = Symbol('LoggedInUser');
 
-	Object.assign(this, json);
+export default class ServiceDocument {
+	constructor (json, server, context) {
+		this[Service] = this; //So the parser can access it
+		this[Server] = server;
+		this[Context] = context;
 
-	this.capabilities = new Capabilities(this, caps);
-	this.enrollment = new Enrollment(this);
-	this.forums = new Forums(this);
+		var caps = json.CapabilityList || [];
 
-	this.__pending = [
-		this.getAppUser().then(function(u) {
-			//Ignore this...handwavey magic here.
-			this.__$user = u;
-			}.bind(this))
-	];
-};
+		Object.assign(this, json);
 
+		this.capabilities = new Capabilities(this, caps);
+		this.enrollment = new Enrollment(this);
+		this.forums = new Forums(this);
 
-Object.assign(ServiceDocument.prototype, {
-
-	getServer: function() {
-		return this._server;
-	},
+		this.__pending = [
+			this.getAppUser().then(u =>
+				this[AppUser] = u
+			)
+		];
+	}
 
 
-	getDataCache: function() {
-		return DataCache.getForContext(this._context);
-	},
+
+	getServer () {
+		return this[Server];
+	}
 
 
-	get: function(url) {
+	getDataCache () {
+		return DataCache.getForContext(this[Context]);
+	}
+
+
+	get (url) {
 		var key = typeof url === 'string' ? url : JSON.stringify(url);
 
 		if (inflight[key]) {
@@ -65,29 +64,31 @@ Object.assign(ServiceDocument.prototype, {
 			delete inflight[key];
 		}
 
-		var p = inflight[key] = this.getServer()._get(url, this._context);
+		var p = inflight[key] = this.getServer()._get(url, this[Context]);
 
 		p.then(clean, clean);
 
 		return p;
-	},
+	}
 
 
-	head: function(url) {
+	head (url) {
 		return this.get({method: 'HEAD', url: url});
-	},
+	}
 
 
-	post: function(url, data) {
-		return this.getServer()._post(url, data, this._context);
-	},
+	post (url, data) {
+		return this.getServer()._post(url, data, this[Context]);
+	}
 
-	delete: function(url, data) {
-		return this.getServer()._delete(url, data, this._context);
-	},
 
-	hasCookie: function(cookie) {
-		var c = this._context;
+	delete (url, data) {
+		return this.getServer()._delete(url, data, this[Context]);
+	}
+
+
+	hasCookie (cookie) {
+		var c = this[Context];
 		var d = global.document;
 		c = (c && c.headers) || d;
 		c = c && (c.Cookie || c.cookie);
@@ -98,15 +99,15 @@ Object.assign(ServiceDocument.prototype, {
 		}
 
 		return c.reduce(search, false);
-	},
+	}
 
 
-	getEnrollment: function() {
+	getEnrollment () {
 		return this.enrollment;
-	},
+	}
 
 
-	getPageInfo: function(ntiid) {
+	getPageInfo (ntiid) {
 		var key = 'pageinfo-' + ntiid;
 		var cache = this.getDataCache();
 		var cached = cache.get(key);
@@ -115,36 +116,34 @@ Object.assign(ServiceDocument.prototype, {
 		if (cached) {
 			result = Promise.resolve(cached);
 		} else {
-			result = this.getServer().getPageInfo(ntiid, this._context)
+			result = this.getServer().getPageInfo(ntiid, this[Context])
 				.then(function(json) {
 					cache.set(key, json);
 					return json;
 				});
 		}
 
-		return result.then(function(data) {
-				return PageInfo.parse(this, data);
-			}.bind(this));
-	},
+		return result.then(info=>parse(this, info));
+	}
 
 
-	getObjects: function(ntiids) {
-		return this.getServer().getObjects(ntiids, this._context);
-	},
+	getObjects (ntiids) {
+		return this.getServer().getObjects(ntiids, this[Context]);
+	}
 
 
-	getObject: function(ntiid, mime) {
-		return this.getServer().getObject(ntiid, mime, this._context);
-	},
+	getObject (ntiid, mime) {
+		return this.getServer().getObject(ntiid, mime, this[Context]);
+	}
 
 
-	getAppUsername: function () {
+	getAppUsername  () {
 		var w = this.getUserWorkspace();
 		return w && w.Title;
-	},
+	}
 
 
-	getAppUser: function() {
+	getAppUser () {
 		var key = 'appuser';
 		var cache = this.getDataCache();
 		var cached = cache.get(key);
@@ -170,13 +169,21 @@ Object.assign(ServiceDocument.prototype, {
 			}
 		}
 
-		return result.then(function(data) {
-			return User.parse(this, data);
-		}.bind(this));
-	},
+		return result.then(user=>parse(this, user));
+	}
 
 
-	__requestUserResolve: function(username) {
+	/**
+	 * Do not use this method for general purpose resolving the user,
+	 * use the async method.
+	 */
+	getAppUserSync () {
+		return this[AppUser] ||
+			(()=>{throw new Error('User is not resolved');}());
+	}
+
+
+	__requestUserResolve (username) {
 		var key = 'user-'+username;
 		var cache = this.getDataCache();
 		var cached = cache.get(key);
@@ -187,24 +194,22 @@ Object.assign(ServiceDocument.prototype, {
 		}
 		else {
 			result = this.get(this.getResolveUserURL(username))
-				.then(function(data) {
-					var user = data.Items.reduce(function(user, data) {
-						return user || (data.Username === username && data);
-					}, null);
+				.then(data => {
+					var user = data.Items.reduce((user, data) =>
+						user || (data.Username === username && data), null);
 
 					cache.set(key, user);
 					return user || Promise.reject('Username "'+ username +'" could not resolve.');
 				});
+
 			cache.setVolatile(key, result);//if this is asked for again before we resolve, reuse this promise.
 		}
 
-		return result.then(function(data) {
-			return User.parse(this, data);
-		}.bind(this));
-	},
+		return result.then(user => parse(this, user));
+	}
 
 
-	resolveUser: function(username) {
+	resolveUser (username) {
 		var key = 'user-respository';
 		var cache = this.getDataCache();
 		var repo = cache.get(key) || {};
@@ -217,18 +222,14 @@ Object.assign(ServiceDocument.prototype, {
 		var req = repo[username] = this.__requestUserResolve(username);
 
 		req.then(
-			function(user){
-				repo[username] = user;
-			},
-			function() {
-				delete repo[username];
-			});
+			user=> repo[username] = user,
+			()=> delete repo[username]);
 
 		return req;
-	},
+	}
 
 
-	getUserWorkspace: function() {
+	getUserWorkspace () {
 		var workspace;
 		this.Items.every(function(o) {
 			if (getLink(o, 'ResolveSelf')) {
@@ -238,10 +239,10 @@ Object.assign(ServiceDocument.prototype, {
 		});
 
 		return workspace;
-	},
+	}
 
 
-	getWorkspace: function(name) {
+	getWorkspace (name) {
 		var workspace;
 		this.Items.every(function(o) {
 			if (o.Title === name) {
@@ -251,10 +252,10 @@ Object.assign(ServiceDocument.prototype, {
 		});
 
 		return workspace;
-	},
+	}
 
 
-	getCollection: function(title, workspaceName) {
+	getCollection (title, workspaceName) {
 		var workspace = workspaceName ?
 					this.getWorkspace(workspaceName) :
 					this.getUserWorkspace(),
@@ -269,18 +270,18 @@ Object.assign(ServiceDocument.prototype, {
 		});
 
 		return collection;
-	},
+	}
 
 
-	ensureAnalyticsSession: function () {
+	ensureAnalyticsSession  () {
 		var workspace = this.getWorkspace('Analytics');
 		var url = getLink(workspace, 'analytics_session');
 
 		return this.hasCookie('nti.da_session') ? Promise.resolve() : this.post(url);
-	},
+	}
 
 
-	postAnalytics: function(events) {
+	postAnalytics (events) {
 		var workspace = this.getWorkspace('Analytics');
 		var url = getLink(workspace, 'batch_events');
 		var payload = {
@@ -290,7 +291,7 @@ Object.assign(ServiceDocument.prototype, {
 
 		return this.ensureAnalyticsSession()
 				.then(this.post.bind(this, url, payload));
-	},
+	}
 
 
 	/**
@@ -298,7 +299,7 @@ Object.assign(ServiceDocument.prototype, {
 	 * @param {String} mimeType
 	 * @param {String} [title]
 	 */
-	getCollectionFor: function(mimeType, title) {
+	getCollectionFor (mimeType, title) {
 		var result = null,
 			items = this.Items || [];
 
@@ -323,43 +324,43 @@ Object.assign(ServiceDocument.prototype, {
 		});
 
 		return result;
-	},
+	}
 
 
-	getContainerURL: function(ntiid) {
+	getContainerURL (ntiid) {
 		var base = this.getResolveAppUserURL();
 		var pageURI = encodeURIComponent('Pages('+ntiid+')');
 
 		return joinWithURL(base, pageURI);
-	},
+	}
 
 
-	getContentPackagesURL: function(name) {
+	getContentPackagesURL (name) {
 		return (this.getCollection(name || 'Main', 'Library') || {}).href;
-	},
+	}
 
 
-	getContentBundlesURL: function () {
+	getContentBundlesURL  () {
 		return (this.getCollection('VisibleContentBundles', 'ContentBundles') || {}).href;
-	},
+	}
 
 
-	getCoursesEnrolledURL: function() {
+	getCoursesEnrolledURL () {
 		return (this.getCollection('EnrolledCourses', 'Courses') || {}).href;
-	},
+	}
 
 
-	getCoursesAdministeringURL: function() {
+	getCoursesAdministeringURL () {
 		return (this.getCollection('AdministeredCourses', 'Courses') || {}).href;
-	},
+	}
 
 
-	getCoursesCatalogURL: function() {
+	getCoursesCatalogURL () {
 		return (this.getCollection('AllCourses', 'Courses') || {}).href;
-	},
+	}
 
 
-	getObjectURL: function(ntiid, field) {
+	getObjectURL (ntiid, field) {
 		var collection = this.getCollection('Objects', 'Global') || {};
 		var parts = [
 			collection.href || '',
@@ -370,10 +371,10 @@ Object.assign(ServiceDocument.prototype, {
 		}
 
 		return parts.join('/');
-	},
+	}
 
 
-	getUserSearchURL: function(username) {
+	getUserSearchURL (username) {
 		var l = getLink(
 			(this.getWorkspace('Global') || {}).Links || [],
 			constants.REL_USER_SEARCH);
@@ -383,24 +384,24 @@ Object.assign(ServiceDocument.prototype, {
 		}
 
 		return joinWithURL(l, username && encodeURIComponent(username));
-	},
+	}
 
 
-	getUserUnifiedSearchURL: function() {
+	getUserUnifiedSearchURL () {
 		var l = getLink(
 			(this.getUserWorkspace() || {}).Links || [],
 			constants.REL_USER_UNIFIED_SEARCH);
 
 		return l || null;
-	},
+	}
 
 
-	getResolveAppUserURL: function() {
+	getResolveAppUserURL () {
 		return getLink(this.getUserWorkspace(), 'ResolveSelf');
-	},
+	}
 
 
-	getResolveUserURL: function(username) {
+	getResolveUserURL (username) {
 		var l = getLink(
 			(this.getWorkspace('Global') || {}).Links || [],
 			constants.REL_USER_RESOLVE);
@@ -410,27 +411,25 @@ Object.assign(ServiceDocument.prototype, {
 		}
 
 		return joinWithURL(l, username && encodeURIComponent(username));
-	},
+	}
 
 
-	getBulkResolveUserURL: function() {
+	getBulkResolveUserURL () {
 		var l = getLink(
 			(this.getWorkspace('Global') || {}).Links || [],
 			constants.REL_BULK_USER_RESOLVE);
 
 		return l || null;
-	},
+	}
 
 
-	getPurchasableItemURL: function() {
+	getPurchasableItemURL () {
 		return '/dataserver2/store/get_purchasables';//TODO: this is legacy...replace
-	},
+	}
 
 
-	getStoreActivationURL: function() {
+	getStoreActivationURL () {
 		return '/dataserver2/store/redeem_purchase_code';//TODO: this is legacy...replace
-	},
+	}
 
-});
-
-module.exports = ServiceDocument;
+}

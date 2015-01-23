@@ -5,11 +5,7 @@ var base = require('../mixins/Base');
 
 var define = require('../../utils/object-define-properties');
 var withValue = require('../../utils/object-attribute-withvalue');
-
-var AssignmentPart = require('./AssignmentPart');
-var AssignmentSubmission = require('./AssignmentSubmission');
-var AssignmentHistoryItem = require('./AssignmentHistoryItem');
-var SavePointItem = require('./SavePointItem');
+var parser = require('../../utils/parse-object');
 
 
 function Assignment(service, parent, data) {
@@ -27,15 +23,12 @@ Object.assign(Assignment.prototype, base, {
 	isSubmittable: true,
 
 	__setup: function (data) {
-		var me = this;
-		Object.assign(me, data);
+		Object.assign(this, data);
 
-		me.__parseDate('available_for_submission_beginning');
-		me.__parseDate('available_for_submission_ending');
+		this.__parseDate('available_for_submission_beginning');
+		this.__parseDate('available_for_submission_ending');
 
-		me.parts = (data.parts || []).map(function(p) {
-			return AssignmentPart.parse(me._service, me, p);
-		});
+		this.parts = (data.parts || []).map(p => parser(this, p));
 	},
 
 
@@ -107,7 +100,8 @@ Object.assign(Assignment.prototype, base, {
 
 
 	getSubmission: function () {
-		var s = AssignmentSubmission.build(this._service, {
+		let model = parser.getModel('assessment.assignmentsubmission');
+		var s = model.build(this._service, {
 			assignmentId: this.getID(),
 			parts: []
 		});
@@ -129,18 +123,14 @@ Object.assign(Assignment.prototype, base, {
 
 
 	loadHistory: function () {
-		var me = this;
-		var service = me._service;
-		var link = me.getLink('History');
+		var service = this._service;
+		var link = this.getLink('History');
 
 		if (!link) {
 			return Promise.reject('No Link');
 		}
 
-		return service.get(link)
-			.then(function(data) {
-				return AssignmentHistoryItem.parse(service, me, data);
-			});
+		return service.get(link).then(data=>parser(this, data));
 	},
 
 
@@ -154,9 +144,7 @@ Object.assign(Assignment.prototype, base, {
 		}
 
 		return service.get(link)
-			.then(function(data) {
-				return SavePointItem.parse(service, me, data);
-			});
+			.then(data=>parser(me, data));
 	},
 
 
@@ -184,11 +172,5 @@ Object.assign(Assignment.prototype, base, {
 
 });
 
-
-function parse(service, parent, data) {
-	return new Assignment(service, parent, data);
-}
-
-Assignment.parse = parse;
 
 module.exports = Assignment;

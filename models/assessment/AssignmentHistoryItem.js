@@ -49,11 +49,4 @@ Object.assign(AssignmentHistoryItem.prototype, base, {
 
 });
 
-
-function parse(service, parent, data) {
-	return new AssignmentHistoryItem(service, parent, data);
-}
-
-AssignmentHistoryItem.parse = parse;
-
 module.exports = AssignmentHistoryItem;

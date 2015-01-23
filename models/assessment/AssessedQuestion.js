@@ -6,21 +6,17 @@ var assessed = require('../mixins/AssessedAssessmentPart');
 
 var define = require('../../utils/object-define-properties');
 var withValue = require('../../utils/object-attribute-withvalue');
-
-var AssessedPart = require('./AssessedPart');
+var parser = require('../../utils/parse-object');
 
 function AssessedQuestion(service, parent, data) {
-	var me = this;
-	define(me,{
+	define(this,{
 		_service: withValue(service),
 		_parent: withValue(parent)
 	});
 
 
-	Object.assign(me, data);
-	me.parts = data.parts.map(function(part) {
-		return AssessedPart.parse(service, me, part);
-	});
+	Object.assign(this, data);
+	this.parts = data.parts.map(part =>parser(this, part));
 }
 
 Object.assign(AssessedQuestion.prototype, base, assessed, {
@@ -45,11 +41,5 @@ Object.assign(AssessedQuestion.prototype, base, assessed, {
 	},
 });
 
-
-function parse(service, parent, data) {
-	return new AssessedQuestion(service, parent, data);
-}
-
-AssessedQuestion.parse = parse;
 
 module.exports = AssessedQuestion;

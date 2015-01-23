@@ -65,15 +65,10 @@ Object.assign(QuestionSubmission.prototype, base, submission, {
 });
 
 
-function parse(service, parent, data) {
-	return new QuestionSubmission(service, parent, data);
-}
-
 function build(service, data) {
 	return new QuestionSubmission(service, null, data);
 }
 
-QuestionSubmission.parse = parse;
 QuestionSubmission.build = build;
 
 module.exports = QuestionSubmission;

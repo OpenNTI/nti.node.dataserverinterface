@@ -32,10 +32,4 @@ Object.assign(Comment.prototype, {
 	}
 });
 
-function parse(service, parent, data) {
-	return new Comment(service, parent, data);
-}
-
-
-Comment.parse = parse;
 module.exports = Comment;

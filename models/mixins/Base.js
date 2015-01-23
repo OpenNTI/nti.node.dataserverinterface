@@ -176,7 +176,7 @@ Object.assign(exports, {
 		}
 
 
-		var u = this._service.__$user || {},//pretend you did not read this line.
+		var u = this._service.getAppUserSync() || {},
 			visibilityKey = getProp('visibility'),
 			attr = CONTENT_VISIBILITY_MAP[visibilityKey] || visibilityKey;
 

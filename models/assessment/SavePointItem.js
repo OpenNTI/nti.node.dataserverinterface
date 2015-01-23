@@ -33,10 +33,4 @@ Object.assign(SavePointItem.prototype, base, {
 });
 
 
-function parse(service, parent, data) {
-	return new SavePointItem(service, parent, data);
-}
-
-SavePointItem.parse = parse;
-
 module.exports = SavePointItem;

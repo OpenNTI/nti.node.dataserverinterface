@@ -3,43 +3,41 @@
 var Url = require('url');
 var getLink = require('../../utils/getlink');
 
-var waitFor = require('../../utils/waitfor');
-var pluck = require('../../utils/array-pluck');
-var define = require('../../utils/object-define-properties');
-var withValue = require('../../utils/object-attribute-withvalue');
-var parseKey = require('../../utils/parse-object-at-key');
-var emptyFunction = require('../../utils/empty-function');
-
 var base = require('../mixins/Base');
-var VideoIndex = require('../VideoIndex');
-var Bundle = require('../content/Bundle');
-var CatalogEntry = require('./CatalogEntry');
-var Outline = require('./OutlineNode');
+
+var emptyFunction = require('../../utils/empty-function');
+var waitFor = require('../../utils/waitfor');
+var define = require('../../utils/object-define-properties');
+
+var withValue = require('../../utils/object-attribute-withvalue');
+
+var parseKey = require('../../utils/parse-object-at-key');
+var parser = parseKey.parser;
+
+
 var AssessmentCollection = require('../assessment/Collection');
 
 var emptyCatalogEntry = {getAuthorLine: emptyFunction};
+
+const OutlineCache = Symbol('OutlineCache');
 
 function Instance(service, parent, data) {
 	define(this, {
 		_service: withValue(service),
 		_parent: withValue(parent)
 	});
+
 	Object.assign(this, data);
 
-	var b = this.ContentPackageBundle = Bundle.parse(service, this, data.ContentPackageBundle);
-
-	b.on('changed', this.onChange.bind(this));
-
-
 	var parse = parseKey.bind(this, this);
+	var bundle = parse('ContentPackageBundle');
+	bundle.on('changed', this.onChange.bind(this));
+
 	parse('ParentDiscussions');
 	parse('Discussions');
+	parse('Outline');
 
-	this.__pending = [
-
-		resolveCatalogEntry(this)
-
-	].concat(b.__pending || []);
+	this.__pending = [resolveCatalogEntry(this), ...bundle.__pending];
 }
 
 Object.assign(Instance.prototype, base, {
@@ -135,33 +133,32 @@ Object.assign(Instance.prototype, base, {
 
 
 	getOutline: function() {
-		var me = this;
 		var link = getLink(this.Outline || {}, 'contents');
 		if (!link) {
 			return Promise.reject('No Outline or content link');
 		}
 
-		function buildOutline(contents) {
-			var o = Outline.parse(me._service, me, me.Outline);
-
-			define(o, {_assignments: withValue(contents[1])});
-
-			o.contents = Outline.parse(me._service, o, contents[0]);
-			return o;
-		}
-
-		if (!this.__outline) {
-			this.__outline = waitFor(this.__pending)
-				.then(function () {
-					return me.CatalogEntry.Preview ?
+		if (!this[OutlineCache]) {
+			this[OutlineCache] = waitFor(this.__pending)
+				.then(()=>
+					this.CatalogEntry.Preview ?
 						Promise.reject('Preview') :
 						Promise.all([
-							me._service.get(link),
-							me.getAssignments().catch(emptyFunction) ])
-						.then(buildOutline);
-				});
+							this._service.get(link),
+							this.getAssignments().catch(emptyFunction) ])
+						.then(contents=> {
+							var [OutlineContents, Assignments] = contents;
+
+							var o = this.Outline;
+
+							define(o, {_assignments: withValue(Assignments)});
+
+							o.contents = parser(o, OutlineContents);
+							return o;
+						})
+				);
 		}
-		return me.__outline;
+		return this[OutlineCache];
 	},
 
 
@@ -175,23 +172,10 @@ Object.assign(Instance.prototype, base, {
 
 
 	getVideoIndex: function() {
-		var service = this._service;
-		var me = this;
-
-		function get(pkg) {
-			return pkg.getVideoIndex().then(function(ix) {return ix.asJSON();});
-		}
-
-		function flattenList(o, i) {return o.concat(i);}
-
-		function combine(indices) {
-			var orders = pluck(indices, '_order');
-			var out = indices.reduce(function(a,b){return Object.assign(a,b);}, {});
-			out._order = orders.reduce(flattenList, []);
-			return VideoIndex.parse(service, me, out);
-		}
-
-		return Promise.all(this.ContentPackageBundle.map(get)).then(combine);
+		return Promise.all(
+			this.ContentPackageBundle.map(pkg=>pkg.getVideoIndex()))
+				.then(indices =>
+					indices.reduce((a,b) =>a.combine(b)));
 	},
 
 
@@ -206,14 +190,6 @@ Object.assign(Instance.prototype, base, {
 });
 
 
-
-function parse(service, parent, data) {
-	return new Instance(service, parent, data);
-}
-
-
-Instance.parse = parse;
-
 module.exports = Instance;
 
 //Private methods
@@ -221,7 +197,7 @@ module.exports = Instance;
 function resolveCatalogEntry(me) {
 
 	function parseCCE(cce) {
-		cce = CatalogEntry.parse(service, cce);
+		cce = parser(service, cce);
 		me.CatalogEntry = cce;
 		return waitFor(cce.__pending);
 	}

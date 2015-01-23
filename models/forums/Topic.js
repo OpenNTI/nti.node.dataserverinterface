@@ -51,10 +51,4 @@ Object.assign(Topic.prototype, Base, GetContents, /*SharedWithList,*/ {
 });
 
 
-function parse(service, parent, data) {
-	return new Topic(service, parent, data);
-}
-
-Topic.parse = parse;
-
 module.exports = Topic;

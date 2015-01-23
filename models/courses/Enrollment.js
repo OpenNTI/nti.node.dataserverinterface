@@ -5,20 +5,19 @@ var unique = require('../../utils/array-unique');
 var define = require('../../utils/object-define-properties');
 var withValue = require('../../utils/object-attribute-withvalue');
 var forwardFunctions = require('../../utils/function-forwarding');
+var parse = require('../../utils/parse-object');
+
 var base = require('../mixins/Base');
 
-var Instance = require('./Instance');
 
-function Enrollment(service, data, admin) {
+function Enrollment(service, data) {
 	define(this, {_service: withValue(service)});
 
 	Object.assign(this, data);
 
-	var i = this.CourseInstance = Instance.parse(service, this, data.CourseInstance);
+	var i = this.CourseInstance = parse(this, data.CourseInstance);
 
 	i.on('changed', this.onChange.bind(this));
-
-	this.admin = admin;
 
 	this.__pending = [].concat(i.__pending || []);
 }
@@ -88,12 +87,5 @@ Object.assign(Enrollment.prototype, base,
 
 });
 
-
-
-function parse(service, data, admin) {
-	return new Enrollment(service, data, admin);
-}
-
-Enrollment.parse = parse;
 
 module.exports = Enrollment;

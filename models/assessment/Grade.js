@@ -33,10 +33,4 @@ Object.assign(Grade.prototype, base, names, {
 });
 
 
-function parse(service, parent, data) {
-	return new Grade(service, parent, data);
-}
-
-Grade.parse = parse;
-
 module.exports = Grade;

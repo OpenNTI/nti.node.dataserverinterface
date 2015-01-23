@@ -20,11 +20,4 @@ function Post(service, parent, data) {
 
 Object.assign(Post.prototype, Base, /*SharedWithList,*/ {});
 
-
-function parse(service, parent, data) {
-	return new Post(service, parent, data);
-}
-
-Post.parse = parse;
-
 module.exports = Post;

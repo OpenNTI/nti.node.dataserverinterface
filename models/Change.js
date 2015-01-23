@@ -35,11 +35,4 @@ Object.assign(Change.prototype, base, {
 
 });
 
-
-function parse(service, parent, data) {
-	return new Change(service, parent, data);
-}
-
-Change.parse = parse;
-
 module.exports = Change;

@@ -50,12 +50,4 @@ Object.assign(FillInTheBlank.prototype, {
 });
 
 
-function parse(service, parent, data) {
-	return new FillInTheBlank(service, parent, data);
-}
-
-
-FillInTheBlank.parse = parse;
-
-
 module.exports = FillInTheBlank;

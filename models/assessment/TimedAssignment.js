@@ -96,10 +96,5 @@ Object.assign(TimedAssignment.prototype, {
 
 });
 
-function parse(service, parent, data) {
-	return new TimedAssignment(service, parent, data);
-}
-
-TimedAssignment.parse = parse;
 
 module.exports = TimedAssignment;

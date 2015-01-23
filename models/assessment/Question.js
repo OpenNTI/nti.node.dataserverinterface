@@ -6,10 +6,8 @@ var content = require('../mixins/HasContent');
 
 var define = require('../../utils/object-define-properties');
 var withValue = require('../../utils/object-attribute-withvalue');
-var parseObject = require('../../utils/parse-object');
+var parser = require('../../utils/parse-object');
 
-var Part = require('./Part');
-var QuestionSubmission = require('./QuestionSubmission');
 
 function Question(service, parent, data) {
 	define(this,{
@@ -21,17 +19,18 @@ function Question(service, parent, data) {
 
 	content.initMixin.call(this, data);
 
-	this.parts = data.parts.map(parseObject.bind(this, this));
+	this.parts = data.parts.map(p=>parser(this, p));
 
 	if (this.wordbank) {
-		this.wordbank = parseObject(this, this.wordbank);
+		this.wordbank = parser(this, this.wordbank);
 	}
 }
 
 Object.assign(Question.prototype, base, content, {
 
 	getVideos: function() {
-		var all = Part.prototype.getVideos.call(this);
+		var all = parser.getModel('assessment.part').prototype.getVideos.call(this);
+
 		for(let p of this.parts) {
 			all.push.apply(all, p.getVideos());
 		}
@@ -41,7 +40,8 @@ Object.assign(Question.prototype, base, content, {
 
 
 	getSubmission: function () {
-		return QuestionSubmission.build(this._service, {
+		let Model = parser.getModel('assessment.questionsubmission');
+		return Model.build(this._service, {
 			ContainerId: this.containerId,
 			NTIID: this.getID(),
 			questionId: this.getID(),
@@ -59,12 +59,5 @@ Object.assign(Question.prototype, base, content, {
 	}
 
 });
-
-
-function parse(service, parent, data) {
-	return new Question(service, parent, data);
-}
-
-Question.parse = parse;
 
 module.exports = Question;

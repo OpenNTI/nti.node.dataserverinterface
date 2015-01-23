@@ -15,12 +15,5 @@ Object.assign(MultipleChoice.prototype, {
 });
 
 
-function parse(service, parent, data) {
-	return new MultipleChoice(service, parent, data);
-}
-
-
-MultipleChoice.parse = parse;
-
 
 module.exports = MultipleChoice;
