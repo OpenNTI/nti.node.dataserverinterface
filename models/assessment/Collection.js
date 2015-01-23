@@ -98,17 +98,16 @@ module.exports = Collection;
 
 
 function find(list, id) {
-	return list.reduce(function(found, item){
-
-		return found || (
+	return list.reduce((found, item) =>
+		found || (
 			(item.getID()===id || (item.containsId && item.containsId(id))) ? item : null
-		); }, null);
+		), null);
 }
 
 
 function nodeToNTIIDs(node) {
 	var id = node.get('ntiid');
 	return (id? [id] : []).concat(
-			node.getchildren().reduce(function(a, b) {
-				return a.concat(nodeToNTIIDs(b)); }, []));
+			node.getchildren().reduce((a, b) =>
+				a.concat(nodeToNTIIDs(b)), []));
 }

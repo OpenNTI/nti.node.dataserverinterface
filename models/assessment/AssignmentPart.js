@@ -21,7 +21,7 @@ Object.assign(AssignmentPart.prototype, base, {
 
 	containsId: function(id) {
 		var qSet = this.question_set;
-		return qSet && qSet.getID() === id || qSet.containsId(id);
+		return qSet && (qSet.getID() === id || qSet.containsId(id));
 	},
 
 	getQuestion: function (id) {

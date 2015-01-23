@@ -38,10 +38,7 @@ Object.assign(Assignment.prototype, base, {
 	 * @param {String} id NTIID
 	 */
 	containsId: function(id) {
-		var items = this.parts.filter(function(p) {
-			return p.containsId(id);
-		});
-		return items.length > 0;
+		return this.parts.filter(p => p && p.containsId(id)).length > 0;
 	},
 
 
