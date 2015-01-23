@@ -35,6 +35,7 @@ var PARSERS = {
 	'assessment.assessedpart': require('./assessment/AssessedPart'),
 
 	'naquestionset': require('./assessment/QuestionSet'),
+	'naquestionbank': 'naquestionset',
 	'naquestion': require('./assessment/Question'),
 	'naquestionfillintheblankwordbank': 'naquestion',
 
