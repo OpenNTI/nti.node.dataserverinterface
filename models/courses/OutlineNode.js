@@ -255,9 +255,10 @@ function getContentFallback(outlineNode) {
 
 	return p.then(function(toc) {
 		var tocNode = toc.getNode(contentId);
-		//console.debug(toc, node);
-
-		return makeFallbackOverview(tocNode, outlineNode);
-		//return Promise.reject('TODO: No overview JSON file');
+		var content = makeFallbackOverview(tocNode, outlineNode);
+		if (!content) {
+			console.error('Fallback Content failed');
+		}
+		return content;
 	});
 }
