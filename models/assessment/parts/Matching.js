@@ -17,7 +17,7 @@ Object.assign(Matching.prototype, {
 		var maybe = !!partValue;
 		var {length} = this.values;
 
-		for(let i = 0; partValue && i < length; i++) {
+		for(let i = 0; maybe && i < length; i++) {
 			//all values have to be non-nully
 			maybe = maybe && partValue[i] != null;
 		}
