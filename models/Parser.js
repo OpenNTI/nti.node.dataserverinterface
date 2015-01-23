@@ -34,18 +34,20 @@ var PARSERS = {
 	'assessment.assessedquestion': require('./assessment/AssessedQuestion'),
 	'assessment.assessedpart': require('./assessment/AssessedPart'),
 
-	'naquestionset': require('./assessment/QuestionSet'),
-	'naquestionbank': 'naquestionset',
-	'naquestion': require('./assessment/Question'),
-	'naquestionfillintheblankwordbank': 'naquestion',
+	'questionset': require('./assessment/QuestionSet'),
+	'naquestionset': 'questionset',
+	'naquestionbank': 'questionset',
+	'question': require('./assessment/Question'),
+	'naquestion': 'question',
+	'naquestionfillintheblankwordbank': 'question',
 
 	'assessment.assignment': require('./assessment/Assignment'),
 	'assessment.timedassignment': require('./assessment/TimedAssignment'),
 
 	'assessment.assignmentpart': require('./assessment/AssignmentPart'),
 
-	'assessment.randomizedquestionset': 'naquestionset',
-	'assessment.fillintheblankwithwordbankquestion': 'naquestion',
+	'assessment.randomizedquestionset': 'questionset',
+	'assessment.fillintheblankwithwordbankquestion': 'question',
 
 	'assessment.assignmentsubmission': require('./assessment/AssignmentSubmission'),
 	'assessment.assignmentsubmissionpendingassessment': 'assessment.assignmentsubmission',
