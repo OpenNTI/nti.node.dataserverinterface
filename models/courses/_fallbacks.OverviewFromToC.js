@@ -135,7 +135,7 @@ module.exports = function buildFromToc (element, outlineNode) {
 
 		if (obj.MimeType === 'application/vnd.nextthought.topic') {
 			items.push(obj);
-			return;
+			continue;
 		}
 
 		let grouping = sections[type];
