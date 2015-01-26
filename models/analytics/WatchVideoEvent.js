@@ -2,10 +2,11 @@
 
 
 var base = require('../mixins/Base');
+var Types = require('./MimeTypes');
 
 function WatchVideoEvent(resourceId, rootContextId, context, duration, startTime, endTime, maxDuration, hasTranscript) {
 	Object.assign(this, {
-		MimeType: 'application/vnd.nextthought.analytics.watchvideoevent',
+		MimeType: Types.WATCH_VIDEO,
 		MaxDuration: maxDuration,
 		type: 'video-watch',
 		resource_id: resourceId,

@@ -3,18 +3,18 @@
 var base = require('../mixins/Base');
 var Types = require('./MimeTypes');
 
-function ResourceEvent(resourceId, courseId, duration) {
+function TopicViewedEvent(topicId, courseId, duration) {
 	Object.assign(this, {
-		MimeType: Types.RESOURCE_VIEWED,
-		type: 'resource-viewed',
-		resource_id: resourceId,
+		MimeType: Types.TOPIC_VIEWED,
+		type: 'discussion-viewed',
+		topic_id: topicId,
 		course: courseId,
 		time_length: duration,
 		timestamp: Date.now() / 1000 //the server is expecting seconds
 	});
 }
 
-Object.assign(ResourceEvent.prototype, base, {
+Object.assign(TopicViewedEvent.prototype, base, {
 
 	setContextPath: function(path) {
 		this.context_path = path;
@@ -25,4 +25,4 @@ Object.assign(ResourceEvent.prototype, base, {
 	}
 });
 
-module.exports = ResourceEvent;
+module.exports = TopicViewedEvent;
