@@ -1,7 +1,3 @@
-'use strict';
-
-module.exports = {
-	WATCH_VIDEO: 'application/vnd.nextthought.analytics.watchvideoevent',
-	RESOURCE_VIEWED: 'application/vnd.nextthought.analytics.resourceevent',
-	TOPIC_VIEWED: 'application/vnd.nextthought.analytics.topicviewevent'
-};
+export const WATCH_VIDEO = 'application/vnd.nextthought.analytics.watchvideoevent';
+export const RESOURCE_VIEWED = 'application/vnd.nextthought.analytics.resourceevent';
+export const TOPIC_VIEWED = 'application/vnd.nextthought.analytics.topicviewevent';
