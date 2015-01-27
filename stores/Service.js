@@ -12,6 +12,7 @@ import DataCache from '../utils/datacache';
 import constants from '../constants';
 import getLink from '../utils/getlink';
 import joinWithURL from '../utils/urljoin';
+import {isNTIID} from '../utils/ntiids';
 
 const inflight = {};
 
@@ -40,7 +41,6 @@ export default class ServiceDocument {
 			)
 		];
 	}
-
 
 
 	getServer () {
@@ -200,7 +200,8 @@ export default class ServiceDocument {
 		else {
 			result = this.get(this.getResolveUserURL(username))
 				.then(data => {
-					var user = data.Items.reduce((user, data) =>
+					var items = data.Items || [data];
+					var user = items.reduce((user, data) =>
 						user || (data.Username === username && data), null);
 
 					cache.set(key, user);
@@ -407,6 +408,10 @@ export default class ServiceDocument {
 
 
 	getResolveUserURL (username) {
+		if (isNTIID(username)) {
+			return this.getObjectURL(username);
+		}
+
 		var l = getLink(
 			(this.getWorkspace('Global') || {}).Links || [],
 			constants.REL_USER_RESOLVE);

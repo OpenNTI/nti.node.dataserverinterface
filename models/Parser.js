@@ -3,6 +3,7 @@
 var ignored = {parse: require('../utils/identity')};
 
 var PARSERS = {
+	'community': require('./Community'),
 	'user': require('./User'),
 	'pageinfo': require('./PageInfo'),
 
