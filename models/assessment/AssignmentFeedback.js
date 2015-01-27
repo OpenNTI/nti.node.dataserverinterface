@@ -23,6 +23,26 @@ function AssignmentFeedback(service, parent, data) {
 
 Object.assign(AssignmentFeedback.prototype, base, names, {
 
+	delete () {
+		var link = this.getLink('edit');
+		if (!link) {
+			return Promise.reject(new Error('No Edit Link'));
+		}
+
+		return this._service.delete(link);
+	},
+
+
+	editBody (body) {
+		var link = this.getLink('edit');
+		if (!link) {
+			return Promise.reject(new Error('No Edit Link'));
+		}
+
+		this.body = body;
+
+		return this._service.put(link, this.getData());
+	}
 
 });
 
