@@ -131,7 +131,7 @@ module.exports = function buildFromToc (element, outlineNode) {
 		let obj = getConfigForNode(node, outlineNode);
 		let type = obj && (obj.section || SECTION_TYPE_MAP[obj.MimeType] || 'Unknown');
 
-		if (!type) { return; }
+		if (!type) { continue; }
 
 		if (obj.MimeType === 'application/vnd.nextthought.topic') {
 			items.push(obj);
