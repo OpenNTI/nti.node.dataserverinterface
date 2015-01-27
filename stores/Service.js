@@ -82,6 +82,11 @@ export default class ServiceDocument {
 	}
 
 
+	put (url, data) {
+		return this.getServer()._put(url, data, this[Context]);
+	}
+
+
 	delete (url, data) {
 		return this.getServer()._delete(url, data, this[Context]);
 	}
