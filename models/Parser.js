@@ -78,7 +78,7 @@ var PARSERS = {
 	'assessment.randomizedmultiplechoicepart': 'assessment.multiplechoicepart',
 	'assessment.randomizedmultiplechoicemultipleanswerpart': 'assessment.multiplechoicepart',
 	'assessment.numericmathpart': 'assessment.part',
-	'assessment.orderingpart': 'assessment.part',
+	'assessment.orderingpart': require('./assessment/parts/Ordering'),
 	'assessment.symbolicmathpart': 'assessment.part',
 
 	'assessment.fillintheblankshortanswersolution': 'assessment.solution',
