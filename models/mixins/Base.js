@@ -62,8 +62,13 @@ Object.assign(exports, {
 
 						let current = this[prop];
 						let value = o[prop];
-						if (current && current._service) {
-							value = parse(this, value);
+						//We will assume if its an array, that we should parse it.
+						if (current && (current._service || Array.isArray(current||value))) {
+							try {
+								value = parse(this, value);
+							} catch(e) {
+								console.warn('Attempted to parse new value, and something went wrong... %o', e.stack||e.message||e);
+							}
 						}
 
 						if (typeof current === 'function') {
