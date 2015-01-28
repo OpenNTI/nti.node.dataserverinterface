@@ -20,15 +20,26 @@ function Post(service, parent, data) {
 }
 
 Object.assign(Post.prototype, Base, /*SharedWithList,*/ {
-	setBody(newValue) {
+	setProperties(newProps) {
 		var link = this.getLink('edit');
 		if (!link) {
 			throw new Error('Post is not editable. (No edit link).');
 		}
-		return this._service.put(link, {
-			body: newValue
-		})
-		.then(result => parseObject(this._parent, result));
+		var props = {};
+		// only allow specific properties to be updated.
+		['body', 'title', 'tags'].forEach(propName => {
+			if (newProps[propName]) {
+				props[propName] = newProps[propName];
+			}
+		});
+		return this._service.put(link, props)
+			.then(result => {
+				// assimilate the resultant instance's properties. the current instance could be
+				// referenced by another object (this could be a topic headline post referenced
+				// by its parent topic, for example) so we want the current instance to reflect
+				// the changes.
+				return Object.assign(this, parseObject(this._parent, result));
+			});
 	}
 });
 
