@@ -1,38 +1,34 @@
-'use strict';
 
-var Url = require('url');
+import Url from 'url';
 //If the login method is invoked on the NodeJS side, we will need this function...
-var btoa = global.bota || require('btoa');
-var QueryString = require('query-string');
-var request = require('../utils/request');
+import base64decode from 'btoa';
+import QueryString from 'query-string';
+import request from '../utils/request';
 
-var StripeInterface = require('./Stripe');
-var FiveMinuteInterface = require('./FiveMinuteInterface');
+import DataCache from '../utils/datacache';
 
-var DataCache = require('../utils/datacache');
+import isBrowser from '../utils/browser';
+import isEmpty from '../utils/isempty';
+import getLink from '../utils/getlink';
+import NTIIDs from '../utils/ntiids';
+import waitFor from '../utils/waitfor';
 
-var define = require('../utils/object-define-hidden-props');
+import Service from '../stores/Service';
 
-var isBrowser = require('../utils/browser');
-var isEmpty = require('../utils/isempty');
-var getLink = require('../utils/getlink');
-var NTIIDs = require('../utils/ntiids');
-var waitFor = require('../utils/waitfor');
+import {Pending, SiteName} from '../CommonSymbols';
 
-var Service = require('../stores/Service');
+const btoa = global.bota || base64decode;
+const jsonContent = /(application|json)/i;
+const mightBeJson = /^(\s*)(\{|\[|"|')/i;
 
-var jsonContent = /(application|json)/i;
-var mightBeJson = /^(\s*)(\{|\[|"|')/i;
-
-var DataServerInterface = function (config) {
-	if (!config || !config.server) {
-		throw new Error('No configuration');
+export default class DataServerInterface {
+	constructor (config) {
+		if (!config || !config.server) {
+			throw new Error('No configuration');
+		}
+		this.config = config;
 	}
-	this.config = config;
-};
 
-
-Object.assign(DataServerInterface.prototype, {
 
 	/**
 	 * Makes a request to the dataserver.
@@ -50,7 +46,7 @@ Object.assign(DataServerInterface.prototype, {
 	 * @returns {Promise}
 	 * @private
 	 */
-	_request: function(options, context) {
+	_request (options, context) {
 
 		var result;
 		var abortMethod;
@@ -178,41 +174,42 @@ Object.assign(DataServerInterface.prototype, {
 
 		pending.push(result);
 		return result;
-	},
+	}
 
 
-	_get: function(url, context) {
+	_get (url, context) {
 		return this._request(url, context);
-	},
+	}
 
 
-	_post: function(url, data, context) {
+	_post (url, data, context) {
 		return this._request({
 			url: url,
 			method: 'POST',
 			data: data
 		}, context);
-	},
+	}
 
 
-	_put: function(url, data, context) {
+	_put (url, data, context) {
 		return this._request({
 			url: url,
 			method: 'PUT',
 			data: data
 		}, context);
-	},
+	}
 
 
-	_delete: function(url, context) {
+	_delete (url, context) {
 		return this._request({
 			url: url,
 			method: 'DELETE'
 		}, context);
-	},
+	}
 
 
-	getPurchasables: function (ids, context) {
+	getPurchasables  (ids, context) {
+		console.debug('{FIXME} does not belong here');
 		var url = '/dataserver2/store/get_purchasables';
 
 		if (ids) {
@@ -226,24 +223,11 @@ Object.assign(DataServerInterface.prototype, {
 		}
 
 		return this._get(url, context);
-	},
-
-
-	// Instead of having a method like this on the server interface directly,
-	// we should just import the module and construct them in the place we need them.
-	// Also, add factory method (.create()) to them so we can require(..).create();
-
-	getStripeInterface: function (context) {
-		return new StripeInterface(this, context);
-	},
-
-	getFiveMinuteInterface: function(context) {
-		return new FiveMinuteInterface(this, context);
-	},
+	}
 
 
 
-	getServiceDocument: function(context) {
+	getServiceDocument (context) {
 		var cache = DataCache.getForContext(context),
 			cached = cache.get('service-doc-instance'),
 			promise;
@@ -258,30 +242,28 @@ Object.assign(DataServerInterface.prototype, {
 		if (cached) {
 			promise = Promise.resolve(new Service(cached, this, context));
 		//No? okay... get the data and build and instance
-		} else {
-			promise = this._get(null, context).then(function(json) {
-				cache.set('service-doc', json);
-				return new Service(json, this, context);
-			}.bind(this))
-			.then(function(doc) {
-				return waitFor(doc.__pending)
-					.then(function() {
-						return Promise.resolve(doc);
-					});
-			});
+		}
+		else {
+			promise = this._get(null, context)
+				.then(json =>
+					cache.set('service-doc', json) &&
+					new Service(json, this, context))
+
+				.then(doc =>
+					waitFor(doc[Pending])
+						.then(() => Promise.resolve(doc)));
 		}
 
 		//once we have an instance, stuff it in the cache so we don't keep building it.
-		promise.then(function(instance) {
-			cache.setVolatile('service-doc-instance', instance);
-		});
+		promise.then(instance =>
+			cache.setVolatile('service-doc-instance', instance));
 
 		//Return a promise that will fulfill with the instance...
 		return promise;
-	},
+	}
 
 
-	logInPassword: function(url,credentials) {
+	logInPassword (url,credentials) {
 		var username = credentials ? credentials.username : undefined;
 		var password = credentials ? credentials.password : undefined;
 		var auth = password ? ('Basic ' + btoa(username+':'+password)) : undefined;
@@ -294,24 +276,24 @@ Object.assign(DataServerInterface.prototype, {
 			}
 		};
 		return this._request(options);
-	},
+	}
 
 
-	logInOAuth: function(url) {
+	logInOAuth (url) {
 		return this._request({
 			url: url
 		});
-	},
+	}
 
 
-	ping: function(context, username) {
+	ping (context, username) {
 		username = username || (context && context.cookies && context.cookies.username);
 
 		var me = this;
 
 		return me._get('logon.ping', context)//ping
 			//pong
-			.then(function(data) {
+			.then(data => {
 				var urls = getLink.asMap(data);
 
 				if (!urls['logon.handshake']) {
@@ -319,13 +301,13 @@ Object.assign(DataServerInterface.prototype, {
 				}
 
 				if (context && data && data.Site) {
-					define(context,{__nti_site: data.Site});
+					context[SiteName] = data.Site;
 				}
 
 				return urls;
 
 			})
-			.then(function(urls) {
+			.then(urls => {
 
 				if (!username) {
 					return (!urls['logon.continue']) ?
@@ -333,21 +315,20 @@ Object.assign(DataServerInterface.prototype, {
 						{links: urls} :
 						//There is a continue link, but we need our username to handshake...
 						me.getServiceDocument(context)
-							.then(function(d) {
-								username = d.getAppUsername();
-								return me.handshake(urls, username, context);
-							});
+							.then(d =>
+								me.handshake(urls, (username = d.getAppUsername()), context)
+							);
 				}
 
 				return me.handshake(urls, username, context);
 
 			});
-	},
+	}
 
 
-	handshake: function (urls, username, context) {
+	handshake  (urls, username, context) {
 		return this._post(urls['logon.handshake'], {_asFORM: true, username: username}, context)
-			.then(function(data) {
+			.then(data => {
 				var result = {links: Object.assign({}, urls, getLink.asMap(data))};
 				if (!getLink(data, 'logon.continue')) {
 					result.reason = 'Not authenticated, no continue after handshake.';
@@ -355,96 +336,98 @@ Object.assign(DataServerInterface.prototype, {
 				}
 				return result;
 			});
-	},
+	}
 
 
-	deleteTOS: function(context) {
-		return this.ping(context).then(function(result) {
-			var link = result.links['content.initial_tos_page'];
-			if (link) {
-				this._delete(link, context);
-			}
-			return 'initial_tos_page link not present.';
-		}.bind(this));
-	},
-
-
-	recoverUsername: function(email, context) {
+	deleteTOS (context) {
 		return this.ping(context)
-			.then(function(result) {
+			.then(result => {
+				var link = result.links['content.initial_tos_page'];
+				if (link) {
+					return this._delete(link, context);
+				}
+				//wut?
+				return 'initial_tos_page link not present.';
+			});
+	}
 
-				return this._post(result.links['logon.forgot.username'], {
+
+	recoverUsername (email, context) {
+		return this.ping(context)
+			.then(result =>
+
+				this._post(result.links['logon.forgot.username'], {
 					_asFORM: true,
 					email: email
-				}, context);
+				}, context)
 
-			}.bind(this));
-	},
+			);
+	}
 
 
-	recoverPassword: function(email, username, returnURL, context) {
+	recoverPassword (email, username, returnURL, context) {
 		return this.ping(context)
-			.then(function(result) {
+			.then(result =>
 
-				return this._post(result.links['logon.forgot.passcode'], {
+				this._post(result.links['logon.forgot.passcode'], {
 					_asFORM: true,
 					email: email,
 					username: username,
 					success: returnURL
-				}, context);
+				}, context)
 
-			}.bind(this));
-	},
+			);
+	}
 
 
-	resetPassword: function(username, newpw, id, context) {
+	resetPassword (username, newpw, id, context) {
 		return this.ping(context)
-			.then(function(result) {
-				return this._post(result.links['logon.reset.passcode'], {
+			.then(result =>
+				this._post(result.links['logon.reset.passcode'], {
 					_asFORM: true,
 					username: username,
 					id: id,
 					password: newpw
-				}, context);
-			}.bind(this));
-	},
+				}, context)
+			);
+	}
 
 
-	preflightAccountCreate: function(fields, context) {
+	preflightAccountCreate (fields, context) {
 		return this.ping(context)
-			.then(function(result) {
-				return this._request({
+			.then(result =>
+				this._request({
 					url: result.links['account.preflight.create'],
 					headers: {
 						'Content-type':'application/json'
 					},
 					data: JSON.stringify(fields)
-				}, context);
-			}.bind(this));
-	},
+				}, context)
+			);
+	}
 
 
-	createAccount: function(fields, context) {
+	createAccount (fields, context) {
 		return this.ping(context)
-			.then(function(result) {
-				return this._request({
+			.then(result =>
+				this._request({
 					url: result.links['account.create'],
 					headers: {
 						'Content-type':'application/json'
 					},
 					data: JSON.stringify(fields)
-				}, context);
-			}.bind(this));
-	},
+				}, context)
+			);
+	}
 
 
-	getObject: function(ntiid, mime, context) {
+	getObject (ntiid, mime, context) {
 		if (!NTIIDs.isNTIID(ntiid)) {
 			return Promise.reject('Bad NTIID');
 		}
 
 		return this.getServiceDocument(context)
-			.then(function(doc) {
+			.then(doc => {
 				var headers = {},
 					url = doc.getObjectURL(ntiid);
 
@@ -460,32 +443,27 @@ Object.assign(DataServerInterface.prototype, {
 				}
 
 				return this._request({url: url, headers: headers}, context);
-			}.bind(this));
-	},
+			});
+	}
 
 
-	getObjects: function(ntiids, context) {
+	getObjects (ntiids, context) {
 		if (!Array.isArray(ntiids)) {
 			ntiids = [ntiids];
 		}
 
-		function model(o) {
-			return o && o.MimeType ? o : null;
-		}
-
 		var me = this;
 
-		return Promise.all(ntiids.map(function(n) {
-			return me.getObject(n, undefined, context); }))
-				.then(function(results) {
-					if (!Array.isArray(results)) {results = [results];}
-					return results.map(model);
-				});
+		return Promise.all(ntiids.map(n =>
+			me.getObject(n, undefined, context)))
+				.then(results =>
+					(!Array.isArray(results) ? [results] : results).map(o=>o && o.MimeType ? o : null)
+				);
 
-	},
+	}
 
 
-	getPageInfo: function(ntiid, context) {
+	getPageInfo (ntiid, context) {
 		var mime = 'application/vnd.nextthought.pageinfo+json';
 
 		if (!NTIIDs.isNTIID(ntiid)) {
@@ -494,7 +472,4 @@ Object.assign(DataServerInterface.prototype, {
 
 		return this.getObject(ntiid, mime, context);
 	}
-});
-
-
-module.exports = DataServerInterface;
+}

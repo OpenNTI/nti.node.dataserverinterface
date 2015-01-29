@@ -1,56 +1,53 @@
-'use strict';
+import Base from '../Base';
+import {
+	Parser as parse,
+	Service
+} from '../../CommonSymbols';
 
-var unique = require('../../utils/array-unique');
+import unique from '../../utils/array-unique';
 
-var define = require('../../utils/object-define-properties');
-var withValue = require('../../utils/object-attribute-withvalue');
-var forwardFunctions = require('../../utils/function-forwarding');
-var parse = require('../../utils/parse-object');
+import forwardFunctions from '../../utils/function-forwarding';
 
-var base = require('../mixins/Base');
+const PerformToCNodeFilter = Symbol.for('ToC:PerformNodeFilter');
 
+export default class Enrollment extends Base {
+	constructor (service, data) {
+		super(service, null, data,
+			{
+				isCourse: true,
+				isEnrollment: true
+			},
+			forwardFunctions([
+				'getPresentationProperties',
+				'getOutline',
+				'getDiscussions'
 
-function Enrollment(service, data) {
-	define(this, {_service: withValue(service)});
-
-	Object.assign(this, data);
-
-	var i = this.CourseInstance = parse(this, data.CourseInstance);
-
-	i.on('changed', this.onChange.bind(this));
-
-	this.__pending = [].concat(i.__pending || []);
-}
-
-Object.assign(Enrollment.prototype, base,
-	forwardFunctions([
-		'getPresentationProperties',
-		'getOutline',
-		'getDiscussions'
-
-		//From:
-	], 'CourseInstance'), {
-
-	isCourse: true,
-	isEnrollment: true,
+			//From:
+			], 'CourseInstance'));
 
 
-	drop: function () {
-		return this._service.delete(this.href);
-	},
+		var i = this[parse]('CourseInstance');
+
+		i.on('changed', this.onChange.bind(this));
+	}
 
 
-	getCourseID: function() {
+	drop () {
+		return this[Service].delete(this.href);
+	}
+
+
+	getCourseID () {
 		return this.CourseInstance.getID();
-	},
+	}
 
 
-	getStatus: function() {
+	getStatus () {
 		return this.LegacyEnrollmentStatus;
-	},
+	}
 
 
-	__cleanToCNodes: function(toc, remove) {
+	[PerformToCNodeFilter] (toc, remove) {
 		var status = this.LegacyEnrollmentStatus;
 
 
@@ -60,32 +57,28 @@ Object.assign(Enrollment.prototype, base,
 			}
 
 			if (!this.hasVisibility(e, status)) {
-				this.__getToCNodesReferencing(e.get('target-ntiid'), toc)
+				getToCNodesReferencing(e.get('target-ntiid'), toc)
 					.forEach(remove);
 			}
 		}
-	},
+	}
+}
 
 
-	__getToCNodesReferencing: function (ntiid, toc) {
-		if (!toc || !ntiid) {
-			return [];
-		}
-
-		function getNodesForKey(keys) {
-			var nodes = [];
-
-			for(let k of keys) {
-				nodes = unique(nodes.concat(toc.findall('*[@' + k + '="' + ntiid + '"]')));
-			}
-
-			return nodes;
-		}
-
-		return getNodesForKey(['ntiid', 'target-ntiid']);
+function getToCNodesReferencing (ntiid, toc) {
+	if (!toc || !ntiid) {
+		return [];
 	}
 
-});
+	function getNodesForKey(keys) {
+		var nodes = [];
 
+		for(let k of keys) {
+			nodes = unique(nodes.concat(toc.findall('*[@' + k + '="' + ntiid + '"]')));
+		}
 
-module.exports = Enrollment;
+		return nodes;
+	}
+
+	return getNodesForKey(['ntiid', 'target-ntiid']);
+}

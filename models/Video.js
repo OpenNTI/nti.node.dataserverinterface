@@ -1,8 +1,6 @@
 import isEmpty from '../utils/isempty';
-import parser from '../utils/parse-object';
-
-const Parent = Symbol.for('Parent');
-const Service = Symbol.for('Service');
+import MediaSource from './MediaSource';
+import {Service, Parent} from '../CommonSymbols';
 
 const NO_TRANSCRIPT = 'No Transcript';
 const NO_TRANSCRIPT_LANG = 'No Transcript for the requested language.';
@@ -21,10 +19,8 @@ export default class Video {
 
 		Object.assign(this, data);
 
-		var MediaSource = parser.getModel('mediasource');
-
 		this.sources = sources.map(item =>
-			MediaSource.parse(service, this, item));
+			new MediaSource(service, this, item));
 	}
 
 

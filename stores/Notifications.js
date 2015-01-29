@@ -1,66 +1,104 @@
-'use strict';
+import {
+	Service,
+	Pending
+} from '../CommonSymbols';
 
+import Url from 'url';
+import {EventEmitter} from 'events';
 
-var Url = require('url');
-var EventEmitter = require('events').EventEmitter;
+import {parse} from '../models/Parser';
 
-var objectParser = require('../models/Parser');
+import ensureInstanceCountDoesNotReach from '../utils/debugging-invoke-limiter';
 
+import {ROOT_NTIID, REL_MESSAGE_INBOX} from '../constants';
+import getLink from '../utils/getlink';
+import forwardFunctions from '../utils/function-forwarding';
+import QueryString from 'query-string';
 
-var ensureInstanceCountDoesNotReach = require('../utils/debugging-invoke-limiter');
-
-var constants = require('../constants');
-var getLink = require('../utils/getlink');
-var forwardFunctions = require('../utils/function-forwarding');
-var withValue = require('../utils/object-attribute-withvalue');
-var defineProperties = require('../utils/object-define-properties');
-var QueryString = require('query-string');
-
-var waitFor = require('../utils/waitfor');
+import waitFor from '../utils/waitfor';
 
 var BATCH_SIZE = 5;
 
 var inflight;
 
+
 function cleanInflight() { inflight = null; }
 
-function Notifications(service, data) {
-	ensureInstanceCountDoesNotReach(this, 2);
 
-	defineProperties(this, {
-		_service: withValue(service),
-		length: {
-			get: function() {return (this.Items || []).length;},
-			set: function() {}
-		},
-		hasMore: {
-			get: function() {return !!this.nextBatchSrc;},
-			set: function() {}
-		},
-		isBusy: {
-			get: function() {return !!inflight;},
-			set: function() {}
+export default class Notifications extends EventEmitter {
+
+	static load (service, reload) {
+		let Notifications = this;
+
+		if (inflight) {
+			return inflight;
 		}
-	});
 
-	this.Items = [];
+		//We need some links...
+		inflight = service.getPageInfo(ROOT_NTIID)
+		//Find our url to fetch notifications from...
+			.then(pageInfo => {
+				var url = pageInfo.getLink(REL_MESSAGE_INBOX);
+				if (!url) {
+					return Promise.reject('No Notifications url');
+				}
 
-	this.__applyData(data);
+				url = Url.parse(url);
 
-	this.lastViewed = new Date(parseFloat(data.lastViewed || 0) * 1000);
+				url.search = QueryString.stringify({
+					batchSize: BATCH_SIZE,
+					batchStart: 0
+				});
 
-}
+				return url.format();
+			})
+
+		//Load the notifications...
+		.then(url => get(service, url, reload))
+		.catch(reason => {
+			console.warn(reason);
+			return {};
+		})
+
+		//Now we can build the Notifications store object.
+		.then(data => {
+			return new Notifications(service, data);
+		});
+
+		inflight.then(cleanInflight, cleanInflight);
+
+		return inflight;
+	}
 
 
-Object.assign(Notifications.prototype, EventEmitter.prototype,
-	forwardFunctions(['every','filter','forEach','map','reduce'], 'Items'), {
+	constructor (service, data) {
+		ensureInstanceCountDoesNotReach(this, 2);
 
-	nextBatch: function() {
+		this[Service] = service;
+		this.Items = [];
+
+		Object.assign(this, forwardFunctions(['every','filter','forEach','map','reduce'], 'Items'));
+
+
+		this.__applyData(data);
+
+		this.lastViewed = new Date(parseFloat(data.lastViewed || 0) * 1000);
+	}
+
+	get isBusy () {return !!inflight;}
+
+	get hasMore () {return !!this.nextBatchSrc;}
+
+	get length () {return (this.Items || []).length;}
+
+
+
+	nextBatch () {
 		var clean = cleanInflight;
 
 		if (!inflight) {
 			if (this.nextBatchSrc) {
-				inflight = get(this._service, this.nextBatchSrc, true)
+				inflight = get(this[Service], this.nextBatchSrc, true)
 					.then(this.__applyData.bind(this));
 
 				inflight.then(clean, clean);
@@ -71,18 +109,17 @@ Object.assign(Notifications.prototype, EventEmitter.prototype,
 		}
 
 		return inflight;
-	},
+	}
 
 
-	__applyData: function (data) {
+	__applyData (data) {
 		this.Items = this.Items.concat(data.Items);
 		this.nextBatchSrc = (data.TotalItemCount > this.Items.length) &&
 			getLink(data, 'batch-next');
 
 		return this;
 	}
-});
-
+}
 
 
 function get(s, url, ignoreCache) {
@@ -91,91 +128,30 @@ function get(s, url, ignoreCache) {
 	var cached = cache.get(url), result;
 	if (!cached || ignoreCache) {
 		result = s.get(url)
-			.catch(function empty () { return {titles: [], Items: []}; })
-			.then(resolveUIData.bind(null, s))
-			.then(function(data) {
-				cache.set(url, data);
-				return data;
-			});
+		.then(data => cache.set(url, data) && data)
+		.catch(()=>({titles: [], Items: []}));
 	} else {
 		result = Promise.resolve(cached);
 	}
 
-	return result;
+	return result.then(resolveUIData.bind(null, s));
 }
 
 
 function resolveUIData(service, data) {
-	var pending = [],
-		push = pending.push;
+	var pending = [];
 
-	data.Items = data.Items.map(function(o) {
+	data.Items = data.Items.map(o => {
 		try {
-			o = objectParser(service, null, o);
-			push.apply(pending, o.__pending || []);
+			o = parse(service, null, o);
+			if (o && o[Pending]) {
+				pending.push(...o[Pending]);
+			}
 		} catch(e) {
 			console.warn(e.NoParser? e.message : (e.stack || e.message || e));
 		}
 		return o;
 	});
 
-	return waitFor(pending)
-		.then(function() { return data; });
+	return waitFor(pending).then(()=> data);
 }
-
-
-Notifications.load = function(service, reload) {
-	var cache = service.getDataCache();
-
-	if (inflight) {
-		return inflight;
-	}
-
-	//We need some links...
-	inflight = service.getPageInfo(constants.ROOT_NTIID)
-		//Find our url to fetch notifications from...
-		.then(function(pageInfo) {
-			var url = pageInfo.getLink(constants.REL_MESSAGE_INBOX);
-			if (!url) {
-				return Promise.reject('No Notifications url');
-			}
-
-			url = Url.parse(url);
-
-			url.search = QueryString.stringify({
-				batchSize: BATCH_SIZE,
-				batchStart: 0
-			});
-
-			return url.format();
-		})
-
-		//Load the notifications...
-		.then(function(url) {
-			var cached = cache.get(url);
-			if (cached) {
-				return cached;
-			}
-
-			return get(service, url, reload)
-				.then(function(data) {
-					cache.set(url, data);
-					return data;
-				});
-		})
-		.catch(function(reason) {
-			console.warn(reason);
-			return {};
-		})
-		//Now we can build the Notifications store object.
-		.then(function(data) {
-			return new Notifications(service, data);
-		});
-
-	inflight.then(cleanInflight, cleanInflight);
-
-	return inflight;
-};
-
-
-module.exports = Notifications;

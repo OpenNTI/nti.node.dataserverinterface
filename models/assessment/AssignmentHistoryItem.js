@@ -1,52 +1,37 @@
-'use strict';
+import Base from '../Base';
+import {
+	Parser as parse
+} from '../../CommonSymbols';
 
-
-var base = require('../mixins/Base');
-
-var define = require('../../utils/object-define-properties');
-var withValue = require('../../utils/object-attribute-withvalue');
-
-var parser = require('../../utils/parse-object');
-
-function AssignmentHistoryItem(service, parent, data) {
-	define(this,{
-		_service: withValue(service),
-		_parent: withValue(parent)
-	});
-
-	Object.assign(this, data);
-
-	for(let prop of ['Feedback','Grade','Submission','pendingAssessment']) {
-		this[prop] = data[prop] && parser(this, data[prop]);
+export default class AssignmentHistoryItem extends Base {
+	constructor (service, parent, data) {
+		super(service, parent, data);
+		for(let prop of ['Feedback','Grade','Submission','pendingAssessment']) {
+			this[prop] = data[prop] && this[parse](data[prop]);
+		}
 	}
-}
 
 
-Object.assign(AssignmentHistoryItem.prototype, base, {
-
-
-	getQuestions: function () {
+	getQuestions () {
 		var submission = this.pendingAssessment || this.Submission;
 		return submission ? submission.getQuestions() : [];
-	},
+	}
 
 
-	isSubmitted: function () {
+	isSubmitted () {
 		return !!this.Submission;
-	},
+	}
 
 
 	isGradeExcused () {
 		var g = this.Grade || false;
 		return g && g.isExcused();
-	},
+	}
 
 
-	getGradeValue: function () {
+	getGradeValue () {
 		var g = this.Grade;
 		return g && g.getValue();
 	}
 
-});
-
-module.exports = AssignmentHistoryItem;
+}

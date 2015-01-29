@@ -1,25 +1,23 @@
-'use strict';
+import Catalog from '../stores/Catalog';
+import Library from '../stores/Library';
+// import Notifications from '../stores/Notifications';
 
+import {ServiceStash} from '../CommonSymbols';
 
-var define = require('../utils/object-define-hidden-props');
-var Catalog = require('../stores/Catalog');
-var Library = require('../stores/Library');
-//var Notifications = require('../stores/Notifications');
-
-var SessionManager = function (server) {
-	if (!server) {
-		throw new Error('No server interface!');
+export default class SessionManager {
+	constructor (server) {
+		if (!server) {
+			throw new Error('No server interface!');
+		}
+		this.server = server;
+		this.config = server.config;
 	}
-	this.server = server;
-	this.config = server.config;
-};
 
-Object.assign(SessionManager.prototype, {
 
-	getUser: function(context) {
+	getUser (context) {
 
 		return this.getServiceDocument(context)
-			.then(function(doc) {
+			.then(doc => {
 					var w = doc.getUserWorkspace();
 					if (w) {
 						return w.Title;
@@ -27,20 +25,20 @@ Object.assign(SessionManager.prototype, {
 					return Promise.reject('No user workspace');
 				});
 
-	},
+	}
 
-	getServiceDocument: function(context) {
+
+	getServiceDocument (context) {
 		var server = this.server;
 		return server.ping(context)
 			.then(server.getServiceDocument.bind(server, context));
-	},
+	}
 
 
-
-	setupIntitalData: function(context) {
+	setupIntitalData (context) {
 		return this.server.getServiceDocument(context)
-			.then(function(service) {
-				define(context,{__nti_service: service});
+			.then(service => {
+				context[ServiceStash] = service;
 
 				return Promise.all([
 					service.getAppUser(),
@@ -50,11 +48,10 @@ Object.assign(SessionManager.prototype, {
 				]);
 
 			});
-	},
+	}
 
 
-
-	middleware: function(req, res, next) {
+	middleware (req, res, next) {
 		var start = Date.now();
 		var url = req.originalUrl || req.url;
 		var basepath = this.config.basepath || '/';
@@ -96,10 +93,10 @@ Object.assign(SessionManager.prototype, {
 					next(reason);
 				}
 			});
-	},
+	}
 
 
-	anonymousMiddleware: function (context, res, next) {
+	anonymousMiddleware (context, res, next) {
 		this.server.ping(context)
 			.then(function() {
 				next();
@@ -113,7 +110,4 @@ Object.assign(SessionManager.prototype, {
 			});
 	}
 
-});
-
-
-module.exports = SessionManager;
+}

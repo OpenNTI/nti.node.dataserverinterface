@@ -1,63 +1,50 @@
-'use strict';
+import Base from '../Base';
+import {
+	Service,
+	Parser as parse
+} from '../../CommonSymbols';
 
+import HasContent from '../mixins/HasContent';
 
-var base = require('../mixins/Base');
-var content = require('../mixins/HasContent');
+export default class Question extends Base {
+	constructor (service, parent, data) {
+		super(service, parent, data, HasContent);
 
-var define = require('../../utils/object-define-properties');
-var withValue = require('../../utils/object-attribute-withvalue');
-var parser = require('../../utils/parse-object');
+		this.parts = data.parts.map(p=>this[parse](p));
 
-
-function Question(service, parent, data) {
-	define(this,{
-		_service: withValue(service),
-		_parent: withValue(parent)
-	});
-
-	Object.assign(this, data);
-
-	content.initMixin.call(this, data);
-
-	this.parts = data.parts.map(p=>parser(this, p));
-
-	if (this.wordbank) {
-		this.wordbank = parser(this, this.wordbank);
+		this[parse]('wordbank');
 	}
-}
 
-Object.assign(Question.prototype, base, content, {
 
-	getVideos: function() {
-		var all = parser.getModel('assessment.part').prototype.getVideos.call(this);
+	getVideos () {
+		//Eeewww...
+		var all = this.getModel('assessment.part').prototype.getVideos.call(this);
 
 		for(let p of this.parts) {
 			all.push.apply(all, p.getVideos());
 		}
 		return all;
-	},
+	}
 
 
 
-	getSubmission: function () {
-		let Model = parser.getModel('assessment.questionsubmission');
-		return Model.build(this._service, {
+	getSubmission () {
+		let Model = this.getModel('assessment.questionsubmission');
+		return Model.build(this[Service], {
 			ContainerId: this.containerId,
 			NTIID: this.getID(),
 			questionId: this.getID(),
 			parts: this.parts.map(()=>null)
 		});
-	},
+	}
 
 
 
-	isAnswered: function(questionSubmission) {
+	isAnswered (questionSubmission) {
 		var expect = this.parts.length;
 		var {parts} = questionSubmission;
 
 		return this.parts.filter((p,i)=>p.isAnswered(parts[i])).length === expect;
 	}
 
-});
-
-module.exports = Question;
+}

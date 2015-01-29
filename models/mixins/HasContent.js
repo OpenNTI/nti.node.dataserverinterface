@@ -1,67 +1,67 @@
-'use strict';
+import define from '../../utils/object-define-properties';
+import fixRefs from '../../utils/rebase-references';
+import clean from '../../utils/sanitize-markup';
 
-var define = require('../../utils/object-define-properties');
-var withValue = require('../../utils/object-attribute-withvalue');
-var fixRefs = require('../../utils/rebase-references');
-var clean = require('../../utils/sanitize-markup');
+function cleanupContentString(content) {
+	try {
+		var root = this.getContentRoot();
+		content = fixRefs(content, root);
+	} catch (e) {
+		console.error('Content cannot be rooted. %s', e.stack || e.message || e);
+	}
 
-Object.assign(exports, {
+	return clean(content);
+}
 
-	getContentRoot: function () {
+function setup (data, keys) {
+	var props = {};
+	var clean = cleanupContentString.bind(this);
+
+	for(let key of keys) {
+		let content = data[key] || '';
+		props[key] = {
+			enumerable: true,
+			configurable: true,
+			get () {
+
+				if (Array.isArray(content)) {
+					content = content.map(clean);
+				} else {
+					content = clean(content);
+				}
+
+				//re-define the getter
+				delete this[key];
+				this[key] = content;
+
+				return content;
+			}
+		};
+	}
+
+	define(this, props);
+}
+
+export const ContentKeys = Symbol('ContentKeys');
+export const SetupContentProperties = Symbol('SetupContentProperties');
+
+export default {
+
+	constructor (data) {
+		var keys = this[ContentKeys] &&
+		 			this[ContentKeys]();
+
+		if (keys === undefined) {
+			keys = ['content'];
+		}
+
+		this[SetupContentProperties] = setup;
+
+		this[SetupContentProperties](data, keys);
+	},
+
+
+	getContentRoot () {
 		return this.ContentRoot || this.parent('getContentRoot').getContentRoot();
 	}
-});
-
-
-define(exports, {
-	initMixin: withValue(
-		function (data, keys) {
-			var props = {};
-			var clean = exports.cleanupContentString.bind(this);
-			if (keys === undefined) {
-				keys = ['content'];
-			}
-
-
-			for(let key of keys) {
-				let content = data[key] || '';
-				props[key] = {
-					enumerable: true,
-					configurable: true,
-					/*jshint -W083*/
-					get: function () {
-
-						if (Array.isArray(content)) {
-							content = content.map(clean);
-						} else {
-							content = clean(content);
-						}
-
-						//re-define the getter
-						var newValue = {};
-						newValue[key] = withValue(content, true);
-
-						define(this, newValue);
-						return content;
-					}
-					/*jshint +W083*/
-				};
-			}
-
-			define(this, props);
-		}
-	),
-
-	cleanupContentString: withValue(
-		function (content) {
-			try {
-				var root = this.getContentRoot();
-				content = fixRefs(content, root);
-			} catch (e) {
-				console.error('Content cannot be rooted. %s', e.stack || e.message || e);
-			}
-
-			return clean(content);
-		}
-	)
-});
+};

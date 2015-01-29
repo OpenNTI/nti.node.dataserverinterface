@@ -1,36 +1,20 @@
-'use strict';
+import Base from '../Base';
+import {
+	Parser as parse
+} from '../../CommonSymbols';
+
+export default class SavePointItem extends Base {
+	constructor (service, parent, data) {
+		super(service, parent, data);
+
+		this.Submission = data.Submission && this[parse](data.Submission);
+	}
 
 
-var base = require('../mixins/Base');
-
-var define = require('../../utils/object-define-properties');
-var withValue = require('../../utils/object-attribute-withvalue');
-
-var parser = require('../../utils/parse-object');
-
-function SavePointItem(service, parent, data) {
-	var me = this;
-	define(me,{
-		_service: withValue(service),
-		_parent: withValue(parent)
-	});
-
-	Object.assign(me, data);
-
-	me.Submission = data.Submission && parser(this, data.Submission);
-}
-
-
-Object.assign(SavePointItem.prototype, base, {
-
-	getQuestions: function () {
+	getQuestions () {
 		return this.Submission ? this.Submission.getQuestions() : [];
-	},
+	}
 
+	isSubmitted () { return false; }
 
-	isSubmitted: function () { return false; }
-
-});
-
-
-module.exports = SavePointItem;
+}

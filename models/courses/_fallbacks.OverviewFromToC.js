@@ -1,7 +1,4 @@
-'use strict';
-
-
-var SECTION_TYPE_MAP = {
+const SECTION_TYPE_MAP = {
 	'application/vnd.nextthought.ntivideo': 'video',
 	'application/vnd.nextthought.content': 'additional',
 	'application/vnd.nextthought.discussion': 'discussions',
@@ -11,7 +8,7 @@ var SECTION_TYPE_MAP = {
 	'application/vnd.nextthought.nanosubmitassignment': 'assignments'
 };
 
-var SECTION_TITLE_MAP = {
+const SECTION_TITLE_MAP = {
 	'video': 'Video',
 	'discussions': 'Discussions',
 	'additional': 'Additional Resources',
@@ -21,7 +18,7 @@ var SECTION_TITLE_MAP = {
 };
 
 
-var SECTION_COLOR_MAP = {
+const SECTION_COLOR_MAP = {
 	'video': '81c8dc',
 	'discussions': 'f5d420',
 	'additional': 'ce78e0',
@@ -31,9 +28,9 @@ var SECTION_COLOR_MAP = {
 	'session-overview': 'f9824e'
 };
 
-var SHARED = {};
+const SHARED = {};
 
-var MIME_PARSER = {
+const MIME_PARSER = {
 	'topic': getTopicLink,
 	'application/vnd.nextthought.ntivideo': getVideoProps,
 	'application/vnd.nextthought.discussion': getForumProps,
@@ -123,7 +120,7 @@ function getConfigForNode(node, outlineNode) {
 }
 
 
-module.exports = function buildFromToc (element, outlineNode) {
+export default function buildFromToc (element, outlineNode) {
 	var sections = {},
 		items = [];
 
@@ -170,4 +167,4 @@ module.exports = function buildFromToc (element, outlineNode) {
 		Items: items,
 		title: element.get('label')
 	};
-};
+}

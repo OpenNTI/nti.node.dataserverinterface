@@ -1,40 +1,37 @@
-'use strict';
+import Part from '../Part';
+import {ContentKeys} from '../../mixins/HasContent';
 
-var Base = require('../Part');
+const isShortAnswer = RegExp.prototype.test.bind(/ShortAnswer/i);
+const hasInputs = RegExp.prototype.test.bind(/<input/i);
 
-var isShortAnswer = RegExp.prototype.test.bind(/ShortAnswer/i);
-var hasInputs = RegExp.prototype.test.bind(/<input/i);
+const tags = /<input[^>]+blankfield[^>]+>/ig;
+const keyName = /name=['"]([^'"]+)['"]/i;
 
-var tags = /<input[^>]+blankfield[^>]+>/ig;
-var keyName = /name=['"]([^'"]+)['"]/i;
+const ValueKeys = Symbol('value-keys');
 
-var ValueKeys = Symbol('value-keys');
 
-function FillInTheBlank(service, parent, data) {
-	if (isShortAnswer(data.MimeType)) {
-		// FillInTheBlankShortAnswer is F'd up... the content has input boxes in many
-		// instances (possibly all instances). That should be illegal. The text with
-		// interspersed inputs should ONLY in the 'input' field.
-		// So, if we detect that the content has <input tags, prefix the content to
-		// the input field, and blank out the content field.
-		if (hasInputs(data.content)) {
-			data.input = data.content + ' ' + (data.input || '');
-			data.content = '';
+export default class FillInTheBlank extends Part {
+	constructor (service, parent, data) {
+		if (isShortAnswer(data.MimeType)) {
+			// FillInTheBlankShortAnswer is F'd up... the content has input boxes in many
+			// instances (possibly all instances). That should be illegal. The text with
+			// interspersed inputs should ONLY in the 'input' field.
+			// So, if we detect that the content has <input tags, prefix the content to
+			// the input field, and blank out the content field.
+			if (hasInputs(data.content)) {
+				data.input = data.content + ' ' + (data.input || '');
+				data.content = '';
+			}
 		}
+
+		super(service, parent, data);
+
+		this[ValueKeys] = (this.input.match(tags) || [])
+			.map(s=>(s.match(keyName)||{})[1]);
 	}
 
 
-	Base.call(this, service, parent, data);
-
-	this[ValueKeys] = (this.input.match(tags) || [])
-		.map(s=>(s.match(keyName)||{})[1]);
-}
-
-
-FillInTheBlank.prototype = Object.create(Base.prototype);
-Object.assign(FillInTheBlank.prototype, {
-	__contentProperties: Base.prototype.__contentProperties.concat(['input']),
-	constructor: FillInTheBlank,
+	[ContentKeys] () { return super[ContentKeys]().concat(['input']); }
 
 
 	isAnswered (partValue) {
@@ -48,7 +45,4 @@ Object.assign(FillInTheBlank.prototype, {
 
 		return maybe;
 	}
-});
-
-
-module.exports = FillInTheBlank;
+}

@@ -1,55 +1,49 @@
-'use strict';
+import {EventEmitter} from 'events';
 
 
-var EventEmitter = require('events').EventEmitter;
+import forwardFunctions from '../utils/function-forwarding';
+import waitFor from '../utils/waitfor';
 
-var forwardFunctions = require('../utils/function-forwarding');
-var define = require('../utils/object-define-properties');
-var withValue = require('../utils/object-attribute-withvalue');
-//var identity = require('../utils/identity');
-var waitFor = require('../utils/waitfor');
+import {parseListFn} from './Library';
 
-var Entry = require('../models/courses/CatalogEntry');
+const Service = Symbol.for('Service');
+const Pending = Symbol.for('PendingRequests');
 
-function Catalog(service, data) {
-	var pending = this.__pending = [];
-	define(this, {
-		_service: withValue(service)
-	});
-
-	Object.assign(this, data);
-
-	this.onChange = this.onChange.bind(this);
-
-
-	function queue(p) {
-		Array.prototype.push.apply(pending, p && p.__pending);
+export default class Catalog extends EventEmitter {
+	static load (service, reload) {
+		return get(service, service.getCoursesCatalogURL(), reload)
+			.then(data => {
+				var catalog = new this(service, data);
+				return waitFor(catalog[Pending]).then(() => catalog);
+			});
 	}
 
-	this.Items = data.Items.map(function(entry) {
-		entry = Entry.parse(service, entry);
-		queue(entry);
-		entry.on('changed', this.onChange);
-		return entry;
+	constructor (service, data) {
+		var pending = [];
+
+		this[Service] = service;
+		this[Pending] = pending;
+
+		Object.assign(this, data,
+			forwardFunctions(['every','filter','forEach','map','reduce'], 'Items'));
+
+		this.onChange = this.onChange.bind(this);
+
+		let parseList = parseListFn(this, service, pending);
+
+		this.Items = parseList(data.Items);
 	}
-	.bind(this));
-	//.filter(identity);//strip falsy items
-}
 
 
-Object.assign(Catalog.prototype, EventEmitter.prototype,
-	forwardFunctions(['every','filter','forEach','map','reduce'], 'Items'), {
-
-
-	onChange: function() {
+	onChange () {
 		this.emit('changed', this);
-	},
+	}
 
 
-	findEntry: function(entryId) {
+	findEntry (entryId) {
 		var found;
 
-		this.every(function(course) {
+		this.every(course => {
 			if (course.getID() === entryId) {
 				found = course;
 			}
@@ -59,7 +53,7 @@ Object.assign(Catalog.prototype, EventEmitter.prototype,
 
 		return found;
 	}
-});
+}
 
 
 function get(s, url, ignoreCache) {
@@ -68,29 +62,11 @@ function get(s, url, ignoreCache) {
 	var cached = cache.get(url), result;
 	if (!cached || ignoreCache) {
 		result = s.get(url)
-			.catch(function empty () { return {titles: [], Items: []}; })
-			.then(function(data) {
-				cache.set(url, data);
-				return data;
-			});
+			.catch(()=>({titles: [], Items: []}))
+			.then(data =>cache.set(url, data) && data);
 	} else {
 		result = Promise.resolve(cached);
 	}
 
 	return result;
 }
-
-
-Catalog.load = function(service, reload) {
-	return get(service, service.getCoursesCatalogURL(), reload)
-		.then(function(data) {
-			var catalog = new Catalog(service, data);
-			return waitFor(catalog.__pending)
-				.then(function() {
-					return catalog;
-				});
-			});
-};
-
-
-module.exports = Catalog;

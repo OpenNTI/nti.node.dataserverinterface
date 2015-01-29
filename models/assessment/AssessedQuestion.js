@@ -1,32 +1,24 @@
-'use strict';
+import Base from '../Base';
+import {
+	Parser as parse
+} from '../../CommonSymbols';
+
+import assessed from '../mixins/AssessedAssessmentPart';
+
+export default class AssessedQuestion extends Base {
+	constructor(service, parent, data) {
+		super(service, parent, data, assessed);
+
+		this.parts = data.parts.map(part =>this[parse](part));
+	}
 
 
-var base = require('../mixins/Base');
-var assessed = require('../mixins/AssessedAssessmentPart');
-
-var define = require('../../utils/object-define-properties');
-var withValue = require('../../utils/object-attribute-withvalue');
-var parser = require('../../utils/parse-object');
-
-function AssessedQuestion(service, parent, data) {
-	define(this,{
-		_service: withValue(service),
-		_parent: withValue(parent)
-	});
-
-
-	Object.assign(this, data);
-	this.parts = data.parts.map(part =>parser(this, part));
-}
-
-Object.assign(AssessedQuestion.prototype, base, assessed, {
-
-	getID: function () {
+	getID () {
 		return this.questionId || this.NTIID;
-	},
+	}
 
 
-	isCorrect: function() {
+	isCorrect () {
 		var p = this.parts || [],
 			i = p.length - 1, v;
 
@@ -38,8 +30,5 @@ Object.assign(AssessedQuestion.prototype, base, assessed, {
 		}
 
 		return true;
-	},
-});
-
-
-module.exports = AssessedQuestion;
+	}
+}

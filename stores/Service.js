@@ -1,6 +1,6 @@
 'use strict';
 
-import parse from '../utils/parse-object';
+import {parse} from '../models/Parser';
 
 import Capabilities from '../models/Capabilities';
 
@@ -9,7 +9,7 @@ import Forums from './Forums';
 
 import DataCache from '../utils/datacache';
 
-import constants from '../constants';
+import {REL_USER_SEARCH, REL_USER_UNIFIED_SEARCH, REL_USER_RESOLVE, REL_BULK_USER_RESOLVE} from '../constants';
 import getLink from '../utils/getlink';
 import joinWithURL from '../utils/urljoin';
 import {isNTIID} from '../utils/ntiids';
@@ -19,6 +19,7 @@ const inflight = {};
 const Server = Symbol.for('Server');
 const Service = Symbol.for('Service');
 const Context = Symbol.for('Context');
+const Pending = Symbol.for('PendingRequests');
 const AppUser = Symbol('LoggedInUser');
 
 export default class ServiceDocument {
@@ -35,7 +36,7 @@ export default class ServiceDocument {
 		this.enrollment = new Enrollment(this);
 		this.forums = new Forums(this);
 
-		this.__pending = [
+		this[Pending] = [
 			this.getAppUser().then(u =>
 				this[AppUser] = u
 			)
@@ -128,7 +129,7 @@ export default class ServiceDocument {
 				});
 		}
 
-		return result.then(info=>parse(this, info));
+		return result.then(info=>parse(this[Service], this, info));
 	}
 
 
@@ -174,7 +175,7 @@ export default class ServiceDocument {
 			}
 		}
 
-		return result.then(user=>parse(this, user));
+		return result.then(user=>parse(this[Service], this, user));
 	}
 
 
@@ -211,7 +212,7 @@ export default class ServiceDocument {
 			cache.setVolatile(key, result);//if this is asked for again before we resolve, reuse this promise.
 		}
 
-		return result.then(user => parse(this, user));
+		return result.then(user => parse(this[Service], this, user));
 	}
 
 
@@ -383,7 +384,7 @@ export default class ServiceDocument {
 	getUserSearchURL (username) {
 		var l = getLink(
 			(this.getWorkspace('Global') || {}).Links || [],
-			constants.REL_USER_SEARCH);
+			REL_USER_SEARCH);
 
 		if (!l) {
 			return null;
@@ -396,7 +397,7 @@ export default class ServiceDocument {
 	getUserUnifiedSearchURL () {
 		var l = getLink(
 			(this.getUserWorkspace() || {}).Links || [],
-			constants.REL_USER_UNIFIED_SEARCH);
+			REL_USER_UNIFIED_SEARCH);
 
 		return l || null;
 	}
@@ -414,7 +415,7 @@ export default class ServiceDocument {
 
 		var l = getLink(
 			(this.getWorkspace('Global') || {}).Links || [],
-			constants.REL_USER_RESOLVE);
+			REL_USER_RESOLVE);
 
 		if (!l) {
 			return null;
@@ -427,7 +428,7 @@ export default class ServiceDocument {
 	getBulkResolveUserURL () {
 		var l = getLink(
 			(this.getWorkspace('Global') || {}).Links || [],
-			constants.REL_BULK_USER_RESOLVE);
+			REL_BULK_USER_RESOLVE);
 
 		return l || null;
 	}

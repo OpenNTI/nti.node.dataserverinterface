@@ -5,77 +5,62 @@
  * non-assignment assessment object.  We also have a reference to all the
  * assignments that we can currently see.
  */
-'use strict';
 
+import Base from '../Base';
+import {
+	Parser as parse
+} from '../../CommonSymbols';
 
-var base = require('../mixins/Base');
+export default class Collection extends Base {
 
-var define = require('../../utils/object-define-properties');
-var withValue = require('../../utils/object-attribute-withvalue');
-var objectEach = require('../../utils/object-each');
+	/**
+	 * Build the Assessment Collection.
+	 *
+	 * @param  {ServiceDocument} service     Service descriptor/interface.
+	 * @param  {Model} parent                Parent model.
+	 * @param  {Object} assignments          Object of keys where each key is an
+	 *                                       array of Assignments that are visible
+	 *                                       to the current user.
+	 * @param  {Object} assessments          Object of keys where each key is an
+	 *                                       array of Non-Assignment assessments
+	 *                                       visible to the current user.
+	 */
+	constructor(service, parent, assignments, assessments, tables) {
+		const process = (v, k, o) => o[k] = Array.isArray(v) ? this[parse](v) : v;
 
-var parser = require('../../utils/parse-object');
+		super(service, parent);
 
-function f(parent) {
-	return function (v, k, o) {
-		if (Array.isArray(v)) {
-			o[k] = parser(parent, v);
+		this.tables = tables;
+
+		var a =	this.visibleAssignments = {};
+		for(let key of Object.keys(assignments)) {
+			process(assignments[key], key, a);
 		}
-	};
-}
 
-/**
- * @class
- * Build the Assessment Collection.
- *
- * @param  {ServiceDocument} service     Service descriptor/interface.
- * @param  {Model} parent                Parent model.
- * @param  {Object} assignments          Object of keys where each key is an
- *                                       array of Assignments that are visible
- *                                       to the current user.
- * @param  {Object} assessments          Object of keys where each key is an
- *                                       array of Non-Assignment assessments
- *                                       visible to the current user.
- */
-function Collection(service, parent, assignments, assessments, tables) {
-	define(this,{
-		_service: withValue(service),
-		_parent: withValue(parent),
-		_tables: withValue(tables)
-	});
+		var b = this.notAssignments = {};
+		for(let key of Object.keys(assessments)) {
+			process(assessments[key], key, b);
+		}
+	}
 
 
-	this._visibleAssignments = objectEach(assignments, f(this));
-	this._notAssignments = objectEach(assessments, f(this));
-}
-
-Object.assign(Collection.prototype, base, {
-
-	getAssignments: function(outlineNodeID) {
-		var node = this._tables.getNode(outlineNodeID);
-		var v = this._visibleAssignments;
-		return nodeToNTIIDs(node).reduce(function(agg, id) {
-			if (v[id]) {
-				agg = (agg || []).concat(v[id]);
-			}
-			return agg;
-		}, null);
-	},
+	getAssignments (outlineNodeID) {
+		let v = this.visibleAssignments;
+		let node = this.tables.getNode(outlineNodeID);
+		return nodeToNTIIDs(node).reduce((agg, id) =>
+			v[id] ? (agg || []).concat(v[id]) : agg, null);
+	}
 
 
-	getAssessments: function(outlineNodeID) {
-		var node = this._tables.getNode(outlineNodeID);
-		var v = this._notAssignments;
-		return nodeToNTIIDs(node).reduce(function(agg, id) {
-			if (v[id]) {
-				agg = (agg || []).concat(v[id]);
-			}
-			return agg;
-		}, null);
-	},
+	getAssessments (outlineNodeID) {
+		let v = this.notAssignments;
+		let node = this.tables.getNode(outlineNodeID);
+		return nodeToNTIIDs(node).reduce((agg, id) =>
+			v[id] ? (agg || []).concat(v[id]) : agg, null);
+	}
 
 
-	isAssignment: function (outlineNodeID, assessmentId) {
+	isAssignment  (outlineNodeID, assessmentId) {
 		var maybe = this.getAssignment(outlineNodeID, assessmentId);
 		if (maybe) {
 			return null;
@@ -83,18 +68,14 @@ Object.assign(Collection.prototype, base, {
 
 		maybe = this.getAssessments(outlineNodeID, assessmentId);
 		return !maybe || !find(maybe, assessmentId);
-	},
+	}
 
 
-	getAssignment: function(outlineNodeID, assignmentId) {
+	getAssignment (outlineNodeID, assignmentId) {
 		var maybe = this.getAssignments(outlineNodeID);
 		return maybe && find(maybe, assignmentId);
 	}
-});
-
-
-
-module.exports = Collection;
+}
 
 
 function find(list, id) {

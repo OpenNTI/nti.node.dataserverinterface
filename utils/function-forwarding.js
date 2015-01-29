@@ -1,5 +1,3 @@
-'use strict';
-
 function reflect(fn, key) {
 
 	return function(...args) {
@@ -19,7 +17,7 @@ function reflect(fn, key) {
  * @param  {String} key The key where the object is at.
  * @return {Object}	Object with function names to bound functions
  */
-module.exports = function forwardFunctions(fns, key) {
+export default function forwardFunctions(fns, key) {
 	var result = {};
 
 	for(let fn of fns) {
@@ -27,4 +25,4 @@ module.exports = function forwardFunctions(fns, key) {
 	}
 
 	return result;
-};
+}

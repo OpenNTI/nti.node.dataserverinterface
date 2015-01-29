@@ -1,33 +1,29 @@
-'use strict';
+import Base from '../Base';
+import {
+	Service,
+	Parser as parse,
+} from '../../CommonSymbols';
 
-var Base = require('../mixins/Base');
-var GetContents = require('../mixins/GetContents');
-//var SharedWithList = require('../mixins/SharedWithList');
+import GetContents from '../mixins/GetContents';
+//import SharedWithList from '../mixins/SharedWithList';
 
-var define = require('../../utils/object-define-properties');
-var parseKey = require('../../utils/parse-object-at-key');
-var withValue = require('../../utils/object-attribute-withvalue');
+export default class Topic extends Base {
+	constructor(service, parent, data) {
+		super(service, parent, data, GetContents/*, SharedWithList*/);
 
-function Topic(service, parent, data) {
-	define(this,{
-		_service: withValue(service),
-		_parent: withValue(parent)
-	});
+		// PostCount
+		// title
+		// PublicationState
+		// NewestDescendant
+		// NewestDescendantCreatedTime
 
-	Object.assign(this, data);
+		this[parse]('NewestDescendant');
+		this[parse]('headline');
+	}
 
-	// PostCount
-	// title
-	// PublicationState
-	// NewestDescendant
-	// NewestDescendantCreatedTime
 
-	parseKey(this, 'NewestDescendant');
-	parseKey(this, 'headline');
-}
-
-Object.assign(Topic.prototype, Base, GetContents, /*SharedWithList,*/ {
-	addComment: function(comment, inReplyTo) {
+	addComment (comment, inReplyTo) {
+		const service = this[Service];
 		var link = this.getLink('add');
 		if (!link) {
 			return Promise.reject('Cannot post comment. Item has no \'add\' link.');
@@ -46,9 +42,6 @@ Object.assign(Topic.prototype, Base, GetContents, /*SharedWithList,*/ {
 			payload.references.push(inReplyTo.NTIID);
 		}
 
-		return this._service.post(link, payload);
+		return service.post(link, payload);
 	}
-});
-
-
-module.exports = Topic;
+}

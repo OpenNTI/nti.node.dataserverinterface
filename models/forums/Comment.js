@@ -1,18 +1,11 @@
-'use strict';
+import {Service, Parser as parse} from '../../CommonSymbols';
+import Post from './Post';
 
-var Base = require('./Post');
-var parseObject = require('../../utils/parse-object');
-var QueryString = require('query-string');
+import QueryString from 'query-string';
 
-function Comment(service, parent, data) {
-	Base.call(this, service, parent, data);
-}
+export default class Comment extends Post {
 
-Comment.prototype = Object.create(Base.prototype);
-Object.assign(Comment.prototype, {
-	constructor: Comment,
-
-	getReplies: function() {
+	getReplies () {
 		var link = this.getLink('replies');
 		if (!link) {
 			return Promise.resolve([]);
@@ -25,11 +18,7 @@ Object.assign(Comment.prototype, {
 
 		link = link.concat('?',QueryString.stringify(params));
 
-		return this._service.get(link)
-			.then(function(result) {
-				return parseObject(this, result.Items);
-			}.bind(this));
+		return this[Service].get(link)
+			.then(result => this[parse](result.Items));
 	}
-});
-
-module.exports = Comment;
+}

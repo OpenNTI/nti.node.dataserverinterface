@@ -1,26 +1,91 @@
-'use strict';
 
-var ignored = {parse: require('../utils/identity')};
+import identity from '../utils/identity';
 
-var PARSERS = {
-	'community': require('./Community'),
-	'user': require('./User'),
-	'pageinfo': require('./PageInfo'),
+import Community from './Community';
+import User from './User';
+import PageInfo from './PageInfo';
+import Change from './Change';
+import ContentPackage from './content/Package';
+import ContentBundle from './content/Bundle';
 
-	'ContentPackage': require('./content/Package'),
-	'ContentPackageBundle': require('./content/Bundle'),
+import MediaSource from './MediaSource';
+import Video from './Video';
+import VideoIndexBackedPageSource from './VideoIndexBackedPageSource';
 
-	'mediasource': require('./MediaSource'),
-	'video': require('./Video'),
+import CourseCatalogEntry from './courses/CatalogEntry';
+import CourseInstance from './courses/Instance';
+import CourseEnrollment from './courses/Enrollment';
+import CourseOutlineNode from './courses/OutlineNode';
+import CourseOutline from './courses/Outline';
+
+import AssessmentQuestionSet from './assessment/QuestionSet';
+import AssessmentQuestion from './assessment/Question';
+
+import AssessmentAssignment from './assessment/Assignment';
+import AssessmentTimedAssignment from './assessment/TimedAssignment';
+import AssessmentAssignmentPart from './assessment/AssignmentPart';
+
+import AssessmentAssessedQuestionSet from './assessment/AssessedQuestionSet';
+import AssessmentAssessedQuestion from './assessment/AssessedQuestion';
+import AssessmentAssessedPart from './assessment/AssessedPart';
+
+import AssessmentAssignmentSubmission from './assessment/AssignmentSubmission';
+import AssessmentQuestionSetSubmission from './assessment/QuestionSetSubmission';
+import AssessmentQuestionSubmission from './assessment/QuestionSubmission';
+
+import AssessmentResponse from './assessment/Response';
+
+import AssessmentPart from './assessment/Part';
+import AssessmentSolution from './assessment/Solution';
+
+import AssessmentHint from './assessment/Hint';
+
+import AssessmentPartFile from './assessment/parts/File';
+import AssessmentPartFillInTheBlank from './assessment/parts/FillInTheBlank';
+import AssessmentPartMatching from './assessment/parts/Matching';
+import AssessmentPartMultipleChoice from './assessment/parts/MultipleChoice';
+import AssessmentPartOrdering from './assessment/parts/Ordering';
+
+import AssessmentSavePointItem from './assessment/SavePointItem';
+
+import AssessmentWordBank from './assessment/WordBank';
+import AssessmentWordEntry from './assessment/WordEntry';
+
+import AssessmentGrade from './assessment/Grade';
+import AssessmentAssignmentHistoryItem from './assessment/AssignmentHistoryItem';
+import AssessmentAssignmentFeedback from './assessment/AssignmentFeedback';
+import AssessmentAssignmentFeedbackContainer from './assessment/AssignmentFeedbackContainer';
+
+import ForumsBoard from './forums/Board';
+import ForumsTopic from './forums/Topic';
+import ForumsForum from './forums/Forum';
+import ForumsPost from './forums/Post';
+import ForumsComment from './forums/Comment';
+
+const ignored = {parse: identity};
+
+const PARSERS = {
+	'link': ignored,
+	'change': Change,
+
+	'community': Community,
+	'user': User,
+	'pageinfo': PageInfo,
+
+	'ContentPackage': ContentPackage,
+	'ContentPackageBundle': ContentBundle,
+
+	'mediasource': MediaSource,
+	'video': Video,
 	'ntivideo': 'video',
 
-	'videoindex-pagesource': require('./VideoIndexBackedPageSource'),
+	'videoindex-pagesource': VideoIndexBackedPageSource,
 
-	'courses.catalogentry': require('./courses/CatalogEntry'),
-	'courses.courseinstance': require('./courses/Instance'),
-	'courses.courseenrollment': require('./courses/Enrollment'),
-	'courses.courseoutlinenode': require('./courses/OutlineNode'),
-	'courses.courseoutline': 'courses.courseoutlinenode',
+	'courses.catalogentry': CourseCatalogEntry,
+	'courses.courseinstance': CourseInstance,
+	'courses.courseenrollment': CourseEnrollment,
+	'courses.courseoutline': CourseOutline,
+	'courses.courseoutlinenode': CourseOutlineNode,
 	'courses.courseoutlinecontentnode': 'courses.courseoutlinenode',
 	'courses.courseoutlinecalendarnode': 'courses.courseoutlinenode',
 
@@ -31,55 +96,55 @@ var PARSERS = {
 	'courseware.courseinstanceenrollment':'courses.courseenrollment',
 
 
-	'assessment.assessedquestionset': require('./assessment/AssessedQuestionSet'),
-	'assessment.assessedquestion': require('./assessment/AssessedQuestion'),
-	'assessment.assessedpart': require('./assessment/AssessedPart'),
+	'assessment.assessedquestionset': AssessmentAssessedQuestionSet,
+	'assessment.assessedquestion': AssessmentAssessedQuestion,
+	'assessment.assessedpart': AssessmentAssessedPart,
 
-	'questionset': require('./assessment/QuestionSet'),
+	'questionset': AssessmentQuestionSet,
 	'naquestionset': 'questionset',
 	'naquestionbank': 'questionset',
-	'question': require('./assessment/Question'),
+	'question': AssessmentQuestion,
 	'naquestion': 'question',
 	'naquestionfillintheblankwordbank': 'question',
 
-	'assessment.assignment': require('./assessment/Assignment'),
-	'assessment.timedassignment': require('./assessment/TimedAssignment'),
+	'assessment.assignment': AssessmentAssignment,
+	'assessment.timedassignment': AssessmentTimedAssignment,
 
-	'assessment.assignmentpart': require('./assessment/AssignmentPart'),
+	'assessment.assignmentpart': AssessmentAssignmentPart,
 
 	'assessment.randomizedquestionset': 'questionset',
 	'assessment.fillintheblankwithwordbankquestion': 'question',
 
-	'assessment.assignmentsubmission': require('./assessment/AssignmentSubmission'),
+	'assessment.assignmentsubmission': AssessmentAssignmentSubmission,
 	'assessment.assignmentsubmissionpendingassessment': 'assessment.assignmentsubmission',
-	'assessment.questionsetsubmission': require('./assessment/QuestionSetSubmission'),
-	'assessment.questionsubmission': require('./assessment/QuestionSubmission'),
+	'assessment.questionsetsubmission': AssessmentQuestionSetSubmission,
+	'assessment.questionsubmission': AssessmentQuestionSubmission,
 
-	'assessment.response': require('./assessment/Response'),
+	'assessment.response': AssessmentResponse,
 	'assessment.dictresponse': 'assessment.response',
 	'assessment.textresponse': 'assessment.response',
 
-	'assessment.part': require('./assessment/Part'),
-	'assessment.solution': require('./assessment/Solution'),
+	'assessment.part': AssessmentPart,
+	'assessment.solution': AssessmentSolution,
 
-	'assessment.hint': require('./assessment/Hint'),
+	'assessment.hint': AssessmentHint,
 	'assessment.htmlhint': 'assessment.hint',
 	'assessment.texthint': 'assessment.hint',
 
-	'assessment.filepart': require('./assessment/parts/File'),
-	'assessment.fillintheblank': require('./assessment/parts/FillInTheBlank'),
+	'assessment.filepart': AssessmentPartFile,
+	'assessment.fillintheblank': AssessmentPartFillInTheBlank,
 	'assessment.fillintheblankshortanswerpart': 'assessment.fillintheblank',
 	'assessment.fillintheblankwithwordbankpart': 'assessment.fillintheblank',
 	'assessment.freeresponsepart': 'assessment.part',
-	'assessment.matchingpart': require('./assessment/parts/Matching'),
+	'assessment.matchingpart': AssessmentPartMatching,
 	'assessment.mathpart': 'assessment.part',
 	'assessment.modeledcontentpart': 'assessment.part',
-	'assessment.multiplechoicepart': require('./assessment/parts/MultipleChoice'),
+	'assessment.multiplechoicepart': AssessmentPartMultipleChoice,
 	'assessment.multiplechoicemultipleanswerpart': 'assessment.multiplechoicepart',
 	'assessment.randomizedmultiplechoicepart': 'assessment.multiplechoicepart',
 	'assessment.randomizedmultiplechoicemultipleanswerpart': 'assessment.multiplechoicepart',
 	'assessment.numericmathpart': 'assessment.part',
-	'assessment.orderingpart': require('./assessment/parts/Ordering'),
+	'assessment.orderingpart': AssessmentPartOrdering,
 	'assessment.symbolicmathpart': 'assessment.part',
 
 	'assessment.fillintheblankshortanswersolution': 'assessment.solution',
@@ -94,28 +159,26 @@ var PARSERS = {
 	'assessment.orderingsolution': 'assessment.solution',
 	'assessment.symbolicmathsolution': 'assessment.solution',
 
-	'assessment.savepointitem': require('./assessment/SavePointItem'),
+	'assessment.savepointitem': AssessmentSavePointItem,
 	'assessment.userscourseassignmentsavepointitem': 'assessment.savepointitem',
 
 	'assessment.questionbank': ignored,
 	'assessment.questionmap': ignored,
 
-	'naqwordbank': require('./assessment/WordBank'),
-	'naqwordentry': require('./assessment/WordEntry'),
+	'naqwordbank': AssessmentWordBank,
+	'naqwordentry': AssessmentWordEntry,
 
-	'grade': require('./assessment/Grade'),
-	'assessment.assignmenthistoryitem': require('./assessment/AssignmentHistoryItem'),
+	'grade': AssessmentGrade,
+	'assessment.assignmenthistoryitem': AssessmentAssignmentHistoryItem,
 	'assessment.userscourseassignmenthistoryitem': 'assessment.assignmenthistoryitem',
-	'assessment.userscourseassignmenthistoryitemfeedback': require('./assessment/AssignmentFeedback'),
-	'assessment.userscourseassignmenthistoryitemfeedbackcontainer': require('./assessment/AssignmentFeedbackContainer'),
+	'assessment.userscourseassignmenthistoryitemfeedback': AssessmentAssignmentFeedback,
+	'assessment.userscourseassignmenthistoryitemfeedbackcontainer': AssessmentAssignmentFeedbackContainer,
 
-	'change': require('./Change'),
-
-	'forums.board': require('./forums/Board'),
-	'forums.topic': require('./forums/Topic'),
-	'forums.forum': require('./forums/Forum'),
-	'forums.post': require('./forums/Post'),
-	'forums.comment': require('./forums/Comment'),
+	'forums.board': ForumsBoard,
+	'forums.topic': ForumsTopic,
+	'forums.forum': ForumsForum,
+	'forums.post': ForumsPost,
+	'forums.comment': ForumsComment,
 
 	'forums.headlinepost': 'forums.post',
 	'forums.headlinetopic': 'forums.topic',
@@ -157,9 +220,9 @@ export function getModelByType(type) {
 }
 
 
-export default function parser(service, parent, obj) {
+export function parse(service, parent, obj) {
 	if (Array.isArray(obj)) {
-		return obj.map(parser.bind(this, service, parent));
+		return obj.map(parse.bind(this, service, parent));
 	}
 	var Cls = getModelByType(getType(obj));
 	var args = [service];

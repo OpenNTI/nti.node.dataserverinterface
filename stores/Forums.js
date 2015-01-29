@@ -1,32 +1,29 @@
-'use strict';
+import {parse} from '../models/Parser';
+import {decodeFromURI} from '../utils/ntiids';
 
-var define = require('../utils/object-define-properties');
-var withValue = require('../utils/object-attribute-withvalue');
+import {Service} from '../CommonSymbols';
 
-var parser = require('../utils/parse-object');
-var NTIID = require('../utils/ntiids');
+export default class Forums {
+	constructor(service) {
+		this[Service] = service;
+	}
 
-function Forums(service) {
-	define(this, {
-		_service: withValue(service)
-	});
-}
+	//TODO: refactor to get rid of this method.
+	getObject (ntiid) {
+		//the decoding should happen on the app side... no method in *this* project should know about 'pretty' encoded NTIIDs.
+		ntiid = decodeFromURI(ntiid);
 
-Object.assign(Forums.prototype, {
+		//We hould probably have the service parse the object by default... making this method redundant.
+		return this[Service].getObject(ntiid).then(o=>parse(this[Service], this, o));
+	}
 
-	getObject: function(ntiid) {
-		ntiid = NTIID.decodeFromURI(ntiid);
-		return this._service.getObject(ntiid)
-			.then(parser.bind(this, this));
-	},
 
-	reportItem: function(o) {
+	reportItem (o) {
 		var link = o && o.getLink && o.getLink('flag') || o.getLink('flag.metoo');
 		if (!link) {
 			return Promise.reject('Item has neither flag nor flag.metoo link.');
 		}
-		return this._service.post(link).then(parser.bind(this, this));
+		return this[Service].post(link)
+				.then(o => parse(this[Service], this, o));
 	}
-});
-
-module.exports = Forums;
+}

@@ -1,60 +1,37 @@
-'use strict';
+import Outline from './Outline';
+import {Parser as parse} from '../../CommonSymbols';
 
+import path from 'path';
 
-var path = require('path');
+import fallbackOverview from './_fallbacks.OverviewFromToC';
+import PageSource from './OutlineNodeBackedPageSource';
 
-var base = require('../mixins/Base');
-var makeFallbackOverview = require('./_fallbacks.OverviewFromToC');
-var PageSource = require('./OutlineNodeBackedPageSource');
+import {encodeForURI} from '../../utils/ntiids';
+import emptyFunction from '../../utils/empty-function';
 
-var parser = require('../../utils/parse-object');
-var define = require('../../utils/object-define-properties');
-var withValue = require('../../utils/object-attribute-withvalue');
-var encodeForURI = require('../../utils/ntiids').encodeForURI;
-
-var emptyFunction = require('../../utils/empty-function');
 var emptyCourseObject = {getID:emptyFunction};
 
-function OutlineNode(service, parent, data) {
-	define(this,{
-		_service: withValue(service),
-		_parent: withValue(parent),
-		href: {
-			enumerable: true,
-			configurable: false,
-			get: this.__getHref.bind(this)
-		},
-		ref: {
-			enumerable: true,
-			configurable: false,
-			get: this.__getRef.bind(this)
-		}
-	});
-	Object.assign(this, data);
 
-	var c = this.contents;
-	this.contents = (c && c.map(o => parser(this, o))) || [];
+function getCourse (node) {
+	return node.root.parent();
 }
 
-Object.assign(OutlineNode.prototype, base, {
+export default class OutlineNode extends Outline {
+	constructor(service, parent, data) {
+		super(service, parent, data);
+		this.contents = (c=>c.map(o => this[parse](o)))(data.contents|| []);
+	}
 
-	getID: function() {
+	get label () { return this.DCTitle; }
+
+
+	getID () {
 		return this.ContentNTIID;
-	},
+	}
 
 
-	__getNode: function (id) {
-		if (this.getID() === id) {
-			return this;
-		}
-
-		return this.contents.reduce(function (item, potential) {
-			return item || potential.__getNode(id); }, null);
-	},
-
-
-	__getHref: function() {
-		var courseId = (this.__getCourse() || emptyCourseObject).getID();
+	get href () {
+		var courseId = (getCourse(this) || emptyCourseObject).getID();
 		var ref = this.ref;
 
 		if (!ref) {
@@ -62,10 +39,10 @@ Object.assign(OutlineNode.prototype, base, {
 		}
 
 		return path.join('course', encodeForURI(courseId), ref) + '/';
-	},
+	}
 
 
-	__getRef: function() {
+	get ref () {
 		var id = this.getID();
 
 		if (!id) {
@@ -73,120 +50,77 @@ Object.assign(OutlineNode.prototype, base, {
 		}
 
 		return path.join('o', encodeForURI(id));
-	},
+	}
 
 
-	__getCourse: function() {
-		return this.__getRoot()._parent;
-	},
+	get depth () {
+		var type = super.constructor;
+		return this.parents({test:p=>p instanceof type}).length;
+	}
 
 
-	__getRoot: function() {
+	get root () {
+		var type = super.constructor;
+		return this.parent({
+			test: o=>o.constructor === type
+		});
+	}
 
-		function up(o) {
-			var p = o && o._parent;
-			if (!p || !(p instanceof OutlineNode)) {
-				return o;
-			}
 
-			return up(p);
+	get isOpen () {}
+
+
+	get isLeaf () {}
+
+
+	get isHeading () {}
+
+
+	get isSection () {}
+
+
+	getPageSource () {
+		let cache = Symbol.for('CachedPageSource');
+		if (!this[cache]) {
+			this[cache] = new PageSource(this, this.root);
 		}
-
-		return up(this);
-	},
-
-
-	__getMaxDepthFromHere: function() {
-		return this.contents.map(function(item) {
-			return item.__getMaxDepthFromHere() + 1;
-		}).reduce(function(agg, item) {
-			return Math.max(agg, item);
-		}, 0);
-	},
+		return this[cache];
+	}
 
 
-	isOpen: function() {},
+	isAssignment  (assessmentId) {
+		return this.root.isAssignment(this.getID(), assessmentId);
+	}
 
 
-	isLeaf: function() {},
+	getAssignment  (assignmentId) {
+		return this.root.getAssignment(this.getID(), assignmentId);
+	}
 
 
-	isHeading: function() {},
+	getAssignments  () {
+		return this.root.getAssignments();
+	}
 
 
-	isSection: function() {},
+	getContent () {
+		let link = 'overview-content';
+		return this.hasLink(link) ?
+			this.fetchLink(link).then(collateVideo) :
+			getContentFallback(this);
+	}
 
 
-	getMaxDepth: function() {
-		return this.__getRoot()
-			.__getMaxDepthFromHere();
-	},
+	getProgress () {
+		var link = 'Progress';
 
-
-	getDepth: function() {
-
-		var level = 0;//lvl 0 = root
-		var p = this._parent;
-		while (p) {
-			level++;
-			p = p._parent;
-			if (p && !(p instanceof OutlineNode)) {
-				p = null;
-			}
-		}
-
-		return level;
-	},
-
-
-	getPageSource: function() {
-		if (!this._pageSource) {
-			this._pageSource = new PageSource(this, this.__getRoot());
-		}
-		return this._pageSource;
-	},
-
-
-	getAssignments: function () {
-		var collection = this.__getRoot()._assignments;
-		if (collection) {
-			return collection.getAssignments(this.getID());
-		}
-		return [];
-	},
-
-
-	isAssignment: function (assessmentId) {
-		var collection = this.__getRoot()._assignments;
-		return collection && collection.isAssignment(this.getID(), assessmentId);
-	},
-
-
-	getAssignment: function (assignmentId) {
-		var collection = this.__getRoot()._assignments;
-		return collection && collection.getAssignment(this.getID(), assignmentId);
-	},
-
-
-	getContent: function() {
-		var src = this.getLink('overview-content') || getSrc(this);
-		return src ? this._service.get(src).then(collateVideo) : getContentFallback(this);
-	},
-
-
-	getProgress: function() {
-		var link = this.getLink('Progress');
-
-		if (!link) {
+		if (!this.hasLink(link)) {
 			return Promise.resolve(null);
 		}
 
-		return this._service.get(link);
+		return this.fetchLink(link);
 	}
-});
-
-
-module.exports = OutlineNode;
+}
 
 
 function collateVideo(json) {
@@ -225,28 +159,9 @@ function collateVideo(json) {
 /*******************************************************************************
  * FALLBACK TEMPORARY STUFF BELOW THIS POINT
  */
-
-function getSrc(node) {
-	var course = node.__getCourse();
-	var bundle = course && course.ContentPackageBundle;
-	var firstPackage = ((bundle && bundle.ContentPackages) || [])[0];
-	var root = firstPackage && firstPackage.root;
-
-	if (node.src) {
-		console.debug('[FALLBACK] Deriving outline node src path');
-		if (node.src.split('/').length === 1) {
-			return path.join(root || '', node.src);
-		}
-		return node.src;
-	}
-
-	return undefined;
-}
-
-
 function getContentFallback(outlineNode) {
 	//console.debug('[FALLBACK] Deriving OutlineNode content');
-	var course = outlineNode.__getCourse();
+	var course = getCourse(outlineNode);
 	var bundle = course && course.ContentPackageBundle;
 	var pkg = ((bundle && bundle.ContentPackages) || [])[0];
 	var contentId = outlineNode.getID();
@@ -255,7 +170,7 @@ function getContentFallback(outlineNode) {
 
 	return p.then(function(toc) {
 		var tocNode = toc.getNode(contentId);
-		var content = makeFallbackOverview(tocNode, outlineNode);
+		var content = fallbackOverview(tocNode, outlineNode);
 		if (!content) {
 			console.error('Fallback Content failed');
 		}

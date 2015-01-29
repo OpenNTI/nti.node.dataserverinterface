@@ -1,52 +1,43 @@
-'use strict';
+import Base from '../Base';
+import {
+	Parser as parse
+} from '../../CommonSymbols';
 
-
-var base = require('../mixins/Base');
 var submission = require('../mixins/Submission');
 
-var define = require('../../utils/object-define-properties');
-var withValue = require('../../utils/object-attribute-withvalue');
 
-var parser = require('../../utils/parse-object');
+export default class AssignmentSubmission extends Base {
 
+	static build (service, data) {
+		return new this(service, null, data);
+	}
 
-function AssignmentSubmission(service, parent, data) {
-	define(this,{
-		_service: withValue(service),
-		_parent: withValue(parent)
-	});
-
-	Object.assign(this, data);
-	Object.assign(this, {
-		MimeType: 'application/vnd.nextthought.assessment.assignmentsubmission'
-	});
-
-	this.parts = this.parts.map(function(part) {
-
-		return parser(this, part);
-
-	}.bind(this));
-
-	// CreatorRecordedEffortDuration: 0
-}
-
-Object.assign(AssignmentSubmission.prototype, base, submission, {
-
-	getQuestion: function (id) {
-		return this.parts.reduce(function(found, p) {
-			return found || p.getQuestion(id);
-		}, null);
-	},
+	constructor (service, parent, data) {
+		super(service, parent, data, submission, {
+			MimeType: 'application/vnd.nextthought.assessment.assignmentsubmission'
+		});
 
 
-	getQuestions: function () {
-		return this.parts.reduce(function(list, p) {
-			return list.concat(p.getQuestions());
-		}, []);
-	},
+
+		this.parts = this.parts.map(part => this[parse](part));
+
+		// CreatorRecordedEffortDuration: 0
+	}
 
 
-	countUnansweredQuestions: function (assignment) {
+	getQuestion (id) {
+		return this.parts.reduce((found, p) =>
+			found || p.getQuestion(id), null);
+	}
+
+
+	getQuestions () {
+		return this.parts.reduce((list, p) =>
+			list.concat(p.getQuestions()), []);
+	}
+
+
+	countUnansweredQuestions (assignment) {
 		//Verify argument is an Assignment model
 		if (!assignment || !assignment.parts || assignment.parts.length !== this.parts.length) {
 			throw new Error('Invalid Argument');
@@ -55,14 +46,4 @@ Object.assign(AssignmentSubmission.prototype, base, submission, {
 		return this.parts.reduce((sum, q, i) =>
 			sum + q.countUnansweredQuestions(assignment.parts[i].question_set), 0);
 	}
-});
-
-
-
-function build(service, data) {
-	return new AssignmentSubmission(service, null, data);
 }
-
-AssignmentSubmission.build = build;
-
-module.exports = AssignmentSubmission;

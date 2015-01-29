@@ -1,69 +1,62 @@
-'use strict';
+import Base from '../Base';
+import {
+	Parser as parse
+} from '../../CommonSymbols';
+
+import {
+	default as HasContent,
+	ContentKeys,
+	SetupContentProperties
+} from '../mixins/HasContent';
 
 
-var base = require('../mixins/Base');
-var content = require('../mixins/HasContent');
+export default class Part extends Base {
+	constructor (service, parent, data) {
+		super(service, parent, data, HasContent);
 
-var define = require('../../utils/object-define-properties');
-var withValue = require('../../utils/object-attribute-withvalue');
-var toArray = require('../../utils/toarray');
+		//Rules:
+		// Show Hints from start if they are present. If more than one, increment which one you see every time your show.
+		// Show Solutions if the part is answered & incorrect (as apposed to correct or 'unknown'), and there are solutions
 
-var parseKey = require('../../utils/parse-object-at-key');
+		this[parse]('hints');
+		this[parse]('solutions');
+		this[parse]('wordbank');
+	}
 
-function Part(service, parent, data) {
-	define(this,{
-		_service: withValue(service),
-		_parent: withValue(parent)
-	});
-
-	Object.assign(this, data);
-
-
-	content.initMixin.call(this, data, this.__contentProperties);
-
-	//Rules:
-	// Show Hints from start if they are present. If more than one, increment which one you see every time your show.
-	// Show Solutions if the part is answered & incorrect (as apposed to correct or 'unknown'), and there are solutions
-
-	var parse = parseKey.bind(this, this);
-	parse('hints');
-	parse('solutions');
-	parse('wordbank');
-
-}
-
-Object.assign(Part.prototype, base, content, {
-	__contentProperties: ['content', 'explanation', 'answerLabel'],
-
-	getQuestionId: function() {
-		return this._parent.getID();
-	},
+	[ContentKeys] () {
+		return ['content', 'explanation', 'answerLabel'];
+	}
 
 
-	getPartIndex: function() {
-		return this._parent.parts.indexOf(this);
-	},
+	getQuestionId () {
+		return this.parent().getID();
+	}
+
+
+	getPartIndex () {
+		return this.parent().parts.indexOf(this);
+	}
 
 
 	isAnswered (partValue) {
 		return partValue != null;
-	},
+	}
 
 
-	getVideos: function () {
+	getVideos () {
 		if (!global.DOMParser) {
 			console.error('Environment does not support DOMParser() no related videos');
 			return [];
 		}
 
 		var out = [],
-			dom = new global.DOMParser().parseFromString(this.content, 'text/xml'),
-			nodes = toArray(dom.querySelectorAll('object.naqvideo'));
+			dom = new global.DOMParser().parseFromString(this.content, 'text/xml'),//Safari???
+			nodes = dom.querySelectorAll('object.naqvideo');
 
 		for(let i of nodes) {
 			let o = {};
 
-			for(let p of toArray(i.getElementsByTagName('param'))) {
+			for(let p of i.getElementsByTagName('param')) {
 				o[p.getAttribute('name')] = p.getAttribute('value');
 			}
 
@@ -71,21 +64,18 @@ Object.assign(Part.prototype, base, content, {
 		}
 
 		return out;
-	},
+	}
 
 
-	getWordBankEntry: function (wid) {
-		var p = this._parent || {};
-		var wordbanks = [this.wordbank, p.wordbank].filter(function(x){return x;});
+	getWordBankEntry (wid) {
+		var p = this.parent() || {};
+		var wordbanks = [this.wordbank, p.wordbank].filter(x=>x);
 
-		function get(found, x){
-			return found || x && x.getEntry(wid);
-		}
+		return wordbanks.reduce((found, x)=>found || x && x.getEntry(wid), null);
+	}
 
-		return wordbanks.reduce(get, null);
-	},
 
-	updateFromAssessed: function (assessedPart) {
+	updateFromAssessed (assessedPart) {
 		if (!assessedPart) {
 			throw new Error('[Assessment Fillin]: Invalid Argument');
 		}
@@ -105,9 +95,7 @@ Object.assign(Part.prototype, base, content, {
 
 		if (assessedPart.explanation) {
 			delete this.explanation;
-			content.initMixin.call(this, assessedPart, ['explanation']);
+			this[SetupContentProperties](assessedPart, ['explanation']);
 		}
 	}
-});
-
-module.exports = Part;
+}

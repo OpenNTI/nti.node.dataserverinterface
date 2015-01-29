@@ -1,46 +1,38 @@
-'use strict';
+import Base from '../Base';
+import {Service, Parser as parse} from '../../CommonSymbols';
+//import SharedWithList from '../mixins/SharedWithList';
 
-var Base = require('../mixins/Base');
-//var SharedWithList = require('../mixins/SharedWithList');
+export default class Post extends Base {
+	constructor (service, parent, data) {
+		super(service, parent, data/*, SharedWithList*/);
 
-var define = require('../../utils/object-define-properties');
-var withValue = require('../../utils/object-attribute-withvalue');
-var parseObject = require('../../utils/parse-object');
+		//body
+		//title
+	}
 
-function Post(service, parent, data) {
-	define(this,{
-		_service: withValue(service),
-		_parent: withValue(parent)
-	});
-
-	Object.assign(this, data);
-
-	//body
-	//title
-}
-
-Object.assign(Post.prototype, Base, /*SharedWithList,*/ {
 	setProperties(newProps) {
-		var link = this.getLink('edit');
+		const link = this.getLink('edit');
+		var props = {};
+
 		if (!link) {
 			throw new Error('Post is not editable. (No edit link).');
 		}
-		var props = {};
+
 		// only allow specific properties to be updated.
-		['body', 'title', 'tags'].forEach(propName => {
+		for (let propName of ['body', 'title', 'tags']) {
 			if (newProps[propName]) {
 				props[propName] = newProps[propName];
 			}
-		});
-		return this._service.put(link, props)
+		}
+
+
+		return this[Service].put(link, props)
 			.then(result => {
 				// assimilate the resultant instance's properties. the current instance could be
 				// referenced by another object (this could be a topic headline post referenced
 				// by its parent topic, for example) so we want the current instance to reflect
 				// the changes.
-				return Object.assign(this, parseObject(this._parent, result));
+				return Object.assign(this, this.parent()[parse](result));
 			});
 	}
-});
-
-module.exports = Post;
+}

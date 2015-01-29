@@ -1,32 +1,13 @@
-'use strict';
+import Base from './Base';
 
-//var et = require('elementtree');
-var base = require('./mixins/Base');
-
-//var PageSource = require('./TableOfContentsBackedPageSource');
-
-//var forwardFunctions = require('../utils/function-forwarding');
-var defineProperties = require('../utils/object-define-properties');
-var withValue = require('../utils/object-attribute-withvalue');
-
-function TablesOfContents(service, parent, tables) {
-	defineProperties(this, {
-		_service: withValue(service),
-		_parent: withValue(parent),
-		_tables: withValue(tables)
-	});
-}
-
-
-Object.assign(TablesOfContents.prototype, base, {
-
-	getNode: function(id) {
-		return this._tables.reduce(function(found, toc) {
-			return found || toc.getNode(id);
-		}, null);
+export default class TablesOfContents extends Base{
+	constructor (service, parent, tables) {
+		super(service, parent);
+		this.tables = tables;
 	}
 
-});
+	getNode (id) {
+		return this.tables.reduce((found, toc)=> found || toc.getNode(id), null);
+	}
 
-
-module.exports = TablesOfContents;
+}

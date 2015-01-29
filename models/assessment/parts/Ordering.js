@@ -1,19 +1,12 @@
-'use strict';
+import Part from '../Part';
+import {ContentKeys} from '../../mixins/HasContent';
 
+export default class Ordering extends Part {
+	constructor(service, parent, data) {
+		super(service, parent, data);
+	}
 
-var Base = require('../Part');
-
-function Ordering(service, parent, data) {
-	Base.call(this, service, parent, data);
-}
-
-
-Ordering.prototype = Object.create(Base.prototype);
-Object.assign(Ordering.prototype, {
-	constructor: Ordering,
+	[ContentKeys] () { return super[ContentKeys]().concat(['values', 'labels']); }
 
 	isAnswered () { return true; }
-});
-
-
-module.exports = Ordering;
+}

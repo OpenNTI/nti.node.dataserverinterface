@@ -1,51 +1,38 @@
-'use strict';
+import Base from '../Base';
+import {
+	Service,
+	Parser as parse
+} from '../../CommonSymbols';
 
-var Url = require('url');
-var getLink = require('../../utils/getlink');
+import Url from 'url';
 
-var base = require('../mixins/Base');
+import emptyFunction from '../../utils/empty-function';
 
-var emptyFunction = require('../../utils/empty-function');
-var waitFor = require('../../utils/waitfor');
-var define = require('../../utils/object-define-properties');
+import AssessmentCollection from '../assessment/Collection';
 
-var withValue = require('../../utils/object-attribute-withvalue');
-
-var parseKey = require('../../utils/parse-object-at-key');
-var parser = parseKey.parser;
-
-
-var AssessmentCollection = require('../assessment/Collection');
-
-var emptyCatalogEntry = {getAuthorLine: emptyFunction};
+const NOT_DEFINED = {reason: 'Not defined'};
+const EMPTY_CATALOG_ENTRY = {getAuthorLine: emptyFunction};
 
 const OutlineCache = Symbol('OutlineCache');
 
-function Instance(service, parent, data) {
-	define(this, {
-		_service: withValue(service),
-		_parent: withValue(parent)
-	});
+export default class Instance extends Base {
+	constructor (service, parent, data) {
+		super(service, parent, data, {isCourse: true});
 
-	Object.assign(this, data);
+		var bundle = this[parse]('ContentPackageBundle');
 
-	var parse = parseKey.bind(this, this);
-	var bundle = parse('ContentPackageBundle');
-	bundle.on('changed', this.onChange.bind(this));
+		bundle.on('changed', this.onChange.bind(this));
 
-	parse('ParentDiscussions');
-	parse('Discussions');
-	parse('Outline');
+		this[parse]('ParentDiscussions');
+		this[parse]('Discussions');
+		this[parse]('Outline');
 
-	this.__pending = [resolveCatalogEntry(this), ...bundle.__pending];
-}
-
-Object.assign(Instance.prototype, base, {
-	isCourse: true,
+		this.addToPending(resolveCatalogEntry(service, this));
+	}
 
 
-	getPresentationProperties: function() {
-		var cce = this.CatalogEntry || emptyCatalogEntry,
+	getPresentationProperties () {
+		var cce = this.CatalogEntry || EMPTY_CATALOG_ENTRY,
 			bundle = this.ContentPackageBundle;
 
 		return {
@@ -55,59 +42,53 @@ Object.assign(Instance.prototype, base, {
 			icon: cce.icon || bundle.icon,
 			thumb: cce.thumb || bundle.thumb
 		};
-	},
+	}
 
 
 	//Should only show assignments if there is an AssignmentsByOutlineNode link
-	shouldShowAssignments: function() {
+	shouldShowAssignments () {
 		return !!this.getLink('AssignmentsByOutlineNode');
-	},
+	}
 
 
-	getAssignments: function() {
-		var toc;
-		var key = '__getAssignments';
-		var me = this;
-		var i = me._service;
-		var p = me[key];
+	getAssignments () {
+		var key = Symbol.for('GetAssignmentsRequest');
+
+		var i = this[Service];
+		var p = this[key];
 
 
 		// A/B sets... Assignments are the Universe-Set minus the B set.
 		// The A set is the assignmetns you can see.
-		var A = me.getLink('AssignmentsByOutlineNode');
-		var B = me.getLink('NonAssignmentAssessmentItemsByOutlineNode');
+		var A = this.getLink('AssignmentsByOutlineNode');
+		var B = this.getLink('NonAssignmentAssessmentItemsByOutlineNode');
 
-		if (!me.shouldShowAssignments()) {
+		if (!this.shouldShowAssignments()) {
 			return Promise.reject('No Assignments');
 		}
 
 		if (!p) {
-			toc = this.ContentPackageBundle.getTablesOfContents();
-			p = me[key] = Promise.all([ i.get(A), i.get(B), toc ])
-				.then(function(a) {
-					return new AssessmentCollection(i, me, a[0], a[1], a[2]);
-				});
+			p = this[key] = Promise.all([
+				i.get(A), //AssignmentsByOutlineNode
+				i.get(B), //NonAssignmentAssessmentItemsByOutlineNode
+				this.ContentPackageBundle.getTablesOfContents()
+			])
+				.then(a => new AssessmentCollection(i, this, ...a));
 		}
 
 		return p;
-	},
+	}
 
 
-	getDiscussions: function () {
-		var NOT_DEFINED = {reason: 'Not defined'};
-		function contents(o) {
-			return o ? o.getContents() : Promise.reject(NOT_DEFINED);
-		}
-
+	getDiscussions  () {
 		function logAndResume(reason) {
 			if (reason !== NOT_DEFINED) {
 				console.warn('Could not load board: %o', reason);
 			}
 		}
 
-		function getId(o) {
-			return o ? o.getID(): null;
-		}
+		let contents = o => o ? o.getContents() : Promise.reject(NOT_DEFINED);
+		let getId = o => o ? o.getID(): null;
 
 		var sectionId = getId(this.Discussions);
 		var parentId = getId(this.ParentDiscussions);
@@ -115,71 +96,53 @@ Object.assign(Instance.prototype, base, {
 		return Promise.all([
 			contents(this.Discussions).catch(logAndResume),
 			contents(this.ParentDiscussions).catch(logAndResume)
-		]).then(function(data) {
-			var section = data[0];
-			var parent = data[1];
+			])
+			.then(data => {
+				let [section, parent] = data;
 
-			if (section) {
-				section.NTIID = sectionId;
-			}
+				if (section) {
+					section.NTIID = sectionId;
+				}
 
-			if (parent) {
-				parent.NTIID = parentId;
-			}
+				if (parent) {
+					parent.NTIID = parentId;
+				}
 
-			return binDiscussions(section, parent);
-		});
-	},
+				return binDiscussions(section, parent);
+			});
+	}
 
 
-	getOutline: function() {
-		var link = getLink(this.Outline || {}, 'contents');
-		if (!link) {
-			return Promise.reject('No Outline or content link');
-		}
-
+	getOutline () {
+		var outline = this.Outline;
 		if (!this[OutlineCache]) {
-			this[OutlineCache] = waitFor(this.__pending)
-				.then(()=>
+			//We have to wait for the CCE to load to know if its in preview mode or not.
+			this[OutlineCache] = this.waitForPending().then(()=>
+					//If preview, block outline
 					this.CatalogEntry.Preview ?
 						Promise.reject('Preview') :
-						Promise.all([
-							this._service.get(link),
-							this.getAssignments().catch(emptyFunction) ])
-						.then(contents=> {
-							var [OutlineContents, Assignments] = contents;
-
-							var o = this.Outline;
-
-							define(o, {_assignments: withValue(Assignments)});
-
-							o.contents = parser(o, OutlineContents);
-							return o;
-						})
-				);
+						//not preview, Load contents...
+						outline.get());
 		}
 		return this[OutlineCache];
-	},
+	}
 
 
-	getOutlineNode: function (id) {
+	getOutlineNode  (id) {
 		return this.getOutline()
-			.then(function(outline) {
-				return outline.__getNode(id) ||
-						Promise.reject('Outline Node not found');
-			});
-	},
+			.then(outline => outline.getNode(id) || Promise.reject('Outline Node not found'));
+	}
 
 
-	getVideoIndex: function() {
+	getVideoIndex () {
 		return Promise.all(
 			this.ContentPackageBundle.map(pkg=>pkg.getVideoIndex()))
 				.then(indices =>
 					indices.reduce((a,b) =>a.combine(b)));
-	},
+	}
 
 
-	resolveContentURL: function(url) {
+	resolveContentURL (url) {
 		var bundle = this.ContentPackageBundle;
 		var pkg = ((bundle && bundle.ContentPackages) || [])[0];//probably should search all packages...
 
@@ -187,38 +150,26 @@ Object.assign(Instance.prototype, base, {
 
 		return Promise.resolve(root.resolve(url));
 	}
-});
+}
 
-
-module.exports = Instance;
 
 //Private methods
 
-function resolveCatalogEntry(me) {
+function resolveCatalogEntry(service, inst) {
+	const cache = service.getDataCache();
+	const url = inst.getLink('CourseCatalogEntry');
+	const cached = cache.get(url);
 
-	function parseCCE(cce) {
-		cce = parser(service, cce);
-		me.CatalogEntry = cce;
-		return waitFor(cce.__pending);
-	}
-
-	function cacheIt(data) {
-		cache.set(url, data);
-		return data;
-	}
-
-	var service = me._service,
-	cache = service.getDataCache(),
-	url = getLink(me, 'CourseCatalogEntry'),
-	cached = cache.get(url), work;
+	var work;
 
 	if (cached) {
 		work = Promise.resolve(cached);
 	} else {
-		work = service.get(url).then(cacheIt);
+		work = service.get(url).then(d=> cache.set(url, d) && d);
 	}
 
-	return work.then(parseCCE);
+	return work.then(cce =>
+		(inst.CatalogEntry = inst[parse](cce)).waitForPending());
 }
 
 

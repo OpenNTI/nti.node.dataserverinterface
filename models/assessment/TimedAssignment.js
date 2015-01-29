@@ -1,31 +1,19 @@
-'use strict';
-
-var Base = require('./Assignment');
-
-//var parser = require('../../utils/parse-object');
+import {Service} from '../Base';
+import Assignment from './Assignment';
 
 
-function TimedAssignment(service, parent, data) {
-	Base.call(this, service, parent, data);
+export default class TimedAssignment extends Assignment {
+	constructor(service, parent, data) {
+		this.isTimed = true;
+		super(service, parent, data);
 
-	// IsTimedAssignment
-	// MaximumTimeAllowed
+		// IsTimedAssignment
+		// MaximumTimeAllowed
 
-	// Metadata {
-	//		Duration: int (seconds),
-	//		StartTime: int (seconds)
-	// }
-}
-
-
-TimedAssignment.prototype = Object.create(Base.prototype);
-Object.assign(TimedAssignment.prototype, {
-	constructor: TimedAssignment,
-
-	isTimed: true,
-
-	__setup: function (data) {
-		Base.prototype.__setup.call(this, data);
+		// Metadata {
+		//		Duration: int (seconds),
+		//		StartTime: int (seconds)
+		// }
 
 		this.MaximumTimeAllowed *= 1000;
 
@@ -33,57 +21,56 @@ Object.assign(TimedAssignment.prototype, {
 			this.Metadata.Duration *= 1000;
 			this.Metadata.StartTime *= 1000;
 		}
-	},
+	}
 
 
-	isNonSubmit: function () {
+	isNonSubmit () {
 		return false;
-	},
+	}
 
 
-	isOverTime: function () {
+	isOverTime () {
 		var max = this.getMaximumTimeAllowed();
 		var dur = this.getDuration() || (new Date() - this.getStartTime());
 		return max < dur;
-	},
+	}
 
 
-	isStarted: function () {
+	isStarted () {
 		return !this.getLink('Commence');
-	},
+	}
 
 
-	start: function() {
-		var me = this;
+	start () {
 		var link = this.getLink('Commence');
 
 		if (!link) {
 			return Promise.reject('No commence link');
 		}
 
-		return this._service.post(link)
-			.then(function (data) { me.__setup(data); });
-	},
+		return this[Service].post(link)
+			.then(()=>this.refresh());
+	}
 
 
-	getDuration: function() {
+	getDuration () {
 		var md = this.Metadata;
 		return md && md.Duration;
-	},
+	}
 
 
-	getStartTime: function() {
+	getStartTime () {
 		var md = this.Metadata;
 		return md && md.StartTime;
-	},
+	}
 
 
-	getMaximumTimeAllowed: function () {
+	getMaximumTimeAllowed () {
 		return this.MaximumTimeAllowed;
-	},
+	}
 
 
-	getTimeRemaining: function() {
+	getTimeRemaining () {
 		var now = new Date().getTime();
 		var max = this.getMaximumTimeAllowed();
 		var start = this.getStartTime();
@@ -92,9 +79,4 @@ Object.assign(TimedAssignment.prototype, {
 					max :
 					(max - (now - start));
 	}
-
-
-});
-
-
-module.exports = TimedAssignment;
+}

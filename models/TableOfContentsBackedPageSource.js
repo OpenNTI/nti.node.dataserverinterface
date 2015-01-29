@@ -1,32 +1,28 @@
-'use strict';
+import Base from './Base';
 
-var base = require('./mixins/Base');
+import {encodeForURI as encodeNTIIDForURI} from '../utils/ntiids';
 
-var NTIIDs = require('../utils/ntiids');
-var defineProperties = require('../utils/object-define-properties');
-var withValue = require('../utils/object-attribute-withvalue');
+const Service = Symbol.for('Service');
 
-function TableOfContentsBackedPageSource(ToC, root) {
-	defineProperties(this, {
-		_service: withValue(ToC._service),
-		_parent: withValue(ToC),
-		_root: withValue(ToC.getNode(root))
-	});
-	try {
-		this.pagesInRange = flatten(this._root).filter(suppressed);
+export default class TableOfContentsBackedPageSource extends Base{
+	constructor (ToC, root) {
+		super(ToC[Service], ToC);
+
+		this.root = ToC.getNode(root);
+
+		try {
+			this.pagesInRange = flatten(this.root).filter(suppressed);
+		}
+		catch(e) {
+			console.error(e.stack || e.message || e);
+			throw e;
+		}
 	}
-	catch(e) {
-		console.error(e.stack || e.message || e);
-		throw e;
-	}
-}
 
 
-Object.assign(TableOfContentsBackedPageSource.prototype, base, {
-
-	getPagesAround: function(pageId) {
+	getPagesAround (pageId) {
 		var query = './/*[@ntiid="' + pageId + '"]';
-		var root = this._root;
+		var {root} = this;
 		var node = root.find(query) || (root.get('ntiid') === pageId && root);
 		var nodes = this.pagesInRange;
 
@@ -43,10 +39,7 @@ Object.assign(TableOfContentsBackedPageSource.prototype, base, {
 		};
 	}
 
-});
-
-
-module.exports = TableOfContentsBackedPageSource;
+}
 
 
 function buildRef(node, root) {
@@ -58,7 +51,7 @@ function buildRef(node, root) {
 		// Adding a page id at the end would be redundant. The "Root" is the
 		// "default" pageId.
 		ref: node === root ?
-			'/' : NTIIDs.encodeForURI(node.get('ntiid'))
+			'/' : encodeNTIIDForURI(node.get('ntiid'))
 	};
 }
 
@@ -71,9 +64,6 @@ function suppressed(node) {
 }
 
 function flatten(node) {
-	var fn = flatten.fnLoop ||
-		(flatten.fnLoop = function(a, n) {
-			return a.concat(flatten(n)); });
-
+	var fn = flatten.fnLoop || (flatten.fnLoop = (a,n)=>a.concat(flatten(n)));
 	return [node].concat(node._children.reduce(fn, []));
 }

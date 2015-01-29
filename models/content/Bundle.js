@@ -1,45 +1,46 @@
-'use strict';
+import Base from '../Base';
+import {
+	Service,
+	Parser as parse
+} from '../../CommonSymbols';
 
-var setAndEmit = require('../../utils/getsethandler');
-var urlJoin = require('../../utils/urljoin');
+import setAndEmit from '../../utils/getsethandler';
+import urlJoin from '../../utils/urljoin';
 
-var forwardFunctions = require('../../utils/function-forwarding');
-var define = require('../../utils/object-define-properties');
-var withValue = require('../../utils/object-attribute-withvalue');
-var parser = require('../../utils/parse-object');
+import forwardFunctions from '../../utils/function-forwarding';
 
-var base = require('../mixins/Base');
-var assets = require('../mixins/PresentationResources');
+import assets from '../mixins/PresentationResources';
 
-var TablesOfContents = require('../TablesOfContents');
+import TablesOfContents from '../TablesOfContents';
 
-function Bundle(service, parent, data) {
-	define(this, {
-		_service: withValue(service),
-		_parent: withValue(parent)
-	});
-	Object.assign(this, data);
+export default class Bundle extends Base {
+	constructor (service, parent, data) {
+		super(service, parent, data,
+			{isBundle: true},
+			assets,
+			forwardFunctions(
+				[
+					'every',
+					'filter',
+					'forEach',
+					'map',
+					'reduce'
+				],
+				'ContentPackages'));
 
-	this.author = (data.DCCreator || []).join(', ');
+		this.author = (data.DCCreator || []).join(', ');
 
-	var pending = this.__pending = [];
+		this.ContentPackages.map((v,i,a) => {
+			let obj = a[i] = v = this[parse](v);
+			obj.on('changed', this.onChange.bind(this));
+		});
 
-	this.ContentPackages = this.ContentPackages.map(pkg => {
-		pkg = parser(this, pkg);
-		pkg.on('changed', this.onChange.bind(this));
-		pending.push(...pkg.__pending);
-		return pkg;
-	});
-
-	pending.push(
-		this.getAsset('landing').then(setAndEmit(this, 'icon')),
-		this.getAsset('thumb').then(setAndEmit(this, 'thumb')),
-		this.getAsset('background').then(setAndEmit(this, 'background')));
-}
-
-Object.assign(Bundle.prototype, base, assets,
-	forwardFunctions(['every','filter','forEach','map','reduce'], 'ContentPackages'), {
-	isBundle: true,
+		this.addToPending(
+			this.getAsset('landing').then(setAndEmit(this, 'icon')),
+			this.getAsset('thumb').then(setAndEmit(this, 'thumb')),
+			this.getAsset('background').then(setAndEmit(this, 'background'))
+			);
+	}
 
 	getDefaultAssetRoot () {
 		var root = ([this].concat(this.ContentPackages))
@@ -54,7 +55,7 @@ Object.assign(Bundle.prototype, base, assets,
 		}
 
 		return urlJoin(root, 'presentation-assets', 'webapp', 'v1');
-	},
+	}
 
 
 	getTablesOfContents () {
@@ -68,11 +69,7 @@ Object.assign(Bundle.prototype, base, assets,
 				tables.forEach((v, i) =>
 					result[v.id] = result[i] = v.toc);
 
-				return new TablesOfContents(this._service, this, result);
+				return new TablesOfContents(this[Service], this, result);
 			});
 	}
-
-});
-
-
-module.exports = Bundle;
+}

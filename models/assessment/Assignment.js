@@ -1,35 +1,26 @@
-'use strict';
-
-
-var base = require('../mixins/Base');
-
-var define = require('../../utils/object-define-properties');
-var withValue = require('../../utils/object-attribute-withvalue');
-var parser = require('../../utils/parse-object');
-
-
-function Assignment(service, parent, data) {
-	define(this,{
-		_service: withValue(service),
-		_parent: withValue(parent)
-	});
-
-	this.__setup(data);
-}
+import Base from '../Base';
+import {
+	Service,
+	ReParent,
+	DateFields,
+	Parser as parse
+} from '../../CommonSymbols';
 
 const ActiveSavePointPost = Symbol('ActiveSavePointPost');
 
-Object.assign(Assignment.prototype, base, {
-	isSubmittable: true,
+export default class Assignment extends Base {
+	constructor (service, parent, data) {
+		super(service, parent, data, {isSubmittable: true});
 
-	__setup: function (data) {
-		Object.assign(this, data);
+		this.parts = (data.parts || []).map(p => this[parse](p));
+	}
 
-		this.__parseDate('available_for_submission_beginning');
-		this.__parseDate('available_for_submission_ending');
-
-		this.parts = (data.parts || []).map(p => parser(this, p));
-	},
+	[DateFields] () {
+		return super[DateFields]().concat([
+			'available_for_submission_beginning',
+			'available_for_submission_ending'
+		]);
+	}
 
 
 	/**
@@ -37,12 +28,12 @@ Object.assign(Assignment.prototype, base, {
 	 *
 	 * @param {String} id NTIID
 	 */
-	containsId: function(id) {
+	containsId (id) {
 		return this.parts.filter(p => p && p.containsId(id)).length > 0;
-	},
+	}
 
 
-	isNonSubmit: function () {
+	isNonSubmit () {
 		var p = this.parts;
 
 		if (this.hasOwnProperty('NoSubmit')) {
@@ -54,98 +45,91 @@ Object.assign(Assignment.prototype, base, {
 		}
 
 		return !p || p.length === 0 || /no_submit/.test(this.category_name);
-	},
+	}
 
 
-	canBeSubmitted: function () {
+	canBeSubmitted () {
 		return !this.isNonSubmit();
-	},
+	}
 
 
-	isLate: function(date) {
+	isLate (date) {
 		return date > this.getDueDate();
-	},
+	}
 
 
-	getDueDate: function() {
+	getDueDate () {
 		return this.available_for_submission_ending;
-	},
+	}
 
 
-	getQuestion: function (id) {
-		function get(question, part) {
-			return question || part.getQuestion(id);
-		}
-		return this.parts.reduce(get, null);
-	},
+	getQuestion (id) {
+		return this.parts.reduce((question, part) =>
+			question || part.getQuestion(id), null);
+	}
 
 
-	getQuestions: function () {
-		function get(list, part) {
-			return list.concat(part.getQuestions());
-		}
-		this.parts.reduce(get, []);
-	},
+	getQuestions () {
+		this.parts.reduce((list, part) =>
+			list.concat(part.getQuestions()), []);
+	}
 
 
-	getQuestionCount: function () {
-		function sum(agg, part) {
-			return agg + part.getQuestionCount();
-		}
-		return this.parts.reduce(sum, 0);
-	},
+	getQuestionCount () {
+		return this.parts.reduce((agg, part) =>
+			agg + part.getQuestionCount(), 0);
+	}
 
 
-	getSubmission: function () {
-		let model = parser.getModel('assessment.assignmentsubmission');
-		var s = model.build(this._service, {
+	getSubmission () {
+		let model = this.getModel('assessment.assignmentsubmission');
+		var s = model.build(this[Service], {
 			assignmentId: this.getID(),
 			parts: []
 		});
 
 		s.parts = this.parts.map(function(p) {
 			p = p.getSubmission();
-			p.__reParent(s);
+			p[ReParent](s);
 			return p;
 		});
 
 		return s;
-	},
+	}
 
 
-	loadPreviousSubmission: function () {
+	loadPreviousSubmission () {
 		return this.loadHistory()
 			.catch(this.loadSavePoint.bind(this));
-	},
+	}
 
 
-	loadHistory: function () {
-		var service = this._service;
+	loadHistory () {
+		var service = this[Service];
 		var link = this.getLink('History');
 
 		if (!link) {
 			return Promise.reject('No Link');
 		}
 
-		return service.get(link).then(data=>parser(this, data));
-	},
+		return service.get(link).then(data=>this[parse](data));
+	}
 
 
-	loadSavePoint: function() {
-		var me = this;
-		var service = me._service;
-		var link = me.getLink('Savepoint');
+	loadSavePoint () {
+		var service = this[Service];
+		var link = this.getLink('Savepoint');
 
 		if (!link) {
 			return Promise.reject('No Link');
 		}
 
 		return service.get(link)
-			.then(data=>parser(me, data));
-	},
+			.then(data=>this[parse](data));
+	}
 
 
-	postSavePoint: function (data) {
+	postSavePoint (data) {
 		var link = this.getLink('Savepoint');
 		if (!link) {
 			return Promise.resolve({});
@@ -156,7 +140,7 @@ Object.assign(Assignment.prototype, base, {
 			last.abort();
 		}
 
-		var result = this[ActiveSavePointPost] = this._service.post(link, data);
+		var result = this[ActiveSavePointPost] = this[Service].post(link, data);
 
 		result.catch(()=>{}).then(()=>{
 			if (result === this[ActiveSavePointPost]) {
@@ -167,7 +151,4 @@ Object.assign(Assignment.prototype, base, {
 		return result;
 	}
 
-});
-
-
-module.exports = Assignment;
+}

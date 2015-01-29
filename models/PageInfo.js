@@ -1,32 +1,27 @@
-'use strict';
+import Base from './Base';
+import Url from 'url';
+import path from 'path';
 
-var base = require('./mixins/Base');
-var Url = require('url');
-var path = require('path');
+import QueryString from 'query-string';
 
-var QueryString = require('query-string');
+import {REL_USER_GENERATED_DATA} from '../constants';
 
-var constants = require('../constants');
-var parseObject = require('../utils/parse-object');
+import fixRefs from '../utils/rebase-references';
 
-
-var fixRefs = require('../utils/rebase-references');
+import {Service, Parser as parse} from '../CommonSymbols';
 
 
-const Service = Symbol.for('Service');
+export default class PageInfo extends Base {
+	constructor (service, data) {
+		super(service, null, data);
 
-function PageInfo(service, data) {
-	this[Service] = service;
-	Object.assign(this, data);
-
-	if (data.AssessmentItems) {
-		this.AssessmentItems = setupAssessmentItems(data.AssessmentItems, this);
+		if (data.AssessmentItems) {
+			this.AssessmentItems = setupAssessmentItems(data.AssessmentItems, this);
+		}
 	}
-}
 
-Object.assign(PageInfo.prototype, base, {
 
-	getContentRoot: function () {
+	getContentRoot () {
 		var url = Url.parse(this.getLink('content'));
 
 		url.pathname = path.dirname(url.pathname) + '/';
@@ -38,32 +33,32 @@ Object.assign(PageInfo.prototype, base, {
 		url.search = null;
 
 		return url.format();
-	},
+	}
 
-	getContent: function() {
+	getContent () {
 		var url = this.getLink('content');
 		var root = this.getContentRoot();
 
 		return this[Service].get(url)
-			.then(function (html){ return fixRefs(html, root); });
-	},
+			.then(html=>fixRefs(html, root));
+	}
 
 
-	getResource: function(url) {
+	getResource (url) {
 		return this[Service].get(url);
-	},
+	}
 
 
-	getPackageID: function () {
+	getPackageID () {
 		function bestGuess() {
 			throw new Error('PageInfo does not declare the package ID.');
 		}
 
 		return this.ContentPackageNTIID || bestGuess(this);
-	},
+	}
 
 
-	getAssessmentQuestion: function (questionId) {
+	getAssessmentQuestion (questionId) {
 		function find(found, item) {
 			return found || (
 				//Find in Assignments/QuestionSets
@@ -73,11 +68,11 @@ Object.assign(PageInfo.prototype, base, {
 			);
 		}
 		return (this.AssessmentItems || []).reduce(find, null);
-	},
+	}
 
 
-	getUserDataLastOfType: function (mimeType) {
-		var link = this.getLink(constants.REL_USER_GENERATED_DATA);
+	getUserDataLastOfType (mimeType) {
+		var link = this.getLink(REL_USER_GENERATED_DATA);
 		var url = link && Url.parse(link);
 		var o = {
 			accept: mimeType,
@@ -94,13 +89,9 @@ Object.assign(PageInfo.prototype, base, {
 		url.search = QueryString.stringify(o);
 
 		return this.getResource(url.format())
-			.then(objects=>	parseObject(this, objects.Items[0]));
+			.then(objects=>this[parse](objects.Items[0]));
 	}
-});
-
-
-module.exports = PageInfo;
-
+}
 
 
 // AssessmentItem Setup functions -- defined here to stay out of the way.
@@ -129,7 +120,7 @@ function assessmentItemOrder(a, b) {
 
 
 function setupAssessmentItems(items, pageInfo) {
-	items = items.map(o=>parseObject(pageInfo, o));
+	items = items.map(o=>pageInfo[parse](o));
 	items.sort(assessmentItemOrder);
 
 	var sets = items.filter(o=>o && o.containsId);
