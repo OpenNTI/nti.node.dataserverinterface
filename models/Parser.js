@@ -104,6 +104,7 @@ var PARSERS = {
 	'naqwordentry': require('./assessment/WordEntry'),
 
 	'grade': require('./assessment/Grade'),
+	'gradebook.grade': 'grade',
 	'assessment.assignmenthistoryitem': require('./assessment/AssignmentHistoryItem'),
 	'assessment.userscourseassignmenthistoryitem': 'assessment.assignmenthistoryitem',
 	'assessment.userscourseassignmenthistoryitemfeedback': require('./assessment/AssignmentFeedback'),
