@@ -1,12 +1,12 @@
 import BasicEvent from './Base';
-import Types from './MimeTypes';
+import {WATCH_VIDEO} from './MimeTypes';
 
 export default class WatchVideoEvent extends BasicEvent {
 
 	constructor (resourceId, rootContextId, context, duration, startTime, endTime, maxDuration, hasTranscript) {
 		super(null, duration);
 		Object.assign(this, {
-			MimeType: Types.WATCH_VIDEO,
+			MimeType: WATCH_VIDEO,
 			MaxDuration: maxDuration,
 			type: 'video-watch',
 			resource_id: resourceId,
