@@ -1,23 +1,24 @@
-'use strict';
+import Part from '../Part';
 
-var Base = require('../Part');
+import isEmpty from '../../../utils/isempty';
+//import escapeStringForRegExp from '../../../utils/...';
 
-var isEmpty = require('../../../utils/isempty');
-
-function File(service, parent, data) {
-	Base.call(this, service, parent, data);
+function getRegExp (pattern, regExpFormat) {
+	//TODO: get the RegExp#escape impl form WebApp... (escape is not part of the spec)
+	var o = RegExp.escape(pattern).replace(/\\\*/g, '[^/]+');
+	return new RegExp((regExpFormat || '^{0}$').replace('{0}', o));
 }
 
+export default class File extends Part {
 
-File.prototype = Object.create(Base.prototype);
-Object.assign(File.prototype, {
-	constructor: File,
+	constructor(service, parent, data) {
+		super(service, parent, data);
+	}
 
-
-	isFileAcceptable: function(file) {
-		var name = this.__checkExt(file.name),
-			type = this.__checkMime(file.type),
-			size = this.__checkSize(file.size),
+	isFileAcceptable (file) {
+		var name = this.checkFileExtention(file.name),
+			type = this.checkMimeType(file.type),
+			size = this.checkFileSize(file.size),
 			r = this.reasons = [];
 
 		if (!name) {
@@ -33,45 +34,29 @@ Object.assign(File.prototype, {
 		}
 
 		return name && type && size;
-	},
+	}
 
 
-	__getRegExp: function(pattern, regExpFormat) {
-		var o = RegExp.escape(pattern)
-				.replace(/\\\*/g, '[^/]+');
-		return new RegExp((regExpFormat || '^{0}$').replace('{0}', o));
-	},
-
-
-	__checkMime: function(mime) {
-		var me = this,
-			allowedMimes = this.allowed_mime_types || ['*/*'];
+	checkMimeType (mime) {
+		let allowed = this.allowed_mime_types || ['*/*'];
 
 		if (isEmpty(mime)) {
 			mime = '-/-';
 		}
 
-		return allowedMimes.some(function(o) {
-			return me.__getRegExp(o).test(mime);
-		});
-	},
+		return allowed.some(o =>getRegExp(o).test(mime));
+	}
 
 
-	__checkExt: function(name) {
-		var me = this,
-			allowedNames = this.allowed_extentions || ['*.*'];
-		return allowedNames.some(function(o) {
-			return me.__getRegExp(o, '{0}$').test(name);
-		});
-	},
+	checkFileExtention (name) {
+		let allowed = this.allowed_extentions || ['*.*'];
+		return allowed.some(o =>getRegExp(o, '{0}$').test(name));
+	}
 
 
-	__checkSize: function(size) {
+	checkFileSize (size) {
 		var max = this.max_file_size || Infinity;
 		return size < max && size > 0;
 	}
 
-});
-
-
-module.exports = File;
+}

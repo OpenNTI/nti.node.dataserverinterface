@@ -1,64 +1,46 @@
-'use strict';
+import Base from '../Base';
+import {DateFields} from '../../CommonSymbols';
 
-var setAndEmit = require('../../utils/getsethandler');
+import setAndEmit from '../../utils/getsethandler';
 
-var define = require('../../utils/object-define-properties');
-var withValue = require('../../utils/object-attribute-withvalue');
-var assets = require('../mixins/PresentationResources');
-var base = require('../mixins/Base');
+import assets from '../mixins/PresentationResources';
 
-function CourseCatalogEntry(service, data) {
-	define(this, {
-		_service: withValue(service)
-	});
-	Object.assign(this, data);
+export default class CourseCatalogEntry extends Base {
+	constructor (service, data) {
+		super(service, null, data, {isCourse: true}, assets);
 
-	this.author = (data.DCCreator || []).join(', ');
+		if (!this.ContentPackages) {
+			this.ContentPackages = [this.ContentPackageNTIID];
+		}
 
-	if (!this.ContentPackages) {
-		this.ContentPackages = [this.ContentPackageNTIID];
+		this.addToPending(
+			this.getAsset('landing').then(setAndEmit(this, 'icon')),
+			this.getAsset('thumb').then(setAndEmit(this, 'thumb')),
+			this.getAsset('background').then(setAndEmit(this, 'background'))
+		);
 	}
 
-	this.__pending = [
-		this.getAsset('landing').then(setAndEmit(this, 'icon')),
-		this.getAsset('thumb').then(setAndEmit(this, 'thumb')),
-		this.getAsset('background').then(setAndEmit(this, 'background'))
-	];
-}
-
-Object.assign(CourseCatalogEntry.prototype, base, assets, {
-	isCourse: true,
+	[DateFields] () {
+		return super[DateFields]().concat([
+			'EndDate',
+			'StartDate'
+		]);
+	}
 
 
-	getDefaultAssetRoot: function() {
-		return '';
-	},
+	get author () { return (this.DCCreator || []).join(', '); }
 
 
-	getAuthorLine: function() {
-		function makeName(instructor) {
-			return instructor.Name;
-		}
+	getDefaultAssetRoot () { return ''; }
 
 
-		function notTA(instructor) {
-			return !taRe.test(instructor.JobTitle);
-		}
-
+	getAuthorLine () {
 		var taRe = (/Teaching Assistant/i),
 			instructors = this.Instructors;
 
-		return (instructors && instructors.filter(notTA).map(makeName).join(', ')) || '';
+		return (instructors && instructors
+								.filter(n=>!taRe.test(n.JobTitle))
+								.map(n=>n.Name).join(', ')
+				) || '';
 	}
-
-});
-
-
-
-function parse(service, data) {
-	return new CourseCatalogEntry(service, data);
 }
-
-CourseCatalogEntry.parse = parse;
-
-module.exports = CourseCatalogEntry;

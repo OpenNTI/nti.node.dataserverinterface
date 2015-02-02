@@ -1,38 +1,11 @@
-'use strict';
+import Base from './Base';
+import {Parser} from '../CommonSymbols';
 
+export default class Change extends Base {
 
-var base = require('./mixins/Base');
-
-var define = require('../utils/object-define-properties');
-var withValue = require('../utils/object-attribute-withvalue');
-var parser;
-
-function parseObject(o, data) {
-	//because Parser requires this model (PageInfo), we can't put this ref
-	//at the top... build will fail. So we will pull the ref on demand
-	if(!parser) {
-		parser = require('./Parser');
+	constructor (service, parent, data) {
+		super(service, parent, data);
+		this.Item = this[Parser](this, data.Item);
 	}
-	return parser(o._service, o, data);
+
 }
-
-
-
-function Change(service, parent, data) {
-	define(this,{
-		_service: withValue(service),
-		_parent: withValue(parent)
-	});
-
-	Object.assign(this, data);
-
-	this.Item = parseObject(this, data.Item);
-
-	this.__pending = this.Item.__pending || [];
-}
-
-Object.assign(Change.prototype, base, {
-
-});
-
-module.exports = Change;

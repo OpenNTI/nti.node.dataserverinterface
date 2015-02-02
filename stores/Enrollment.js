@@ -1,59 +1,55 @@
-'use strict';
+import getLink from '../utils/getlink';
 
-var define = require('../utils/object-define-properties');
-var withValue = require('../utils/object-attribute-withvalue');
-var getLink = require('../utils/getlink');
+import Library from './Library';
 
-var Library = require('./Library');
+import {Service} from '../CommonSymbols';
 
-function Enrollment(service) {
-	define(this, {
-		_service: withValue(service)
-	});
-}
-
-Object.assign(Enrollment.prototype, {
-
-	__getLibrary: function () {
-		return Library.get(this._service, 'Main');
-	},
+export default class Enrollment {
+	constructor (service) {
+		this[Service] = service;
+	}
 
 
-	isEnrolled: function(courseId) {
-		return this.__getLibrary().then(function(library) {
-			return !!library.getCourse(courseId);
-		});
-	},
+	getLibrary () {
+		return Library.get(this[Service], 'Main');
+	}
 
 
-	enrollOpen: function(catalogEntryId) {
-		return this._service.post(this._service.getCoursesEnrolledURL(),{
+	isEnrolled (courseId) {
+		return this.getLibrary().then(library => !!library.getCourse(courseId));
+	}
+
+
+	enrollOpen (catalogEntryId) {
+		let service = this[Service];
+		return service.post(service.getCoursesEnrolledURL(),{
 			NTIID: catalogEntryId
 		});
-	},
+	}
 
 
-	dropCourse: function(courseId) {
+	dropCourse (courseId) {
 
-		return this.__getLibrary()
-			.then(function(library) {
-				return library.getCourse(courseId) || Promise.reject('Not Enrolled');
-			})
+		return this.getLibrary()
+			.then(library =>
+				library.getCourse(courseId) || Promise.reject('Not Enrolled'))
 
-			.then(function(course) { return course.drop(); });
-	},
+			.then(course => course.drop());
+	}
 
 
-	redeemGift: function(purchasable, accessKey) {
+	redeemGift (purchasable, accessKey) {
+		if (purchasable.getLink) {
+			console.error('Use model@getLink');
+		} else {
+			console.error('purchasable needs to be a model');
+		}
+
 		var link = getLink(purchasable, 'redeem_gift');
 		if (!link) {
 			return Promise.reject('Couldn\'t find the gift redemption link for the provided purchasable');
 		}
-		return this._service.post(link, {
-			code: accessKey
-		});
 
+		return this[Service].post(link, { code: accessKey });
 	}
-});
-
-module.exports = Enrollment;
+}

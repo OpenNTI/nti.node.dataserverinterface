@@ -1,37 +1,34 @@
-'use strict';
+import Base from '../Base';
+import {
+	Service
+} from '../../CommonSymbols';
+
+import isEmpty from '../../utils/isempty';
+import setAndEmit from '../../utils/getsethandler';
+import urlJoin from '../../utils/urljoin';
 
 
+import assets from '../mixins/PresentationResources';
 
-var isEmpty = require('../../utils/isempty');
-var setAndEmit = require('../../utils/getsethandler');
-var urlJoin = require('../../utils/urljoin');
-var withValue = require('../../utils/object-attribute-withvalue');
+import VideoIndex from '../VideoIndex';
+import ToC from '../XMLBasedTableOfContents';
 
-var base = require('../mixins/Base');
-var define = require('../../utils/object-define-properties');
-var assets = require('../mixins/PresentationResources');
+const VideoIndexReqest = Symbol('VideoIndexReqest');
 
-var VideoIndex = require('../VideoIndex');
-var ToC = require('../XMLBasedTableOfContents');
+export default class Package extends Base {
+	constructor (service, parent, data) {
+		super(service, parent, data, assets);
 
-function Package(service, parent, data) {
-	define(this, {
-		_service: withValue(service),
-		_parent: withValue(parent)
-	});
-	Object.assign(this, data);
+		this.author = (data.DCCreator || []).join(', ');
 
-	this.author = (data.DCCreator || []).join(', ');
+		this.addToPending(
+			this.getAsset('landing').then(setAndEmit(this, 'icon')),
+			this.getAsset('thumb').then(setAndEmit(this, 'thumb'))
+		);
+	}
 
-	this.__pending = [
-		this.getAsset('landing').then(setAndEmit(this, 'icon')),
-		this.getAsset('thumb').then(setAndEmit(this, 'thumb'))
-	];
-}
 
-Object.assign(Package.prototype, base, assets, {
-
-	getDefaultAssetRoot: function() {
+	getDefaultAssetRoot () {
 		var root = this.root;
 
 		if (!root) {
@@ -40,38 +37,34 @@ Object.assign(Package.prototype, base, assets, {
 		}
 
 		return urlJoin(root, 'presentation-assets', 'webapp', 'v1');
-	},
+	}
 
 
-	getTableOfContents: function() {
-		var me = this;
-		var toc = me.__toc;
-		var cache = me._service.getDataCache();
-		var cached = cache.get(me.index);
+	getTableOfContents () {
+		var service = this[Service];
+		var toc = this.tableOfContents;
+		var cache = service.getDataCache();
+		var cached = cache.get(this.index);
 
 		if (!toc) {
 			toc = cached ?
 				Promise.resolve(cached) :
-				me._service.get(me.index)
-					.then(function(data) {
-						cache.set(me.index, data);
-						return data;
-					});
+				service.get(this.index).then(data =>
+						cache.set(this.index, data) && data);
 
-			toc = toc.then(function(o){return ToC.parse(me._service, me, o);});
+			toc = toc.then(o => new ToC(service, this, o));
 
-			me.__toc = toc;
+			this.tableOfContents = toc;
 		}
 
-
 		return toc;
-	},
+	}
 
 
-	getVideoIndex: function() {
-		var cache = this._service.getDataCache();
-		var promise = this.__videoIndex;
-		var service = this._service;
+	getVideoIndex () {
+		var service = this[Service];
+		var promise = this[VideoIndexReqest];
+		var cache = service.getDataCache();
 
 		function find(toc) {
 			return toc.getVideoIndexRef() || Promise.reject('No Video Index');
@@ -84,74 +77,65 @@ Object.assign(Package.prototype, base, assets, {
 			}
 
 			return service.get(url)
-				.then(function (data) {
-					cache.set(url, data);
-					return data;
-				});
+				.then(data => cache.set(url, data) && data);
 		}
 
 
 		if (!promise) {
-			this.__videoIndex = promise = this.getTableOfContents()
-				.then(function(toc) {
-					return Promise.resolve(toc)
+			this[VideoIndexReqest] = promise = this.getTableOfContents()
+				.then(toc =>
+					Promise.resolve(toc)
 						.then(find)
 						.then(urlJoin.bind(this, this.root))
 						.then(get)
-						.then(this.__parseVideoIndex.bind(this, toc));
-				}.bind(this));
+						.then(parseVideoIndex.bind(this, toc)));
 		}
 
 		return promise;
-	},
+	}
+}
 
+function parseVideoIndex (toc, json) {
+	var keyOrder = [];
+	var root = this.root;
 
-	__parseVideoIndex: function(toc, json) {
-		var keyOrder = [];
-		var root = this.root;
-
-		function prefix(o) {
-			o.src = urlJoin(root, o.src);
-			o.srcjsonp = urlJoin(root, o.srcjsonp);
-			return o;
-		}
-
-		function tocOrder(a, b) {
-			// Since the <[topic|object] ntiid="..." is not guaranteed to be unique,
-			// this will just order by first occurance of any element that has an
-			// ntiid attribute with value of what is asked for (a & b)
-			var c = toc.getSortPosition(a),
-				d = toc.getSortPosition(b),
-				p = c > d;
-			return p ? 1 : -1;
-		}
-
-		let containers = (json && json.Containers) || {};
-		let keys = Object.keys(containers);
-
-		try {
-			keys.sort(tocOrder);
-		} catch (e) {
-			console.warn('Potentially unsorted: %o', e.stack || e.message || e);
-		}
-
-		keys.forEach(k => keyOrder.push(...containers[k]));
-
-		let vi = (json && json.Items) || json;
-
-		for (let n in vi) {
-			if (vi.hasOwnProperty(n)) {
-				n = vi[n];
-				if (n && !isEmpty(n.transcripts)) {
-					n.transcripts = n.transcripts.map(prefix);
-				}
-			}
-		}
-
-		return VideoIndex.parse(this._service, this, vi, keyOrder);
+	function prefix(o) {
+		o.src = urlJoin(root, o.src);
+		o.srcjsonp = urlJoin(root, o.srcjsonp);
+		return o;
 	}
 
+	function tocOrder(a, b) {
+		// Since the <[topic|object] ntiid="..." is not guaranteed to be unique,
+		// this will just order by first occurance of any element that has an
+		// ntiid attribute with value of what is asked for (a & b)
+		var c = toc.getSortPosition(a),
+		d = toc.getSortPosition(b),
+		p = c > d;
+		return p ? 1 : -1;
+	}
 
-});
+	let containers = (json && json.Containers) || {};
+	let keys = Object.keys(containers);
 
-module.exports = Package;
+	try {
+		keys.sort(tocOrder);
+	} catch (e) {
+		console.warn('Potentially unsorted: %o', e.stack || e.message || e);
+	}
+
+	keys.forEach(k => keyOrder.push(...containers[k]));
+
+	let vi = (json && json.Items) || json;
+
+	for (let n in vi) {
+		if (vi.hasOwnProperty(n)) {
+			n = vi[n];
+			if (n && !isEmpty(n.transcripts)) {
+				n.transcripts = n.transcripts.map(prefix);
+			}
+		}
+	}
+
+	return new VideoIndex(this[Service], this, vi, keyOrder);
+}

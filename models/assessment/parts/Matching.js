@@ -1,17 +1,12 @@
-'use strict';
+import Part from '../Part';
+import {ContentKeys} from '../../mixins/HasContent';
 
+export default class Matching extends Part {
+	constructor(service, parent, data) {
+		super(service, parent, data);
+	}
 
-var Base = require('../Part');
-
-function Matching(service, parent, data) {
-	Base.call(this, service, parent, data);
-}
-
-
-Matching.prototype = Object.create(Base.prototype);
-Object.assign(Matching.prototype, {
-	__contentProperties: Base.prototype.__contentProperties.concat(['values', 'labels']),
-	constructor: Matching,
+	[ContentKeys] () { return super[ContentKeys]().concat(['values', 'labels']); }
 
 	isAnswered (partValue) {
 		var maybe = !!partValue;
@@ -24,7 +19,4 @@ Object.assign(Matching.prototype, {
 
 		return maybe;
 	}
-});
-
-
-module.exports = Matching;
+}

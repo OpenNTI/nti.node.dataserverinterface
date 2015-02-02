@@ -1,28 +1,40 @@
-'use strict';
 /* global Stripe */
 
-var define = require('../utils/object-define-properties');
-var withValue = require('../utils/object-attribute-withvalue');
-var getLink = require('../utils/getlink');
+import ServiceModel from '../stores/Service';
+import getLink from '../utils/getlink';
 
 var _pollInterval = 1000;
 
-var Service = require('../stores/Service');
+const Server = Symbol.for('Server');
+const Context = Symbol.for('Context');
 
-function StripeInterface(server, context) {
-	define(this, {
-		_server: withValue(server),
-		_context: withValue(context)
-	});
-}
+export default class StripeInterface {
+	static fromService (service) {
+		let server = service[Server];
+		let context = service[Context];
+		return new this(server, context);
+	}
 
-Object.assign(StripeInterface.prototype, {
-	getServer: function () { return this._server; },
-	get: Service.prototype.get,
-	post: Service.prototype.post,
+	constructor (server, context) {
+		Object.assign(this, {
+			get: ServiceModel.prototype.get,
+			post: ServiceModel.prototype.post,
+			[Server]: server,
+			[Context]: context
+		});
+	}
+
+	getServer () { return this[Server]; }
 
 
-	getPricing: function(purchasable) {
+	getPricing (purchasable) {
+		if (purchasable.getLink) {
+			console.error('Use model@getLink');
+		} else {
+			console.error('purchasable needs to be a model');
+		}
+
+		//TODO: purchasable should be a model... getLink should be never imported outside of Base class for models
 		var link = getLink(purchasable.Links,'price');
 		if (link) {
 			return this.post(link, {
@@ -30,10 +42,16 @@ Object.assign(StripeInterface.prototype, {
 			});
 		}
 		throw new Error('Unable to find price link for provided Purchasable');
-	},
+	}
 
 
-	getCouponPricing: function(purchasable, coupon) {
+	getCouponPricing (purchasable, coupon) {
+		if (purchasable.getLink) {
+			console.error('Use model@getLink');
+		} else {
+			console.error('purchasable needs to be a model');
+		}
+		//TODO: purchasable should be a model... getLink should be never imported outside of Base class for models
 		var link = getLink(purchasable.Links, 'price_purchasable_with_stripe_coupon');
 		var data = {
 				purchasableID: purchasable.ID
@@ -48,23 +66,22 @@ Object.assign(StripeInterface.prototype, {
 		}
 
 		throw new Error('Unable to find price with coupon link for purchasable');
-	},
+	}
 
-	getToken: function(stripePublicKey, data) {
-		return new Promise(function(fulfill) {
+	getToken (stripePublicKey, data) {
+		return new Promise(fulfill => {
 			Stripe.setPublishableKey(stripePublicKey);
-			Stripe.card.createToken(data, function(status, response) {
+			Stripe.card.createToken(data, (status, response) => {
 				//if (response.error) {return reject(response.error);}
-
 				fulfill({
 					status: status,
 					response: response
 				});
 			});
 		});
-	},
+	}
 
-	submitPayment: function(data) {
+	submitPayment (data) {
 		var stripeToken = data.stripeToken.id;
 		var purchasable = data.purchasable;
 		var pricing = data.pricing;
@@ -85,29 +102,29 @@ Object.assign(StripeInterface.prototype, {
 		}
 
 		if (pricing) {
-			if (pricing.coupon !== undefined) {
+			if (pricing.coupon != null) {
 				payload.coupon = pricing.coupon;
 			}
 
-			if (pricing.expected_price != undefined) {
+			if (pricing.expected_price != null) {
 				payload.expectedAmount = pricing.expected_price;
 			}
 		}
 
 
 		return this.post(paymentUrl, payload)
-			.then(function(result) {
+			.then(result => {
 				var attempt = result.Items[0];
 
 				return this._pollPurchaseAttempt(attempt.ID, attempt.Creator, pollUrl);
-			}.bind(this));
-	},
+			});
+	}
 
 
-	_pollPurchaseAttempt: function(purchaseId, creator, pollUrl) {
+	_pollPurchaseAttempt (purchaseId, creator, pollUrl) {
 		var me = this;
 
-		return new Promise(function(fulfill, reject) {
+		return new Promise((fulfill, reject) => {
 
 			function pollResponse(result) {
 				var attempt = result.Items[0];
@@ -136,6 +153,4 @@ Object.assign(StripeInterface.prototype, {
 		});
 	}
 
-});
-
-module.exports = StripeInterface;
+}

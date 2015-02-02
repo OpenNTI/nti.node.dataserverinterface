@@ -1,19 +1,10 @@
-'use strict';
+import Part from '../Part';
+import {ContentKeys} from '../../mixins/HasContent';
 
+export default class MultipleChoice extends Part {
+	constructor(service, parent, data) {
+		super(service, parent, data);
+	}
 
-var Base = require('../Part');
-
-function MultipleChoice(service, parent, data) {
-	Base.call(this, service, parent, data);
+	[ContentKeys] () { return super[ContentKeys]().concat(['choices']); }
 }
-
-
-MultipleChoice.prototype = Object.create(Base.prototype);
-Object.assign(MultipleChoice.prototype, {
-	__contentProperties: Base.prototype.__contentProperties.concat(['choices']),
-	constructor: MultipleChoice
-});
-
-
-
-module.exports = MultipleChoice;

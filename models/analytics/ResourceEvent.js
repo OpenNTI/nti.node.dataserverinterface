@@ -1,28 +1,13 @@
-'use strict';
+import BasicEvent from './Base';
+import * as Types from './MimeTypes';
 
-var base = require('../mixins/Base');
-var Types = require('./MimeTypes');
-
-function ResourceEvent(resourceId, courseId, duration) {
-	Object.assign(this, {
-		MimeType: Types.RESOURCE_VIEWED,
-		type: 'resource-viewed',
-		resource_id: resourceId,
-		course: courseId,
-		time_length: duration,
-		timestamp: Date.now() / 1000 //the server is expecting seconds
-	});
-}
-
-Object.assign(ResourceEvent.prototype, base, {
-
-	setContextPath: function(path) {
-		this.context_path = path;
-	},
-
-	getDuration: function () {
-		return this.time_length;
+export default class ResourceEvent extends BasicEvent {
+	constructor (resourceId, courseId, duration) {
+		super(courseId, duration);
+		Object.assign(this, {
+			MimeType: Types.RESOURCE_VIEWED,
+			type: 'resource-viewed',
+			resource_id: resourceId
+		});
 	}
-});
-
-module.exports = ResourceEvent;
+}

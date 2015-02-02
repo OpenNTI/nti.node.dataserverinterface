@@ -1,35 +1,14 @@
-'use strict';
+import Base from '../Base';
+import {Parser as parse} from '../../CommonSymbols';
 
-
-var base = require('../mixins/Base');
-
-var define = require('../../utils/object-define-properties');
-var withValue = require('../../utils/object-attribute-withvalue');
-var parser = require('../../utils/parse-object');
-
-function WordBank(service, parent, data) {
-	define(this,{
-		_service: withValue(service),
-		_parent: withValue(parent)
-	});
-
-
-	Object.assign(this, data);
-
-	this.entries = data.entries.map(e=>parser(this, e));
-}
-
-Object.assign(WordBank.prototype, base, {
-
-	getEntry: function (id) {
-		function find(found, x){
-			return found || (x.wid === id && x);
-		}
-
-		return this.entries.reduce(find, null);
+export default class WordBank extends Base {
+	constructor(service, parent, data) {
+		super(service, parent, data);
+		this.entries = data.entries.map(e=>this[parse](e));
 	}
 
-});
+	getEntry (id) {
+		return this.entries.reduce((found, x) => found || (x.wid === id && x), null);
+	}
 
-
-module.exports = WordBank;
+}

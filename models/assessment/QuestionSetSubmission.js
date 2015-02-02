@@ -1,39 +1,34 @@
-'use strict';
+import Base from '../Base';
+import {
+	Parser as parse
+} from '../../CommonSymbols';
 
+import submission from '../mixins/Submission';
 
-var base = require('../mixins/Base');
-var submission = require('../mixins/Submission');
+export default class QuestionSetSubmission extends Base {
 
-var define = require('../../utils/object-define-properties');
-var withValue = require('../../utils/object-attribute-withvalue');
+	static build(service, data) {
+		return new this(service, null, data);
+	}
 
-var parser = require('../../utils/parse-object');
+	constructor (service, parent, data) {
+		super(service, parent, data, submission, {
+			MimeType: 'application/vnd.nextthought.assessment.questionsetsubmission'
+		});
 
-function QuestionSetSubmission(service, parent, data) {
-	define(this,{
-		_service: withValue(service),
-		_parent: withValue(parent)
-	});
+		// CreatorRecordedEffortDuration: 0
 
-	Object.assign(this, data);
-	Object.assign(this, {
-		MimeType: 'application/vnd.nextthought.assessment.questionsetsubmission'
-	});
+		this.questions = this.questions.map(q =>this[parse](q));
+	}
 
-	// CreatorRecordedEffortDuration: 0
-
-	this.questions = this.questions.map(q =>parser(this, q));
-}
-
-Object.assign(QuestionSetSubmission.prototype, base, submission, {
 
 	getQuestion (id) {
 		return this.questions.reduce((found, q) => found || (q.getID() === id && q), null);
-	},
+	}
 
 	getQuestions () {
 		return this.questions.slice();
-	},
+	}
 
 	countUnansweredQuestions (questionSet) {
 		if (!questionSet || !questionSet.questions || questionSet.questions.length !== this.questions.length) {
@@ -43,12 +38,4 @@ Object.assign(QuestionSetSubmission.prototype, base, submission, {
 		return this.questions.reduce((sum, q) =>
 			sum + (questionSet.getQuestion(q.getID()).isAnswered(q) ? 0 : 1), 0);
 	}
-});
-
-function build(service, data) {
-	return new QuestionSetSubmission(service, null, data);
 }
-
-QuestionSetSubmission.build = build;
-
-module.exports = QuestionSetSubmission;

@@ -1,71 +1,53 @@
-'use strict';
+import Base from '../Base';
+import {
+	Parser as parse
+} from '../../CommonSymbols';
+
+import assessed from '../mixins/AssessedAssessmentPart';
+
+export default class AssessedQuestionSet extends Base {
+	constructor (service, parent, data) {
+		super(service, parent, data, assessed);
+		this.questions = data.questions.map(question=>this[parse](question));
+	}
+
+	getQuestion (id) {
+		return this.questions.reduce((found, q) =>
+			found || (q.getID() === id && q), null);
+	}
 
 
-var base = require('../mixins/Base');
-var assessed = require('../mixins/AssessedAssessmentPart');
-
-var define = require('../../utils/object-define-properties');
-var withValue = require('../../utils/object-attribute-withvalue');
-var parser = require('../../utils/parse-object');
-
-function AssessedQuestionSet(service, parent, data) {
-	define(this,{
-		_service: withValue(service),
-		_parent: withValue(parent)
-	});
-
-
-	Object.assign(this, data);
-	this.questions = data.questions.map(question=>parser(this, question));
-}
-
-Object.assign(AssessedQuestionSet.prototype, base, assessed, {
-
-	getQuestion: function (id) {
-		return this.questions.reduce(function(found, q) {
-			return found || (q.getID() === id && q);
-		}, null);
-	},
-
-
-	getQuestions: function () {
+	getQuestions () {
 		return this.questions.slice();
-	},
+	}
 
 
-	isSubmitted: function () {
+	isSubmitted () {
 		return true;
-	},
+	}
 
 
-	getTotal: function () {
+	getTotal () {
 		return (this.questions || []).length;
-	},
+	}
 
 
-	getCorrect: function() {
-		function addCorrect(sum, question) {
-			if (question.isCorrect()) {
-				sum++;
-			}
-			return sum;
-		}
-		return (this.questions || []).reduce(addCorrect, 0);
-	},
+	getCorrect () {
+		return (this.questions || []).reduce((sum, question) =>
+			sum + (question.isCorrect() ? 1 : 0), 0);
+	}
 
 
-	getIncorrect: function () {
+	getIncorrect () {
 		return this.getTotal() - this.getCorrect();
-	},
+	}
 
 
-	getScore: function() {
+	getScore () {
 		try {
 			return 100 * (this.getCorrect() / this.getTotal());
 		} catch (e) {
 			return 0;
 		}
 	}
-});
-
-module.exports = AssessedQuestionSet;
+}

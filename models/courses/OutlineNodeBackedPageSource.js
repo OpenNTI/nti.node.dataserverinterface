@@ -1,45 +1,33 @@
-'use strict';
+import Base from '../Base';
+import {
+	Service
+} from '../../CommonSymbols';
 
-var base = require('../mixins/Base');
+export default class OutlineNodeBackedPageSource extends Base {
 
-var defineProperties = require('../../utils/object-define-properties');
-var withValue = require('../../utils/object-attribute-withvalue');
+	constructor (node, root) {
+		super(node[Service], node);
 
-function OutlineNodeBackedPageSource(node, root) {
-	defineProperties(this, {
-		_service: withValue(node._service),
-		_parent: withValue(node),
-		_root: withValue(root),
-	});
+		this.root = root;
+		this.current = node;
 
-	this.current = node;
-
-	try {
-		this.pagesInRange = flatten(root).filter(suppressed);
+		try {
+			this.pagesInRange = flatten(root).filter(suppressed);
+		}
+		catch(e) {
+			console.error(e.stack || e.message || e);
+			throw e;
+		}
 	}
-	catch(e) {
-		console.error(e.stack || e.message || e);
-		throw e;
-	}
-}
 
 
-Object.assign(OutlineNodeBackedPageSource.prototype, base, {
+	getPagesAround (pageId) {
+		const nodes = this.pagesInRange;
+		const index = nodes.reduce((found, node, index) =>
+			(typeof found !== 'number' && node.getID() === pageId) ? index : found, null);
 
-	getPagesAround: function(pageId) {
-		var nodes = this.pagesInRange;
-		var index = nodes.reduce(function(found, node, index) {
-
-			if (typeof found !== 'number' && node.getID() === pageId) {
-				found = index;
-			}
-
-			return found;
-		}, null);
-
-
-		var next = nodes[index + 1];
-		var prev = nodes[index - 1];
+		let next = nodes[index + 1];
+		let prev = nodes[index - 1];
 
 		return {
 			total: nodes.length,
@@ -49,10 +37,7 @@ Object.assign(OutlineNodeBackedPageSource.prototype, base, {
 		};
 	}
 
-});
-
-
-module.exports = OutlineNodeBackedPageSource;
+}
 
 
 function buildRef(node) {
@@ -69,9 +54,8 @@ function suppressed(node) {
 }
 
 function flatten(node) {
-	var fn = flatten.fnLoop ||
-		(flatten.fnLoop = function(a, n) {
-			return a.concat(flatten(n)); });
+	const fn = flatten.fnLoop ||
+		(flatten.fnLoop = (a, n)=> a.concat(flatten(n)));
 
 	return [node].concat(node.contents.reduce(fn, []));
 }

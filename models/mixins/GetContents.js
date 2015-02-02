@@ -1,21 +1,28 @@
-'use strict';
+import QueryString from 'query-string';
 
-var parse = require('../../utils/parse-object');
-var QueryString = require('query-string');
+import {Parser as parse} from '../../CommonSymbols';
 
-module.exports = {
-	getContents: function (params) {
+const Service = Symbol.for('Service');
+
+export default {
+	getContents (params) {
 		var link = this.getLink('contents');
 		if (!link) {
 			return Promise.reject('No Link!?');
 		}
+
 		if (typeof params === 'object') {
 			link = link.concat('?',QueryString.stringify(params));
 		}
-		return this._service.get(link)
-			.then(function(wrapper){
-				wrapper.Items = parse(this, wrapper.Items);
-				return wrapper;
-			}.bind(this));
+
+		return this[Service].get(link)
+			.then(wrapper =>
+				Object.assign(
+					wrapper,
+					{
+						Items: this[parse](wrapper.Items)
+					}
+				)
+			);
 	}
 };

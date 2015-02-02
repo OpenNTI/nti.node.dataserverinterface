@@ -1,74 +1,60 @@
-'use strict';
+import  Base from '../Base';
+import submission from '../mixins/Submission';
+
+export default class QuestionSubmission extends Base {
+
+	static build(service, data) {
+		return new this(service, null, data);
+	}
 
 
-var base = require('../mixins/Base');
-var submission = require('../mixins/Submission');
+	constructor (service, parent, data) {
 
-var define = require('../../utils/object-define-properties');
-var withValue = require('../../utils/object-attribute-withvalue');
+		super(service, parent, data, submission, {
+			MimeType: 'application/vnd.nextthought.assessment.questionsubmission'
+		});
 
 
-function QuestionSubmission(service, parent, data) {
-	define(this,{
-		_service: withValue(service),
-		_parent: withValue(parent)
-	});
+		// questionId
+		// parts -> parse
+		// CreatorRecordedEffortDuration: 0
+	}
 
-	Object.assign(this, data);
-	Object.assign(this, {
-		MimeType: 'application/vnd.nextthought.assessment.questionsubmission'
-	});
 
-	// questionId
-	// parts -> parse
-	// CreatorRecordedEffortDuration: 0
-}
-
-Object.assign(QuestionSubmission.prototype, base, submission, {
-
-	getID: function() {
+	getID () {
 		return this.NTIID || this.questionId;
-	},
+	}
 
 
-	getPartValue: function (index) {
+	getPartValue  (index) {
 		return this.parts[index];
-	},
+	}
 
 
-	setPartValue: function (index, value) {
+	setPartValue (index, value) {
 		index = parseInt(index, 10);
 		if (index < 0 || index >= this.parts.length) {
 			throw new Error('Index Out Of Bounds.');
 		}
 
 		this.parts[index] = value;
-	},
+	}
 
 
-	addRecordedEffortTime: function (/*duration*/) {
+	addRecordedEffortTime (/*duration*/) {
 		// var old = this.CreatorRecordedEffortDuration || 0;
 		// this.CreatorRecordedEffortDuration = old + duration;
 
 		//Force/Blank this out for now.
 		this.CreatorRecordedEffortDuration = null;
-	},
+	}
 
 
-	canSubmit: function() {
+	canSubmit () {
 		function answered(p) { return p !== null; }
 
 		if (this.isSubmitted()) {return false;}
 
 		return this.parts.filter(answered).length > 0;
 	}
-});
-
-
-function build(service, data) {
-	return new QuestionSubmission(service, null, data);
 }
-
-QuestionSubmission.build = build;
-
-module.exports = QuestionSubmission;

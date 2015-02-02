@@ -1,25 +1,16 @@
-'use strict';
+import Base from '../Base';
+import {
+	Service,
+	Parser as parse
+} from '../../CommonSymbols';
 
 
-var base = require('../mixins/Base');
+export default class AssignmentFeedbackContainer extends Base {
+	constructor (service, parent, data) {
+		super(service, parent, data);
 
-var define = require('../../utils/object-define-properties');
-var withValue = require('../../utils/object-attribute-withvalue');
-var parser = require('../../utils/parse-object');
-
-function AssignmentFeedbackContainer(service, parent, data) {
-	define(this,{
-		_service: withValue(service),
-		_parent: withValue(parent)
-	});
-
-
-	Object.assign(this, data);
-
-	this.Items = data.Items.map(p=>parser(this, p));
-}
-
-Object.assign(AssignmentFeedbackContainer.prototype, base, {
+		this.Items = data.Items.map(p=>this[parse](p));
+	}
 
 	addPost (body) {
 		var link = this.getLink('edit');
@@ -33,10 +24,7 @@ Object.assign(AssignmentFeedbackContainer.prototype, base, {
 			body: Array.isArray(body) ? body : [body]
 		};
 
-		return this._service.post(link, payload);
+		return this[Service].post(link, payload);
 	}
 
-});
-
-
-module.exports = AssignmentFeedbackContainer;
+}

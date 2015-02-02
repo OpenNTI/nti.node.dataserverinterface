@@ -1,10 +1,7 @@
-'use strict';
+import urlJoin from '../../utils/urljoin';
+import isEmpty from '../../utils/isempty';
 
-
-var urlJoin = require('../../utils/urljoin');
-var isEmpty = require('../../utils/isempty');
-
-var ASSET_MAP = {
+const ASSET_MAP = {
 	thumb: 'contentpackage-thumb-60x60.png',
 	landing: 'contentpackage-landing-232x170.png',
 	background: 'background.png'
@@ -32,21 +29,18 @@ function getDefaultAssetRoot(scope) {
 	return '';
 }
 
-Object.assign(exports, {
+export default {
 
 
-	getAssetRoot: function getAssetRoot() {
+	getAssetRoot () {
 		if (this.presentationroot) { return this.presentationroot; }
 
 		var resources = this.PlatformPresentationResources || [],
 			root;
 
-		resources.every(function(resource) {
-			if (resource.PlatformName === 'webapp') {
-				root = resource.href;
-			}
-			return !root;
-		});
+		resources.every(
+			resource=> !(root = (resource.PlatformName === 'webapp') ? resource.href : root)
+		);
 
 		this.presentationroot = root || getDefaultAssetRoot(this);
 
@@ -59,11 +53,11 @@ Object.assign(exports, {
 	 * @param  {string} name asset name to load
 	 * @return {Promise} whether or not the asset exists
 	 */
-	getAsset: function getAsset(name) {
+	getAsset (name) {
 		var assetPath = ASSET_MAP[name] || ('missing-' + name + '-asset.png'),
 			root = this.getAssetRoot(),
 			url = root && urlJoin(root, assetPath);
-			// cache = this._service.getDataCache(),
+			// cache = this[Service].getDataCache(),
 			// cacheKey = 'asset-' + url;
 
 		if (isEmpty(root)) {
@@ -73,4 +67,4 @@ Object.assign(exports, {
 		return Promise.resolve(url);
 	}
 
-});
+};

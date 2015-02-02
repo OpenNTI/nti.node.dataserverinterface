@@ -1,36 +1,16 @@
-'use strict';
+import Base from '../Base';
+import names from '../mixins/CourseAndAssignmentNameResolving';
 
-
-var base = require('../mixins/Base');
-var names = require('../mixins/CourseAndAssignmentNameResolving');
-
-var define = require('../../utils/object-define-properties');
-var withValue = require('../../utils/object-attribute-withvalue');
-
-function Grade(service, parent, data) {
-	define(this,{
-		_service: withValue(service),
-		_parent: withValue(parent)
-	});
-
-
-	Object.assign(this, data);
-
-	this.__pending = [
-		this.__resolveNames(service)
-	];
-}
-
-Object.assign(Grade.prototype, base, names, {
+export default class Grade extends Base {
+	constructor (service, parent, data) {
+		super(service, parent, data, names);
+	}
 
 	getValue () {
 		return this.value;
-	},
+	}
 
 	isExcused () {
 		return !!this.IsExcused;
 	}
-});
-
-
-module.exports = Grade;
+}

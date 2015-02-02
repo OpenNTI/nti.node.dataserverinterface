@@ -1,9 +1,10 @@
-var Session = require('./session');
-var Interface = require('./interface');
-var cache = require('./utils/datacache');
+import Session from './session';
+import Interface from './interface';
+import cache from './utils/datacache';
 
-module.exports = function(config) {
-	'use strict';
+import {getModelByType as lookup} from './models/Parser';
+
+export default function(config) {
 	var i = new Interface(config);
 
 	return {
@@ -11,4 +12,8 @@ module.exports = function(config) {
 		interface: i,
 		session: new Session(i)
 	};
-};
+}
+
+export function getModel (...args) {
+	return lookup(...args);
+}

@@ -1,32 +1,23 @@
-'use strict';
+import path from 'path';
 
-var path = require('path');
-var base = require('./mixins/Base');
+import Base from './Base';
 
-var NTIID = require('../utils/ntiids');
-var defineProperties = require('../utils/object-define-properties');
-var withValue = require('../utils/object-attribute-withvalue');
+import {encodeForURI as encodeNTIIDForURI} from '../utils/ntiids';
 
-function VideoIndexBackedPageSource(index) {
-	defineProperties(this, {
-		_service: withValue(index._service),
-		_parent: withValue(index),
-	});
-}
+import {Parent, Service} from '../CommonSymbols';
+
+export default class VideoIndexBackedPageSource extends Base {
+
+	constructor (index) {
+		super(index[Service], index);
+	}
 
 
-Object.assign(VideoIndexBackedPageSource.prototype, base, {
-
-	getPagesAround: function(pageId) {
-		var nodes = this._parent;
-		var index = nodes.reduce(function(found, node, index) {
-
-			if (typeof found !== 'number' && node.getID() === pageId) {
-				found = index;
-			}
-
-			return found;
-		}, null);
+	getPagesAround (pageId) {
+		var nodes = this[Parent];
+		var index = nodes.reduce(
+			(found, node, index) => (typeof found !== 'number' && node.getID() === pageId) ? index : found,
+			null);
 
 
 		var next = nodes.getAt(index + 1);
@@ -40,10 +31,7 @@ Object.assign(VideoIndexBackedPageSource.prototype, base, {
 		};
 	}
 
-});
-
-
-module.exports = VideoIndexBackedPageSource;
+}
 
 
 function buildRef(node) {
@@ -51,6 +39,6 @@ function buildRef(node) {
 	return id && {
 		ntiid: id,
 		title: node.title,
-		ref: path.join('v', NTIID.encodeForURI(id))
+		ref: path.join('v', encodeNTIIDForURI(id))
 	};
 }

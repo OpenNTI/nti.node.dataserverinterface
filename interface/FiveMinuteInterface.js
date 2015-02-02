@@ -5,84 +5,75 @@
  *	/interface/thirdparties/ou/FiveMinute.js
  *
  */
-'use strict';
 
-var define = require('../utils/object-define-properties');
-var withValue = require('../utils/object-attribute-withvalue');
+import ServiceModel from '../stores/Service';
 
-var Service = require('../stores/Service');
+const Server = Symbol.for('Server');
+const Context = Symbol.for('Context');
 
-function FiveMinuteInterface(server, context) {
-	define(this, {
-		_server: withValue(server),
-		_context: withValue(context)
-	});
-}
+export default class FiveMinuteInterface {
+	static fromService (service) {
+		let server = service[Server];
+		let context = service[Context];
+		return new this(server, context);
+	}
 
-Object.assign(FiveMinuteInterface.prototype, {
-	getServer: function () { return this._server; },
-	get: Service.prototype.get,
-	post: Service.prototype.post,
 
-	_getAppUser: function() {
-		//This doesn't leverage our instance cache. This will create a new Service Doc instance (as
-		// well as a new App User model instance)
-		return this._server.getServiceDocument().then(function(doc) {
-			return doc.getAppUser();
+	constructor (server, context) {
+		Object.assign(this, {
+			get: ServiceModel.prototype.get,
+			post: ServiceModel.prototype.post,
+			[Server]: server,
+			[Context]: context
 		});
-	},
+	}
 
-	getAdmissionStatus: function() {
+	getServer () { return this[Server]; }
 
-		return this._getAppUser().then(function(user) {
-			return (user||{}).fmaep_admission_state;
-		});
-	},
+	_getAppUser () {
+		//FIXME: This doesn't leverage our instance cache.
+		//This will create a new Service Doc instance (as well
+		// as a new App User model instance)
+		return this[Server].getServiceDocument().then(doc=>doc.getAppUser());
+	}
 
-	_getUserLink: function(rel) {
-		return this._getAppUser().then(function(user) {
-			return user.getLink(rel);
-		});
-	},
+	getAdmissionStatus () {
+		return this._getAppUser()
+			.then(user=>(user||{}).fmaep_admission_state);
+	}
 
-	preflight: function(data) {
+	_getUserLink (rel) {
+		return this._getAppUser().then(user=>user.getLink(rel));
+	}
 
+	preflight (data) {
 		// get the preflight link.
 		var p = this._getUserLink('fmaep.admission.preflight');
 
 		// post the data to the link
-		var r = p.then(function(link) {
-			return this.post(link, data);
-		}.bind(this));
+		var r = p.then(link => this.post(link, data));
 
 		return r;
-	},
+	}
 
-	requestAdmission: function(data) {
+	requestAdmission (data) {
 		console.debug('five minute service requestAdmission');
 		var getLink = this._getUserLink('fmaep.admission');
-		var r = getLink.then(function(link) {
-			return this.post(link, data);
-		}.bind(this));
+		var r = getLink.then(link => this.post(link, data));
 		return r;
-	},
+	}
 
-	requestConcurrentEnrollment: function(data) {
+	requestConcurrentEnrollment (data) {
 		return this._getUserLink('concurrent.enrollment.notify')
-		.then(function(link) {
-			return this.post(link, data);
-		}.bind(this));
-	},
+			.then(link => this.post(link, data));
+	}
 
-	getPayAndEnroll: function(link, ntiCrn, ntiTerm, returnUrl) {
+	getPayAndEnroll (link, ntiCrn, ntiTerm, returnUrl) {
 		console.debug(link);
-		var r = this.post(link, {
+		return this.post(link, {
 			crn: ntiCrn,
 			term: ntiTerm,
 			return_url: returnUrl
 		});
-		return r;
 	}
-});
-
-module.exports = FiveMinuteInterface;
+}

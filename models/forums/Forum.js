@@ -1,47 +1,40 @@
-'use strict';
+import Base from '../Base';
+import {
+	Service,
+	Parser as parse
+} from '../../CommonSymbols';
 
-var Base = require('../mixins/Base');
-var GetContents = require('../mixins/GetContents');
-//var SharedWithList = require('../mixins/SharedWithList');
+import GetContents from '../mixins/GetContents';
+//import SharedWithList from '../mixins/SharedWithList';
 
-var define = require('../../utils/object-define-properties');
-var parseKey = require('../../utils/parse-object-at-key');
-var parseObject = require('../../utils/parse-object');
-var withValue = require('../../utils/object-attribute-withvalue');
-var getLink = require('../../utils/getlink');
+import getLink from '../../utils/getlink';
 
-function Forum(service, parent, data) {
-	define(this,{
-		_service: withValue(service),
-		_parent: withValue(parent)
-	});
+export default class Forum extends Base {
+	constructor (service, parent, data) {
+		super(service, parent, data, GetContents/*, SharedWithList*/);
 
-	Object.assign(this, data);
+		// Creator: "username"
+		// ID: "Forum" -- Local id (within the container)
+		// NewestDescendant
+		// NewestDescendantCreatedTime
+		// TopicCount: 2
+		// description: ""
+		// title: "Forum"
 
-	// Creator: "username"
-	// ID: "Forum" -- Local id (within the container)
-	// NewestDescendant
-	// NewestDescendantCreatedTime
-	// TopicCount: 2
-	// description: ""
-	// title: "Forum"
+		this[parse]('NewestDescendant');
+	}
 
-	parseKey(this, 'NewestDescendant');
-}
-
-Object.assign(Forum.prototype, Base, GetContents, /*SharedWithList,*/ {
-
-	getBin: function () {
-		var openBin = RegExp.prototype.test.bind(/open/i);
-		var forCreditBin = RegExp.prototype.test.bind(/in\-class/i);
-		var title = this.title || '';
+	getBin () {
+		const openBin = RegExp.prototype.test.bind(/open/i);
+		const forCreditBin = RegExp.prototype.test.bind(/in\-class/i);
+		const title = this.title || '';
 
 		return	openBin(title) ?		'Open' :
 				forCreditBin(title) ?	'ForCredit' :
 										'Other';
-	},
+	}
 
-	getRecentActivity: function(size) {
+	getRecentActivity (size) {
 
 		var params = {
 			batchStart: 0,
@@ -51,15 +44,17 @@ Object.assign(Forum.prototype, Base, GetContents, /*SharedWithList,*/ {
 		};
 
 		return this.getContents(params); //.then(function(result) { return result.Items; });
-	},
+	}
 
-	createTopic: function(data) {
+	createTopic (data) {
+		const service = this[Service];
+
 		var link = this.getLink('add');
 		if (!link) {
 			return Promise.reject('Cannot post comment. Item has no \'add\' link.');
 		}
 
-		var {title,body} = data;
+		var {title, body} = data;
 
 		var payload = {
 			MimeType: 'application/vnd.nextthought.forums.post',
@@ -68,15 +63,11 @@ Object.assign(Forum.prototype, Base, GetContents, /*SharedWithList,*/ {
 			body: Array.isArray(body) ? body : [body]
 		};
 
-		return this._service.post(link, payload).then(result => {
-			return this._service.post(getLink(result, 'publish')).then(result => {
-				return parseObject(this, result);
-			});
-		});
+		return service.post(link, payload)
+			.then(result =>
+				service.post(getLink(result, 'publish'))
+					.then(result => this[parse](result)));
 
 	}
 
-});
-
-
-module.exports = Forum;
+}

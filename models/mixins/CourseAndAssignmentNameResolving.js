@@ -1,55 +1,55 @@
-'use strict';
-
-
 /**
  * This is for Objects within an assignment history item.
  */
 
-var getLink = require('../../utils/getlink');
+import getLink from '../../utils/getlink';
 
-module.exports = {
+import {Service} from '../../CommonSymbols';
 
-__resolveNames: function (service) {
-	var me = this;
+export default {
 
-	var courseInstanceUrl = (me.getLink('AssignmentHistoryItem') || me.href || '').replace(/\/AssignmentHistories.*/, '');
+	constructor () {
+		var service = this[Service];
 
-	var assignmentId = me.AssignmentId;
-	var a, b;
+		var courseInstanceUrl = (this.getLink('AssignmentHistoryItem') || this.href || '')
+									.replace(/\/AssignmentHistories.*/, '');
 
-
-	//If this model has an assignment parent model instance,
-	a = this.parent('MimeType', /assessment.assignment$/i);
-	a = (a ?
-	//... the assignment title is already known... use it.
-		Promise.resolve(a) :
-	//Otherwise, load the assignment object
-		service.getObject(assignmentId)
-	)
-	//then... Pluck the assignment object title...
-		.then(function (assignment) {
-			me.AssignmentName = assignment.title; });
+		var assignmentId = this.AssignmentId;
+		var a, b, result;
 
 
+		//If this model has an assignment parent model instance,
+		a = this.parent('MimeType', /assessment.assignment$/i);
+		a = (a ?
+		//... the assignment title is already known... use it.
+			Promise.resolve(a) :
+		//Otherwise, load the assignment object
+			service.getObject(assignmentId)
+		)
+		//then... Pluck the assignment object title...
+			.then(assignment=>
+				this.AssignmentName = assignment.title);
 
-	//This is really dirty (IMO),
-	//TODO: Find a better way to resolve the "Course Name"
-	b = service.get(courseInstanceUrl).then(function(courseInstanceData) {
-			//OMG, ICK! Yet another request...
-			return service.get(getLink(courseInstanceData, 'CourseCatalogEntry'));
-		})
-
-		//Okay, the scary part is over! just grab what we need and run.
-		.then(function(catalogEntryData) {
-			me.CourseName = catalogEntryData.Title;
-		});
 
 
-	//Wait on the two async operations (a and b), then fire a change
-	// event so views know values changed.
-	return Promise.all([a, b]).then(function() {
-		me.emit('change');
-	});
-}
+		//This is really dirty (IMO),
+		//TODO: Find a better way to resolve the "Course Name"
+		b = service.get(courseInstanceUrl).then(courseInstanceData =>
+				//OMG, ICK! Yet another request...
+				service.get(getLink(courseInstanceData, 'CourseCatalogEntry'))
+			)
+
+			//Okay, the scary part is over! just grab what we need and run.
+			.then(catalogEntryData =>
+				this.CourseName = catalogEntryData.Title);
+
+
+		//Wait on the two async operations (a and b), then fire a change
+		// event so views know values changed.
+		result = Promise.all([a, b])
+			.then(()=>this.emit('change'));
+
+		this.addToPending(result);
+	}
 
 };

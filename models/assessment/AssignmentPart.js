@@ -1,49 +1,37 @@
-'use strict';
+import Base from '../Base';
+import {
+	Parser as parse
+} from '../../CommonSymbols';
+
+export default class AssignmentPart extends Base {
+	constructor (service, parent, data) {
+		super(service, parent, data);
+		this.question_set = this[parse](this.question_set);
+	}
 
 
-var base = require('../mixins/Base');
-
-var define = require('../../utils/object-define-properties');
-var withValue = require('../../utils/object-attribute-withvalue');
-var parser = require('../../utils/parse-object');
-
-function AssignmentPart(service, parent, data) {
-	define(this,{
-		_service: withValue(service),
-		_parent: withValue(parent)
-	});
-
-	Object.assign(this, data);
-	this.question_set = parser(this, this.question_set);
-}
-
-Object.assign(AssignmentPart.prototype, base, {
-
-	containsId: function(id) {
+	containsId (id) {
 		var qSet = this.question_set;
 		return qSet && (qSet.getID() === id || qSet.containsId(id));
-	},
+	}
 
-	getQuestion: function (id) {
+	getQuestion (id) {
 		return this.question_set.getQuestion(id);
-	},
+	}
 
 
-	getQuestions: function () {
+	getQuestions () {
 		return this.question_set.getQuestions();
-	},
+	}
 
 
-	getQuestionCount: function () {
+	getQuestionCount () {
 		return this.question_set.getQuestionCount();
-	},
+	}
 
 
-	getSubmission: function () {
+	getSubmission () {
 		return this.question_set.getSubmission();
 	}
 
-});
-
-
-module.exports = AssignmentPart;
+}

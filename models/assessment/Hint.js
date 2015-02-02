@@ -1,26 +1,12 @@
-'use strict';
+import Base from '../Base';
+import { default as HasContent, ContentKeys } from '../mixins/HasContent';
 
+export default class Hint extends Base {
+	constructor (service, parent, data) {
+		super(service, parent, data, HasContent);
+	}
 
-var base = require('../mixins/Base');
-var content = require('../mixins/HasContent');
-
-var define = require('../../utils/object-define-properties');
-var withValue = require('../../utils/object-attribute-withvalue');
-
-
-function Hint(service, parent, data) {
-	define(this,{
-		_service: withValue(service),
-		_parent: withValue(parent)
-	});
-
-	Object.assign(this, data);
-	content.initMixin.call(this, data, ['value']);
+	[ContentKeys] () {
+		return ['value'];
+	}
 }
-
-Object.assign(Hint.prototype, base, content, {
-
-});
-
-
-module.exports = Hint;

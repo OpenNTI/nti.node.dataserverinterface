@@ -1,7 +1,6 @@
-import parser from '../utils/parse-object';
-
-const Parent = Symbol.for('Parent');
-const Service = Symbol.for('Service');
+import Video from './Video';
+import PageSourceModel from './VideoIndexBackedPageSource';
+import {Service, Parent} from '../CommonSymbols';
 
 const PageSource = Symbol('PageSource');
 const Order = Symbol('Order');
@@ -9,6 +8,7 @@ const Data = Symbol('Data');
 
 export default class VideoIndex {
 	static parse (service, parent, data, order) {
+		console.error('Where ?');
 		return new this(service, parent, data, order);
 	}
 
@@ -24,7 +24,7 @@ export default class VideoIndex {
 
 		for(var key in data) {
 			if (data.hasOwnProperty(key)) {
-				this[Data][key] = parser(this, data[key]);
+				this[Data][key] = new Video(service, this, data[key]);
 			}
 		}
 	}
@@ -88,7 +88,6 @@ export default class VideoIndex {
 
 	getPageSource (at=null) {
 		if (!this[PageSource]) {
-			let PageSourceModel = parser.getModel('videoindex-pagesource');
 			this[PageSource] = new PageSourceModel(this);
 		}
 

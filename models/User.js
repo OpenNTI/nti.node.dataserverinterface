@@ -1,31 +1,12 @@
-'use strict';
+import Base from './Base';
 
-var base = require('./mixins/Base');
+export default class User extends Base {
 
-var defineProperties = require('../utils/object-define-properties');
-var withValue = require('../utils/object-attribute-withvalue');
+	constructor (service, data) {
+		super(service, null, data);
+	}
 
-function User(service, data) {
-	defineProperties(this, {
-		_service: withValue(service),
-		DisplayName: {
-			get: function() {
-				return this.alias ||
-				   this.realname ||
-				   this.Username;
-			}
-		}
-	});
-	Object.assign(this, data);
-
-
+	get DisplayName () {
+		return this.alias || this.realname || this.Username;
+	}
 }
-
-
-Object.assign(User.prototype, base, {
-
-
-});
-
-
-module.exports = User;

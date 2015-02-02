@@ -1,27 +1,24 @@
-'use strict';
+import {Parser as parse} from '../../CommonSymbols';
 
-var define = require('../../utils/object-define-properties');
-var withValue = require('../../utils/object-attribute-withvalue');
-var parser = require('../../utils/parse-object');
+const Service = Symbol.for('Service');
+const Submitted = Symbol('Submitted');
 
-exports = module.exports = {
+export default {
 
-
-	canSubmit: function() {
+	canSubmit () {
 		if (this.isSubmitted()) {return false;}
 
 		var list = this.questions || this.parts || [];
 
-		return list.reduce(function(can, q) {
-			return can || q.canSubmit(); }, false);
+		return list.reduce((can, q) => can || q.canSubmit(), false);
 	},
 
 
-	isSubmitted: function () {
+	isSubmitted () {
 		var p;
 
 		//Test if we are explicitly marked submitted
-		return Boolean(this.__submitted ||
+		return Boolean(this[Submitted] ||
 
 			//Then check parent for submitted
 			((p = this.parent('isSubmitted')) && p.isSubmitted()));
@@ -29,22 +26,19 @@ exports = module.exports = {
 	},
 
 
-	markSubmitted: function (v) {
-		delete this.__submitted;
-		define(this, {
-			__submitted: withValue(!!v)
-		});
+	markSubmitted (v) {
+		this[Submitted] = v;
 	},
 
 
-	submit: function() {
-		var me = this;
-		var target = (this._service.getCollectionFor(me) || {}).href;
+	submit () {
+		var target = (this[Service].getCollectionFor(this) || {}).href;
 		if (!target) {
 			console.error('No where to save object: %o', this);
 		}
 
-		return me._service.post(target, me.getData())
-			.then(function (data) { return parser(me, data); });
+		return this[Service]
+			.post(target, this.getData())
+			.then(data => this[parse](data));
 	}
 };

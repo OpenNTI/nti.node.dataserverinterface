@@ -1,10 +1,9 @@
-'use strict';
 
-Object.assign(exports, {
+export default {
 
-	getAssessedRoot: function() {
+	getAssessedRoot () {
 
-		var p = this._parent;
+		var p = this.parent();
 
 		if (!p || !p.getAssessedRoot) {
 			return this;
@@ -13,4 +12,4 @@ Object.assign(exports, {
 		return p.getAssessedRoot();
 	}
 
-});
+};

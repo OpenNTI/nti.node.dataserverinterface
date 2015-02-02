@@ -1,36 +1,54 @@
-'use strict';
+import Base from './Base';
 
-var et = require('elementtree');
-var base = require('./mixins/Base');
+import xml from 'elementtree';
+import PageSource from './TableOfContentsBackedPageSource';
+import forwardFunctions from '../utils/function-forwarding';
 
-var PageSource = require('./TableOfContentsBackedPageSource');
 
-var forwardFunctions = require('../utils/function-forwarding');
-var defineProperties = require('../utils/object-define-properties');
-var withValue = require('../utils/object-attribute-withvalue');
+function cleanNodes(x, o) {
+	function getParent(e) {
+		var key = 'ntiid',
+		id = e.get(key);
 
-function TableOfContents(service, parent, data) {
-	defineProperties(this, {
-		_service: withValue(service),
-		_parent: withValue(parent),
-		_root: withValue(parseXML(data))
-	});
+		if (!id) {
+			key = 'target-ntiid';
+			id = e.get(key);
+		}
 
-	cleanNodes(this._root, this);
+		return x.find('*[@' + key + '="' + id + '"]/..') || {remove:()=>{}};
+	}
+
+	var hiddenMethod = Symbol.for('ToC:PerformNodeFilter');
+
+	var p = o.parent(hiddenMethod);
+
+	if (p) {
+		p[hiddenMethod](x, e=>getParent(e).remove(e));
+	}
+
+	return x;
 }
 
 
-Object.assign(TableOfContents.prototype, base,
-	forwardFunctions(['find'], '_root'), {
+export default class TableOfContents extends Base {
 
-	getVideoIndexRef: function() {
-		var ref = this._root.find('.//reference[@type="application/vnd.nextthought.videoindex"]');
+	constructor (service, parent, data) {
+		super(service, parent, null, forwardFunctions(['find'], 'root'));
+
+		this.root = xml.parse(data);
+		cleanNodes(this.root, this);
+	}
+
+
+
+	getVideoIndexRef () {
+		var ref = this.root.find('.//reference[@type="application/vnd.nextthought.videoindex"]');
 		return ref && ref.get('href');
-	},
+	}
 
 
-	getNode: function(id) {
-		var n = this._root,
+	getNode (id) {
+		var n = this.root,
 			r = n._root;
 
 		if (r.get('ntiid') === id) {
@@ -44,67 +62,17 @@ Object.assign(TableOfContents.prototype, base,
 		}
 
 		return list[0];
-	},
+	}
 
 
-	getSortPosition: function(id) {
+	getSortPosition (id) {
 		var node = this.getNode(id);
 		return (node && node._id) || -1;
-	},
+	}
 
 
-	getPageSource: function(rootId) {
+	getPageSource (rootId) {
 		return new PageSource(this, rootId);
 	}
 
-});
-
-
-function parse(service, parent, data) {
-	return new TableOfContents(service, parent, data);
-}
-
-TableOfContents.parse = parse;
-
-module.exports = TableOfContents;
-
-
-
-
-/**
- * Super Secret private details...
- */
-
-function parseXML(string) {
-	return et.parse(string);
-}
-
-
-function cleanNodes(x, o) {
-	function remove(e) {
-		var p = getParent(e);
-		if (p) {
-			p.remove(e);
-		}
-	}
-
-	function getParent(e) {
-		var key = 'ntiid',
-			id = e.get(key);
-
-		if (!id) {
-			key = 'target-ntiid';
-			id = e.get(key);
-		}
-
-		return x.find('*[@' + key + '="' + id + '"]/..');
-	}
-
-	var p = o.parent('__cleanToCNodes');
-
-	if (p) {
-		p.__cleanToCNodes(x, remove);
-	}
-
-	return x;
 }

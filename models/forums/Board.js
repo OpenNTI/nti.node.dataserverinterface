@@ -1,31 +1,13 @@
-'use strict';
-
-var Base = require('../mixins/Base');
-var GetContents = require('../mixins/GetContents');
-//var SharedWithList = require('../mixins/SharedWithList');
-
-var define = require('../../utils/object-define-properties');
-var withValue = require('../../utils/object-attribute-withvalue');
+import Base from '../Base';
+import GetContents from '../mixins/GetContents';
+//import SharedWithList from '../mixins/SharedWithList';
 
 
-function Board(service, parent, data) {
-	define(this,{
-		_service: withValue(service),
-		_parent: withValue(parent)
-	});
-
-	Object.assign(this, data);
-
-	// ForumCount: 1
-	// description: ""
-	// title: "Discussions"
+export default class Board extends Base {
+	constructor (service, parent, data) {
+		super(service, parent, data, GetContents/*, SharedWithList*/);
+		// ForumCount: 1
+		// description: ""
+		// title: "Discussions"
+	}
 }
-
-Object.assign(Board.prototype, Base, GetContents, /*SharedWithList,*/ {
-
-
-
-});
-
-
-module.exports = Board;
