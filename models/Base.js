@@ -120,6 +120,10 @@ export default class Base extends EventEmitter {
 			}
 		}
 
+		if (raw === this) {
+		 	throw new Error('Migration failure: something is calling parse with `this` as the first argument.');
+		}
+
 
 		var key;
 		//If the param is:

@@ -5,6 +5,11 @@ import QueryString from 'query-string';
 
 export default class Comment extends Post {
 
+	constructor (service, parent, data) {
+		super(service, parent, data);
+	}
+
+
 	getReplies () {
 		var link = this.getLink('replies');
 		if (!link) {

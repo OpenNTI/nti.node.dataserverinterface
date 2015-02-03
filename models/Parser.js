@@ -225,6 +225,11 @@ export function parse(service, parent, obj) {
 	if (Array.isArray(obj)) {
 		return obj.map(parse.bind(this, service, parent));
 	}
+
+	if (Object.getPrototypeOf(obj) !== Object.getPrototypeOf({})) {
+		throw new Error('Attempting to parse somthing other than an object-literal: %o', obj);
+	}
+
 	var Cls = getModelByType(getType(obj));
 	var args = [service];
 
@@ -234,7 +239,7 @@ export function parse(service, parent, obj) {
 
 	args.push(obj);
 
-	return (Cls && Cls.parse && Cls.parse.apply(Cls, args)) || error(obj);
+	return (Cls && Cls.parse(...args)) || error(obj);
 }
 
 
