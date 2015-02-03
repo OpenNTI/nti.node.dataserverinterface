@@ -14,6 +14,7 @@ import VideoIndexBackedPageSource from './VideoIndexBackedPageSource';
 
 import CourseCatalogEntry from './courses/CatalogEntry';
 import CourseInstance from './courses/Instance';
+import CourseAdministrativeRole from './courses/AdministrativeRole';
 import CourseEnrollment from './courses/Enrollment';
 import CourseOutlineNode from './courses/OutlineNode';
 import CourseOutline from './courses/Outline';
@@ -84,6 +85,10 @@ const PARSERS = {
 	'courses.catalogentry': CourseCatalogEntry,
 	'courses.courseinstance': CourseInstance,
 	'courses.courseenrollment': CourseEnrollment,
+	'courseware.courseinstanceadministrativerole': CourseAdministrativeRole,
+	'courses.legacycommunitybasedcourseinstance': 'courses.courseinstance',
+	'courseware.courseinstanceenrollment':'courses.courseenrollment',
+
 	'courses.courseoutline': CourseOutline,
 	'courses.courseoutlinenode': CourseOutlineNode,
 	'courses.courseoutlinecontentnode': 'courses.courseoutlinenode',
@@ -92,8 +97,6 @@ const PARSERS = {
 	'courses.coursecataloglegacyentry': 'courses.catalogentry',//Really?! Two packages?! :P
 	'courseware.coursecataloglegacyentry': 'courses.catalogentry',
 
-	'courses.legacycommunitybasedcourseinstance': 'courses.courseinstance',
-	'courseware.courseinstanceenrollment':'courses.courseenrollment',
 
 
 	'assessment.assessedquestionset': AssessmentAssessedQuestionSet,
