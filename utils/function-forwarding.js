@@ -1,10 +1,26 @@
 function reflect(fn, key) {
+	var keys = key.split('.');
 
 	return function(...args) {
 		//`this` needs to be the object the returned
 		// function is injected into, _not_ a job for
 		// the arrow function
-		return (this[key] || [])[fn](...args);
+		var scope = this;
+		var path = [];
+
+		//walk down the path...
+		for(let i=0, l=keys.length; i<=l; i++) {
+			let key = keys[i];
+			if (i < l && scope) {
+				scope = scope[key];
+				path.push(key);
+				if (!scope) {
+					console.warn('Property path `%s` does not exist on: %o', path.join('.'), this);
+				}
+			}
+		}
+
+		return scope[fn](...args);
 	};
 }
 
