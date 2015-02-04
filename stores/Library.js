@@ -111,7 +111,7 @@ export default class Library extends EventEmitter {
 		this.packages = parseList(contentPackages);
 		this.bundles = parseList(contentBundles);
 		this.courses = parseList(enrolledCourses);
-		this.coursesAdmin = parseList(administeredCourses);
+		this.administeredCourses = parseList(administeredCourses);
 	}
 
 
@@ -121,7 +121,7 @@ export default class Library extends EventEmitter {
 
 
 	getCourse (courseInstanceId) {
-		var courses = [].concat(this.coursesAdmin || []).concat(this.courses || []);
+		var courses = [].concat(this.administeredCourses || []).concat(this.courses || []);
 		var found;
 		courses.every(course =>
 			!(found = (course.getCourseID() === courseInstanceId) ? course : null));
@@ -135,7 +135,7 @@ export default class Library extends EventEmitter {
 		var packs = unique(this.packages.concat(
 
 			this.bundles.concat(
-					this.courses.concat(this.coursesAdmin).map(course =>
+					this.courses.concat(this.administeredCourses).map(course =>
 						course.CourseInstance.ContentPackageBundle
 					)
 				)
