@@ -17,13 +17,21 @@ export default class Enrollment extends Base {
 				isCourse: true,
 				isEnrollment: true
 			},
+
 			forwardFunctions([
 				'getPresentationProperties',
 				'getOutline',
 				'getDiscussions'
 
 			//From:
-			], 'CourseInstance'));
+			], 'CourseInstance'),
+
+			forwardFunctions([
+				'getEndDate',
+				'getStartDate'
+
+			//From:
+			], 'CourseInstance.CatalogEntry'));
 
 
 		var i = this[parse]('CourseInstance');
