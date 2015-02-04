@@ -24,11 +24,12 @@ import parseDate from '../utils/parse-date';
 var CONTENT_VISIBILITY_MAP = {OU: 'OUID'};
 
 function dateGetter(key) {
+	const symbol = Symbol.for(`parsedDate:${key}`);
 	return function () {
-		if (typeof this[key] !== 'object') {
-			this[key] = parseDate(this[key]);
+		if (typeof this[symbol] !== 'object') {
+			this[symbol] = parseDate(this[key]);
 		}
-		return this[key];
+		return this[symbol];
 	};
 }
 
