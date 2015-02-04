@@ -30,9 +30,10 @@ export default class Bundle extends Base {
 
 		this.author = (data.DCCreator || []).join(', ');
 
-		this.ContentPackages.map((v,i,a) => {
-			let obj = a[i] = v = this[parse](v);
+		this.ContentPackages = (data.ContentPackages || []).map(v => {
+			let obj = this[parse](v);
 			obj.on('changed', this.onChange.bind(this));
+			return obj;
 		});
 
 		this.addToPending(
