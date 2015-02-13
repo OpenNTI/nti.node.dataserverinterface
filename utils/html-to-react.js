@@ -10,6 +10,8 @@ var UNARY_ELEMENTS = [
 var ENTITY_MATCHER = /&([^&;]+);/gm;
 
 var HTML_ENTITIES = {//these are unknown to XML by name, swap them with the &#decimal; version.
+	lt: 60,
+	gt: 62,
 	nbsp: 160,
 	iexcl: 161,
 	cent: 162,
