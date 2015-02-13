@@ -14,7 +14,7 @@ import getLink from '../utils/getlink';
 import joinWithURL from '../utils/urljoin';
 import {isNTIID} from '../utils/ntiids';
 
-const inflight = {};
+var inflight = {};
 
 const Server = Symbol.for('Server');
 const Service = Symbol.for('Service');
