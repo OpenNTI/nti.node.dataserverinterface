@@ -24,6 +24,11 @@ export default class Video {
 	}
 
 
+	getPoster () {
+		var first = this.sources[0];
+		return first ? first.getPoster() : Promise.reject('No Source');
+	}
+
 
 	getID () {
 		return this.ntiid;
