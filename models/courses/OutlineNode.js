@@ -11,6 +11,7 @@ import emptyFunction from '../../utils/empty-function';
 
 var emptyCourseObject = {getID:emptyFunction};
 
+const Progress = Symbol.for('Progress');
 
 function getCourse (node) {
 	return node.root.parent();
@@ -105,9 +106,18 @@ export default class OutlineNode extends Outline {
 
 	getContent () {
 		let link = 'overview-content';
-		return this.hasLink(link) ?
+		let content = this.hasLink(link) ?
 			this.fetchLink(link).then(collateVideo) :
 			getContentFallback(this);
+
+		return Promise.all([this.getProgress(), content])
+			.then(progressAndContent=>{
+				let [progress, content] = progressAndContent;
+
+				applyProgress(content, progress);
+
+				return content;
+			});
 	}
 
 
@@ -118,7 +128,7 @@ export default class OutlineNode extends Outline {
 			return Promise.resolve(null);
 		}
 
-		return this.fetchLink(link);
+		return this.fetchLinkParsed(link);
 	}
 }
 
@@ -155,6 +165,32 @@ function collateVideo(json) {
 	return json;
 }
 
+
+function applyProgress(content, progress) {
+	if (!content) {return;}
+
+	function findWithFuzzyKey (c, key) {
+		key = key.toLowerCase();
+		key = Object.keys(c).reduce(
+			(found, v)=> found || (v.toLowerCase() === key ? v : found),
+			null);
+
+		return key && c[key];
+	}
+
+	var id = ['Target-NTIID', 'NTIID'].reduce(
+			(id, key)=> id || findWithFuzzyKey(content, key), null);
+
+	var nodeProgress = id && progress.getProgress(id);
+
+	if (progress != null) {
+		content[Progress] = nodeProgress;
+	}
+
+	if (Array.isArray(content.Items)) {
+		content.Items.forEach(item=>applyProgress(item, progress));
+	}
+}
 
 /*******************************************************************************
  * FALLBACK TEMPORARY STUFF BELOW THIS POINT

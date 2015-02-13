@@ -16,8 +16,11 @@ import CourseCatalogEntry from './courses/CatalogEntry';
 import CourseInstance from './courses/Instance';
 import CourseAdministrativeRole from './courses/AdministrativeRole';
 import CourseEnrollment from './courses/Enrollment';
-import CourseOutlineNode from './courses/OutlineNode';
 import CourseOutline from './courses/Outline';
+import CourseOutlineNode from './courses/OutlineNode';
+import CourseOutlineNodeProgress from './courses/OutlineNodeProgress';
+
+import CourseProgress from './courses/Progress';
 
 import AssessmentQuestionSet from './assessment/QuestionSet';
 import AssessmentQuestion from './assessment/Question';
@@ -93,6 +96,12 @@ const PARSERS = {
 	'courses.courseoutlinenode': CourseOutlineNode,
 	'courses.courseoutlinecontentnode': 'courses.courseoutlinenode',
 	'courses.courseoutlinecalendarnode': 'courses.courseoutlinenode',
+
+	'courseoutlinenodeprogress': CourseOutlineNodeProgress,
+	'CourseOutlineNodeProgress': 'courseoutlinenodeprogress',
+
+	'progress' : CourseProgress,
+	'Progress' : 'progress',
 
 	'courses.coursecataloglegacyentry': 'courses.catalogentry',//Really?! Two packages?! :P
 	'courseware.coursecataloglegacyentry': 'courses.catalogentry',
