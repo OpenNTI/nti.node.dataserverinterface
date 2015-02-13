@@ -66,6 +66,10 @@ import ForumsForum from './forums/Forum';
 import ForumsPost from './forums/Post';
 import ForumsComment from './forums/Comment';
 
+import ResourceEvent from './analytics/resourceevent';
+import TopicViewedEvent from './analytics/TopicViewedEvent';
+import WatchVideoEvent from './analytics/WatchVideoEvent';
+
 const ignored = {parse: identity};
 
 const PARSERS = {
@@ -84,6 +88,10 @@ const PARSERS = {
 	'ntivideo': 'video',
 
 	'videoindex-pagesource': VideoIndexBackedPageSource,
+
+	'analytics.resourceevent': ResourceEvent,
+	'analytics.topicviewevent': TopicViewedEvent,
+	'analytics.watchvideoevent': WatchVideoEvent,
 
 	'courses.catalogentry': CourseCatalogEntry,
 	'courses.courseinstance': CourseInstance,
