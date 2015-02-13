@@ -107,6 +107,7 @@ const PARSERS = {
 
 	'courseoutlinenodeprogress': CourseOutlineNodeProgress,
 	'CourseOutlineNodeProgress': 'courseoutlinenodeprogress',
+	'progresscontainer': 'courseoutlinenodeprogress',
 
 	'progress' : CourseProgress,
 	'Progress' : 'progress',
