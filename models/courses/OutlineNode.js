@@ -183,7 +183,7 @@ function applyProgress(content, progress) {
 
 	var nodeProgress = id && progress.getProgress(id);
 
-	if (progress != null) {
+	if (nodeProgress != null) {
 		content[Progress] = nodeProgress;
 	}
 
