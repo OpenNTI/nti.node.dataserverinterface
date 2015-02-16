@@ -4,7 +4,6 @@ import {Parser as parse} from '../../CommonSymbols';
 import path from 'path';
 
 import fallbackOverview from './_fallbacks.OverviewFromToC';
-import PageSource from './OutlineNodeBackedPageSource';
 
 import {encodeForURI} from '../../utils/ntiids';
 import emptyFunction from '../../utils/empty-function';
@@ -78,15 +77,6 @@ export default class OutlineNode extends Outline {
 
 
 	get isSection () {}
-
-
-	getPageSource () {
-		let cache = Symbol.for('CachedPageSource');
-		if (!this[cache]) {
-			this[cache] = new PageSource(this, this.root);
-		}
-		return this[cache];
-	}
 
 
 	isAssignment  (assessmentId) {

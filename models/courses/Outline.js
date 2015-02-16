@@ -1,5 +1,7 @@
 import Base from '../Base';
 
+import PageSource from './OutlineNodeBackedPageSource';
+
 const OUTLINE_CONTENT_CACHE = Symbol('OutlineContents:cache');
 const MAX_DEPTH = Symbol('OutlineContents:maximum depth');
 
@@ -78,6 +80,16 @@ export default class Outline extends Base {
 		}
 
 		return this.contents.reduce((item, potential) => item || potential.getNode(id), null);
+	}
+
+
+	getPageSource () {
+		let cache = Symbol.for('CachedPageSource');
+		let root = this.root;
+		if (!root[cache]) {
+			root[cache] = new PageSource(root, this.root);
+		}
+		return root[cache];
 	}
 
 
