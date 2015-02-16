@@ -66,7 +66,7 @@ import ForumsForum from './forums/Forum';
 import ForumsPost from './forums/Post';
 import ForumsComment from './forums/Comment';
 
-import ResourceEvent from './analytics/resourceevent';
+import ResourceEvent from './analytics/ResourceEvent';
 import TopicViewedEvent from './analytics/TopicViewedEvent';
 import WatchVideoEvent from './analytics/WatchVideoEvent';
 
