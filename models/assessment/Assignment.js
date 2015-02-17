@@ -17,8 +17,8 @@ export default class Assignment extends Base {
 
 	[DateFields] () {
 		return super[DateFields]().concat([
-			'available_for_submission_beginning',
-			'available_for_submission_ending'
+			'available_for_submission_beginning',//becomes getAvailableForSubmissionBeginning
+			'available_for_submission_ending'//becomes getAvailableForSubmissionEnding
 		]);
 	}
 
@@ -59,7 +59,7 @@ export default class Assignment extends Base {
 
 
 	getDueDate () {
-		return this.available_for_submission_ending;
+		return this.getAvailableForSubmissionEnding();
 	}
 
 
