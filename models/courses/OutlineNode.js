@@ -186,7 +186,7 @@ function applyProgress(content, progress) {
  * FALLBACK TEMPORARY STUFF BELOW THIS POINT
  */
 function getContentFallback(outlineNode) {
-	//console.debug('[FALLBACK] Deriving OutlineNode content');
+	console.debug('[FALLBACK] Deriving OutlineNode(%s) content', outlineNode.getID());
 	var course = getCourse(outlineNode);
 	var bundle = course && course.ContentPackageBundle;
 	var pkg = ((bundle && bundle.ContentPackages) || [])[0];
