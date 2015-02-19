@@ -4,6 +4,7 @@ import Url from 'url';
 import base64decode from 'btoa';
 import QueryString from 'query-string';
 import request from '../utils/request';
+import logger from '../logger';
 
 import DataCache from '../utils/datacache';
 
@@ -110,12 +111,12 @@ export default class DataServerInterface {
 
 		result = new Promise((fulfill, reject) => {
 			if(!isBrowser) {
-				console.error('%s REQUEST <- %s %s', new Date().toUTCString(), opts.method, url);
+				logger.info('%s REQUEST <- %s %s', new Date().toUTCString(), opts.method, url);
 			}
 
 			let active = request(opts, (error, res, body) => {
 				if (!res) {
-					console.error('%s Request Options: ', new Date().toUTCString(), opts, arguments);
+					logger.info('%s Request Options: ', new Date().toUTCString(), opts, arguments);
 					res = {headers:{}};
 				}
 
@@ -129,7 +130,7 @@ export default class DataServerInterface {
 				} catch (e) {}//Don't care... let it pass to the client as a string
 
 				if(!isBrowser) {
-					console.error('%s REQUEST -> %s %s %s %dms',
+					logger.info('%s REQUEST -> %s %s %s %dms',
 						new Date().toUTCString(), opts.method, url, error || code, Date.now() - start);
 				}
 
@@ -170,7 +171,7 @@ export default class DataServerInterface {
 			abortMethod = ()=> active.abort();
 		});
 
-		result.abort = abortMethod || ()=> console.error('Attempting to abourt request, but missing abort() method.');
+		result.abort = abortMethod || ()=> logger.info('Attempting to abourt request, but missing abort() method.');
 
 		pending.push(result);
 		return result;

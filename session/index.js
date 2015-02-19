@@ -1,5 +1,6 @@
 import Catalog from '../stores/Catalog';
 import Library from '../stores/Library';
+import logger from '../logger';
 // import Notifications from '../stores/Notifications';
 
 import {ServiceStash} from '../CommonSymbols';
@@ -59,20 +60,20 @@ export default class SessionManager {
 		req.responseHeaders = {};
 
 
-		console.log('SESSION <- [%s] %s %s', new Date().toUTCString(), req.method, url);
+		logger.debug('SESSION <- [%s] %s %s', new Date().toUTCString(), req.method, url);
 
 		function finish() {
 			res.set(req.responseHeaders);
-			console.log('SESSION -> [%s] %s %s (User: %s, %dms)',
+			logger.debug('SESSION -> [%s] %s %s (User: %s, %dms)',
 				new Date().toUTCString(), req.method, url, req.username, Date.now() - start);
 			next();
 		}
 
 		this.getUser(req)
-			.then(function(user) { req.username = user; })
+			.then(user => req.username = user)
 			.then(this.setupIntitalData.bind(this, req))
 			.then(finish)
-			.catch(function(reason) {
+			.catch(reason => {
 				if ((reason || {}).hasOwnProperty('statusCode')) {
 					reason = reason.statusCode;
 				}
@@ -82,12 +83,12 @@ export default class SessionManager {
 				}
 
 				if (!/\/(api|login)/.test(req.url)) {
-					console.log('SESSION -> [%s] %s %s REDIRECT %slogin/ (User: annonymous, %dms)',
+					logger.debug('SESSION -> [%s] %s %s REDIRECT %slogin/ (User: annonymous, %dms)',
 						new Date().toUTCString(), req.method, url, basepath, Date.now() - start);
 
 					res.redirect(basepath + 'login/?return=' + encodeURIComponent(req.originalUrl));
 				} else {
-					console.log('SESSION -> [%s] %s %s (%s, %dms)',
+					logger.debug('SESSION -> [%s] %s %s (%s, %dms)',
 						new Date().toUTCString(), req.method, url, reason, Date.now() - start);
 
 					next(reason);
@@ -98,10 +99,8 @@ export default class SessionManager {
 
 	anonymousMiddleware (context, res, next) {
 		this.server.ping(context)
-			.then(function() {
-				next();
-			})
-			.catch(function(err) {
+			.then(() => next())
+			.catch(err => {
 				if (typeof err === 'string' || (err && err.reason)) {
 					next();
 				} else {
