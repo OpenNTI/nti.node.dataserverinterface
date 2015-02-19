@@ -4,19 +4,18 @@ import Library from './Library';
 
 import {Service} from '../CommonSymbols';
 
+function getLibrary () {
+	return Library.get(this[Service], 'Main');
+}
+
 export default class Enrollment {
 	constructor (service) {
 		this[Service] = service;
 	}
 
 
-	getLibrary () {
-		return Library.get(this[Service], 'Main');
-	}
-
-
 	isEnrolled (courseId) {
-		return this.getLibrary().then(library => !!library.getCourse(courseId));
+		return getLibrary().then(library => !!library.getCourse(courseId));
 	}
 
 
@@ -30,7 +29,7 @@ export default class Enrollment {
 
 	dropCourse (courseId) {
 
-		return this.getLibrary()
+		return getLibrary()
 			.then(library =>
 				library.getCourse(courseId) || Promise.reject('Not Enrolled'))
 
