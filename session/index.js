@@ -1,4 +1,4 @@
-import Catalog from '../stores/Catalog';
+//import Catalog from '../stores/Catalog';
 import Library from '../stores/Library';
 import logger from '../logger';
 // import Notifications from '../stores/Notifications';
@@ -43,7 +43,7 @@ export default class SessionManager {
 
 				return Promise.all([
 					service.getAppUser(),
-					Catalog.load(service),
+					//Catalog.load(service),
 					Library.load(service, 'Main')//,
 					//Notifications.load(service)
 				]);
