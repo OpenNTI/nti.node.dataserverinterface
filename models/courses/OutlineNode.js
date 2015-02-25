@@ -38,7 +38,7 @@ export default class OutlineNode extends Outline {
 			return undefined;
 		}
 
-		return path.join('course', encodeForURI(courseId), ref) + '/';
+		return path.join('course', encodeForURI(courseId), 'o', ref) + '/';
 	}
 
 
