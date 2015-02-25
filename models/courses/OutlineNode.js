@@ -49,7 +49,7 @@ export default class OutlineNode extends Outline {
 			return undefined;
 		}
 
-		return path.join('o', encodeForURI(id));
+		return path.join(encodeForURI(id));
 	}
 
 
