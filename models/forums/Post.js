@@ -27,12 +27,10 @@ export default class Post extends Base {
 
 
 		return this[Service].put(link, props)
-			.then(result => {
-				// assimilate the resultant instance's properties. the current instance could be
-				// referenced by another object (this could be a topic headline post referenced
-				// by its parent topic, for example) so we want the current instance to reflect
-				// the changes.
-				return Object.assign(this, this.parent()[parse](result));
-			});
+			// assimilate the resultant instance's properties. the current instance could be
+			// referenced by another object (this could be a topic headline post referenced
+			// by its parent topic, for example) so we want the current instance to reflect
+			// the changes.
+			.then(result => Object.assign(this, this.parent()[parse](result)));
 	}
 }
