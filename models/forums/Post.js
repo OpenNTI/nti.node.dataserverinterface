@@ -31,6 +31,15 @@ export default class Post extends Base {
 			// referenced by another object (this could be a topic headline post referenced
 			// by its parent topic, for example) so we want the current instance to reflect
 			// the changes.
-			.then(result => Object.assign(this, this.parent()[parse](result)));
+			.then(result => {
+				if (this === global) {
+					console.warn('wtf?');
+				}
+				let parent = this.parent();
+				let actingParent = (parent && parent[parse]) ? parent : this;
+
+				let o = actingParent[parse](result);
+				return Object.assign(this, o);
+			});
 	}
 }

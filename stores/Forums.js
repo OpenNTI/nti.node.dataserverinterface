@@ -13,10 +13,13 @@ export default class Forums {
 		//the decoding should happen on the app side... no method in *this* project should know about 'pretty' encoded NTIIDs.
 		ntiid = decodeFromURI(ntiid);
 
-		//We hould probably have the service parse the object by default... making this method redundant.
-		return this[Service].getObject(ntiid).then(o=>parse(this[Service], this, o));
+		//We should probably have the service parse the object by default... making this method redundant.
+		return this[Service].getParsedObject(ntiid);
 	}
 
+	getObjects(ntiids) {
+		return this[Service].getParsedObjects(ntiids);
+	}
 
 	reportItem (o) {
 		var link = o && o.getLink && o.getLink('flag') || o.getLink('flag.metoo');

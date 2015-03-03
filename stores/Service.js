@@ -129,7 +129,7 @@ export default class ServiceDocument {
 				});
 		}
 
-		return result.then(info=>parse(this[Service], this, info));
+		return result.then(info=>parse(this, this, info));
 	}
 
 
@@ -142,6 +142,13 @@ export default class ServiceDocument {
 		return this.getServer().getObject(ntiid, mime, this[Context]);
 	}
 
+	getParsedObject(ntiid, parent) {
+		return this.getObject(ntiid).then(o => parse(this, parent || this, o));
+	}
+
+	getParsedObjects(ntiids, parent) {
+		return this.getObjects(ntiids).then(o => parse(this, parent || this, o));
+	}
 
 	getAppUsername  () {
 		var w = this.getUserWorkspace();
