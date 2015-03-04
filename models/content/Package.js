@@ -137,5 +137,5 @@ function parseVideoIndex (toc, json) {
 		}
 	}
 
-	return new VideoIndex(this[Service], this, vi, keyOrder);
+	return new VideoIndex(this[Service], this, vi, keyOrder, containers);
 }

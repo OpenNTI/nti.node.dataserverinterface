@@ -14,14 +14,14 @@ export default class VideoIndexBackedPageSource extends Base {
 
 
 	getPagesAround (pageId) {
-		var nodes = this[Parent];
-		var index = nodes.reduce(
+		let nodes = this[Parent];
+		let index = nodes.reduce(
 			(found, node, index) => (typeof found !== 'number' && node.getID() === pageId) ? index : found,
 			null);
 
 
-		var next = nodes.getAt(index + 1);
-		var prev = nodes.getAt(index - 1);
+		let next = nodes.getAt(index + 1);
+		let prev = nodes.getAt(index - 1);
 
 		return {
 			total: nodes.length,
@@ -31,11 +31,16 @@ export default class VideoIndexBackedPageSource extends Base {
 		};
 	}
 
+
+	scopped (containerId) {
+		let subset = this[Parent].scopped(containerId);
+		return new this.constructor(subset);
+	}
 }
 
 
 function buildRef(node) {
-	var id = node && node.getID();
+	let id = node && node.getID();
 	return id && {
 		ntiid: id,
 		title: node.title,
