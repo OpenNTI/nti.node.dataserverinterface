@@ -19,7 +19,8 @@ function getCourse (node) {
 export default class OutlineNode extends Outline {
 	constructor(service, parent, data) {
 		super(service, parent, data);
-		this.contents = (c=>c.map(o => this[parse](o)))(data.contents|| []);
+		let p = c=>c.map(o => this[parse](o));
+		this.contents = p(data.contents|| []);
 	}
 
 	get label () { return this.DCTitle; }
