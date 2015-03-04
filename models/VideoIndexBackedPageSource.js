@@ -1,5 +1,3 @@
-import path from 'path';
-
 import Base from './Base';
 
 import {encodeForURI as encodeNTIIDForURI} from '../utils/ntiids';
@@ -44,6 +42,6 @@ function buildRef(node) {
 	return id && {
 		ntiid: id,
 		title: node.title,
-		ref: path.join('v', encodeNTIIDForURI(id))
+		ref: encodeNTIIDForURI(id)
 	};
 }
