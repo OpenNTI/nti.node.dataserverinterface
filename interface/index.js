@@ -111,12 +111,12 @@ export default class DataServerInterface {
 
 		result = new Promise((fulfill, reject) => {
 			if(!isBrowser) {
-				logger.info('%s REQUEST <- %s %s', new Date().toUTCString(), opts.method, url);
+				logger.info('REQUEST <- %s %s', opts.method, url);
 			}
 
 			let active = request(opts, (error, res, body) => {
 				if (!res) {
-					logger.info('%s Request Options: ', new Date().toUTCString(), opts, arguments);
+					logger.info('Request Options: ', opts, arguments);
 					res = {headers:{}};
 				}
 
@@ -130,8 +130,8 @@ export default class DataServerInterface {
 				} catch (e) {}//Don't care... let it pass to the client as a string
 
 				if(!isBrowser) {
-					logger.info('%s REQUEST -> %s %s %s %dms',
-						new Date().toUTCString(), opts.method, url, error || code, Date.now() - start);
+					logger.info('REQUEST -> %s %s %s %dms',
+						opts.method, url, error || code, Date.now() - start);
 				}
 
 				if (error || code >= 300 || code === 0) {

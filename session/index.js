@@ -37,6 +37,8 @@ export default class SessionManager {
 
 
 	setupIntitalData (context) {
+		var url = context.originalUrl || context.url;
+		logger.debug('SESSION [PRE-FETCHING DATA] %s %s (User: %s)', context.method, url, context.username);
 		return this.server.getServiceDocument(context)
 			.then(service => {
 				context[ServiceStash] = service;
@@ -60,17 +62,18 @@ export default class SessionManager {
 		req.responseHeaders = {};
 
 
-		logger.debug('SESSION <- [%s] %s %s', new Date().toUTCString(), req.method, url);
+		logger.debug('SESSION [BEGIN] %s %s', req.method, url);
 
 		function finish() {
 			res.set(req.responseHeaders);
-			logger.debug('SESSION -> [%s] %s %s (User: %s, %dms)',
-				new Date().toUTCString(), req.method, url, req.username, Date.now() - start);
+			logger.debug('SESSION [END] %s %s (User: %s, %dms)',
+				req.method, url, req.username, Date.now() - start);
 			next();
 		}
 
 		this.getUser(req)
 			.then(user => req.username = user)
+			.then(()=> logger.debug('SESSION [VALID] %s %s', req.method, url))
 			.then(this.setupIntitalData.bind(this, req))
 			.then(finish)
 			.catch(reason => {
@@ -83,13 +86,13 @@ export default class SessionManager {
 				}
 
 				if (!/\/(api|login)/.test(req.url)) {
-					logger.debug('SESSION -> [%s] %s %s REDIRECT %slogin/ (User: annonymous, %dms)',
-						new Date().toUTCString(), req.method, url, basepath, Date.now() - start);
+					logger.debug('SESSION [INVALID] %s %s REDIRECT %slogin/ (User: annonymous, %dms)',
+						req.method, url, basepath, Date.now() - start);
 
 					res.redirect(basepath + 'login/?return=' + encodeURIComponent(req.originalUrl));
 				} else {
-					logger.debug('SESSION -> [%s] %s %s (%s, %dms)',
-						new Date().toUTCString(), req.method, url, reason, Date.now() - start);
+					logger.error('SESSION [ERROR] %s %s (%s, %dms)',
+						req.method, url, reason, Date.now() - start);
 
 					next(reason);
 				}
