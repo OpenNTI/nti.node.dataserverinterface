@@ -4,6 +4,7 @@ export default class BasicEvent {
 	constructor (courseId, duration) {
 
 		Object.assign(this, {
+			RootContextID: courseId,
 			course: courseId,
 			time_length: duration,
 			timestamp: Date.now() / 1000 //the server is expecting seconds
