@@ -1,4 +1,4 @@
-import {encodeForURI} from '../../utils/ntiids';
+import {encodeForURI} from '../utils/ntiids';
 
 export default class ListBackedPageSource {
 
