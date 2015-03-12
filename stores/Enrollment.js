@@ -32,7 +32,7 @@ export default class Enrollment {
 
 		return this[GetLibrary]()
 			.then(library =>
-				library.getCourse(courseId) || Promise.reject('Not Enrolled'))
+				library.getCourse(courseId, true) || Promise.reject('Not Enrolled'))
 
 			.then(course => course.drop());
 	}

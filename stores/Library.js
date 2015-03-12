@@ -9,11 +9,11 @@ import {parse} from '../models/Parser';
 const Pending = Symbol.for('PendingRequests');
 const Service = Symbol.for('Service');
 
-var instances = {};
+let instances = {};
 
 export function parseListFn (scope, service, pending) {
 	function queue(p) {
-		var list = (p && p[Pending]) || [];
+		let list = (p && p[Pending]) || [];
 		return pending.push( ...list) && p;
 	}
 
@@ -63,7 +63,7 @@ export default class Library extends EventEmitter {
 	static get (service, name, reload) {
 		function reloading(i) { i.emit('reloading'); }
 
-		var instance = instances[name];
+		let instance = instances[name];
 
 		if (instance) {
 			if (!reload) {
@@ -87,7 +87,7 @@ export default class Library extends EventEmitter {
 
 	constructor(service, name, contentPackages, contentBundles, enrolledCourses, administeredCourses) {
 
-		var pending = [];
+		let pending = [];
 
 		this[Service] = service;
 		this[Pending] = pending;
@@ -95,7 +95,7 @@ export default class Library extends EventEmitter {
 
 		this.onChange = this.onChange.bind(this);
 
-		var parseList = parseListFn(this, service, pending);
+		let parseList = parseListFn(this, service, pending);
 
 
 		contentBundles = contentBundles.filter(o => {
@@ -120,9 +120,15 @@ export default class Library extends EventEmitter {
 	}
 
 
-	getCourse (courseInstanceId) {
-		var courses = [].concat(this.administeredCourses || []).concat(this.courses || []);
-		var found;
+	getCourse (courseInstanceId, ignoreAdministeredCourses) {
+		let admin = this.administeredCourses || [];
+		let courses = this.courses || [];
+
+		if (ignoreAdministeredCourses !== true) {
+			courses = [].concat(admin).concat(courses);
+		}
+
+		let found;
 		courses.every(course =>
 			!(found = (course.getCourseID() === courseInstanceId) ? course : null));
 
@@ -132,7 +138,7 @@ export default class Library extends EventEmitter {
 
 	getPackage (packageId) {
 
-		var packs = unique(this.packages.concat(
+		let packs = unique(this.packages.concat(
 
 			this.bundles.concat(
 					this.courses.concat(this.administeredCourses).map(course =>
@@ -150,13 +156,13 @@ export default class Library extends EventEmitter {
 
 
 function resolveCollection(s, url, ignoreCache) {
-	var cache = s.getDataCache();
+	let cache = s.getDataCache();
 
 	if (!url) {
 		return Promise.resolve([]);
 	}
 
-	var cached = cache.get(url), result;
+	let cached = cache.get(url), result;
 	if (!cached || ignoreCache) {
 		result = s.get(url)
 			.catch(()=>({titles: [], Items: []}))
