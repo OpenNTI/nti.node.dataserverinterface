@@ -6,7 +6,7 @@ import logger from './logger';
 import {getModelByType as lookup} from './models/Parser';
 
 export default function(config) {
-	var i = new Interface(config);
+	let i = new Interface(config);
 
 	if (config.silent) {
 		logger.quiet();

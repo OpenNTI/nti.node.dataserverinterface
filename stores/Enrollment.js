@@ -45,7 +45,7 @@ export default class Enrollment {
 			console.error('purchasable needs to be a model');
 		}
 
-		var link = getLink(purchasable, 'redeem_gift');
+		let link = getLink(purchasable, 'redeem_gift');
 		if (!link) {
 			return Promise.reject('Couldn\'t find the gift redemption link for the provided purchasable');
 		}

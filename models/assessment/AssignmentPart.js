@@ -11,7 +11,7 @@ export default class AssignmentPart extends Base {
 
 
 	containsId (id) {
-		var qSet = this.question_set;
+		let qSet = this.question_set;
 		return qSet && (qSet.getID() === id || qSet.containsId(id));
 	}
 

@@ -226,7 +226,7 @@ const PARSERS = {
 
 export function getModelByType(type) {
 	type = type.replace(/^application\/vnd.nextthought./, '');
-	var p = PARSERS[type];
+	let p = PARSERS[type];
 	if (typeof p === 'string') {
 		p = p !== type ? getModelByType(p) : undefined;
 	}
@@ -253,8 +253,8 @@ export function parse(service, parent, obj) {
 		throw new Error(message);
 	}
 
-	var Cls = getModelByType(getType(obj));
-	var args = [service];
+	let Cls = getModelByType(getType(obj));
+	let args = [service];
 
 	if (Cls && Cls.parse.length > 2) {
 		args.push(parent);
@@ -272,7 +272,7 @@ function getType(o) {
 
 
 function error(obj) {
-	var e = new Error('No Parser for object: ' + (obj && getType(obj)));
+	let e = new Error('No Parser for object: ' + (obj && getType(obj)));
 	e.NoParser = true;
 	throw e;
 }

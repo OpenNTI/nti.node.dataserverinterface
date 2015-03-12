@@ -11,12 +11,12 @@ export default class Comment extends Post {
 
 
 	getReplies () {
-		var link = this.getLink('replies');
+		let link = this.getLink('replies');
 		if (!link) {
 			return Promise.resolve([]);
 		}
 
-		var params = {
+		let params = {
 			sortOn: 'CreatedTime',
 			sortOrder: 'ascending'
 		};

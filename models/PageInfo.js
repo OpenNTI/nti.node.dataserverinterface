@@ -22,7 +22,7 @@ export default class PageInfo extends Base {
 
 
 	getContentRoot () {
-		var url = Url.parse(this.getLink('content'));
+		let url = Url.parse(this.getLink('content'));
 
 		url.pathname = path.dirname(url.pathname) + '/';
 
@@ -36,8 +36,8 @@ export default class PageInfo extends Base {
 	}
 
 	getContent () {
-		var url = this.getLink('content');
-		var root = this.getContentRoot();
+		let url = this.getLink('content');
+		let root = this.getContentRoot();
 
 		return this[Service].get(url)
 			.then(html=>fixRefs(html, root));
@@ -72,9 +72,9 @@ export default class PageInfo extends Base {
 
 
 	getUserDataLastOfType (mimeType) {
-		var link = this.getLink(REL_USER_GENERATED_DATA);
-		var url = link && Url.parse(link);
-		var o = {
+		let link = this.getLink(REL_USER_GENERATED_DATA);
+		let url = link && Url.parse(link);
+		let o = {
 			accept: mimeType,
 			batchStart: 0, batchSize: 1,
 			sortOn: 'lastModified',
@@ -106,7 +106,7 @@ export default class PageInfo extends Base {
  * @param {Object} b
  */
 function assessmentItemOrder(a, b) {
-	var order = assessmentItemOrder.order = (assessmentItemOrder.order || {
+	let order = assessmentItemOrder.order = (assessmentItemOrder.order || {
 		'application/vnd.nextthought.assessment.assignment': 0,
 		'application/vnd.nextthought.naquestionset': 1,
 		'application/vnd.nextthought.naquestion': 2,
@@ -123,7 +123,7 @@ function setupAssessmentItems(items, pageInfo) {
 	items = items.map(o=>pageInfo[parse](o));
 	items.sort(assessmentItemOrder);
 
-	var sets = items.filter(o=>o && o.containsId);
+	let sets = items.filter(o=>o && o.containsId);
 
 	//Remove questions & questionsets that are embedded within Assignments and QuestionSets...leave only top-level items.
 	items = items.filter(o=>

@@ -48,18 +48,18 @@ export default class FiveMinuteInterface {
 
 	preflight (data) {
 		// get the preflight link.
-		var p = this._getUserLink('fmaep.admission.preflight');
+		let p = this._getUserLink('fmaep.admission.preflight');
 
 		// post the data to the link
-		var r = p.then(link => this.post(link, data));
+		let r = p.then(link => this.post(link, data));
 
 		return r;
 	}
 
 	requestAdmission (data) {
 		console.debug('five minute service requestAdmission');
-		var getLink = this._getUserLink('fmaep.admission');
-		var r = getLink.then(link => this.post(link, data));
+		let getLink = this._getUserLink('fmaep.admission');
+		let r = getLink.then(link => this.post(link, data));
 		return r;
 	}
 

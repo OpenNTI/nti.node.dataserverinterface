@@ -8,7 +8,7 @@ import fallbackOverview from './_fallbacks.OverviewFromToC';
 import {encodeForURI} from '../../utils/ntiids';
 import emptyFunction from '../../utils/empty-function';
 
-var emptyCourseObject = {getID:emptyFunction};
+let emptyCourseObject = {getID:emptyFunction};
 
 const Progress = Symbol.for('Progress');
 
@@ -32,8 +32,8 @@ export default class OutlineNode extends Outline {
 
 
 	get href () {
-		var courseId = (getCourse(this) || emptyCourseObject).getID();
-		var ref = this.ref;
+		let courseId = (getCourse(this) || emptyCourseObject).getID();
+		let ref = this.ref;
 
 		if (!ref) {
 			return undefined;
@@ -44,7 +44,7 @@ export default class OutlineNode extends Outline {
 
 
 	get ref () {
-		var id = this.getID();
+		let id = this.getID();
 
 		if (!id) {
 			return undefined;
@@ -55,13 +55,13 @@ export default class OutlineNode extends Outline {
 
 
 	get depth () {
-		var type = super.constructor;
+		let type = super.constructor;
 		return this.parents({test:p=>p instanceof type}).length;
 	}
 
 
 	get root () {
-		var type = super.constructor;
+		let type = super.constructor;
 		return this.parent({
 			test: o=>o.constructor === type
 		});
@@ -113,7 +113,7 @@ export default class OutlineNode extends Outline {
 
 
 	getProgress () {
-		var link = 'Progress';
+		let link = 'Progress';
 
 		if (!this.hasLink(link)) {
 			return Promise.resolve(null);
@@ -125,9 +125,9 @@ export default class OutlineNode extends Outline {
 
 
 function collateVideo(json) {
-	var re = /ntivideo$/;
+	let re = /ntivideo$/;
 	function collate(list, current) {
-		var last = list[list.length - 1];
+		let last = list[list.length - 1];
 		if (re.test(current.MimeType)) {
 			//last was a video...
 			if (last && re.test(last.MimeType)){
@@ -169,10 +169,10 @@ function applyProgress(content, progress) {
 		return key && c[key];
 	}
 
-	var id = ['Target-NTIID', 'NTIID'].reduce(
+	let id = ['Target-NTIID', 'NTIID'].reduce(
 			(id, key)=> id || findWithFuzzyKey(content, key), null);
 
-	var nodeProgress = id && progress.getProgress(id);
+	let nodeProgress = id && progress.getProgress(id);
 
 	if (nodeProgress != null) {
 		content[Progress] = nodeProgress;
@@ -188,16 +188,16 @@ function applyProgress(content, progress) {
  */
 function getContentFallback(outlineNode) {
 	console.debug('[FALLBACK] Deriving OutlineNode(%s) content', outlineNode.getID());
-	var course = getCourse(outlineNode);
-	var bundle = course && course.ContentPackageBundle;
-	var pkg = ((bundle && bundle.ContentPackages) || [])[0];
-	var contentId = outlineNode.getID();
+	let course = getCourse(outlineNode);
+	let bundle = course && course.ContentPackageBundle;
+	let pkg = ((bundle && bundle.ContentPackages) || [])[0];
+	let contentId = outlineNode.getID();
 
-	var p = pkg ? pkg.getTableOfContents() : Promise.reject('No Content Package');
+	let p = pkg ? pkg.getTableOfContents() : Promise.reject('No Content Package');
 
 	return p.then(function(toc) {
-		var tocNode = toc.getNode(contentId);
-		var content = fallbackOverview(tocNode, outlineNode);
+		let tocNode = toc.getNode(contentId);
+		let content = fallbackOverview(tocNode, outlineNode);
 		if (!content) {
 			console.error('Fallback Content failed');
 		}

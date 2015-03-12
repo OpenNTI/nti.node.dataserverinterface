@@ -42,7 +42,7 @@ export default class QuestionSubmission extends Base {
 
 
 	addRecordedEffortTime (/*duration*/) {
-		// var old = this.CreatorRecordedEffortDuration || 0;
+		// let old = this.CreatorRecordedEffortDuration || 0;
 		// this.CreatorRecordedEffortDuration = old + duration;
 
 		//Force/Blank this out for now.

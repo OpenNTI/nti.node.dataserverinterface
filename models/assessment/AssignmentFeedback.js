@@ -10,7 +10,7 @@ export default class AssignmentFeedback extends Base {
 
 
 	delete () {
-		var link = this.getLink('edit');
+		let link = this.getLink('edit');
 		if (!link) {
 			return Promise.reject(new Error('No Edit Link'));
 		}
@@ -20,7 +20,7 @@ export default class AssignmentFeedback extends Base {
 
 
 	editBody (body) {
-		var link = this.getLink('edit');
+		let link = this.getLink('edit');
 		if (!link) {
 			return Promise.reject(new Error('No Edit Link'));
 		}

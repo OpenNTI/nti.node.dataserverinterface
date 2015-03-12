@@ -19,7 +19,7 @@ export default class Instance extends Base {
 	constructor (service, parent, data) {
 		super(service, parent, data, {isCourse: true});
 
-		var bundle = this[parse]('ContentPackageBundle');
+		let bundle = this[parse]('ContentPackageBundle');
 
 		bundle.on('changed', this.onChange.bind(this));
 
@@ -32,7 +32,7 @@ export default class Instance extends Base {
 
 
 	getPresentationProperties () {
-		var cce = this.CatalogEntry || EMPTY_CATALOG_ENTRY,
+		let cce = this.CatalogEntry || EMPTY_CATALOG_ENTRY,
 			bundle = this.ContentPackageBundle;
 
 		return {
@@ -52,16 +52,16 @@ export default class Instance extends Base {
 
 
 	getAssignments () {
-		var key = Symbol.for('GetAssignmentsRequest');
+		let key = Symbol.for('GetAssignmentsRequest');
 
-		var i = this[Service];
-		var p = this[key];
+		let i = this[Service];
+		let p = this[key];
 
 
 		// A/B sets... Assignments are the Universe-Set minus the B set.
 		// The A set is the assignmetns you can see.
-		var A = this.getLink('AssignmentsByOutlineNode');
-		var B = this.getLink('NonAssignmentAssessmentItemsByOutlineNode');
+		let A = this.getLink('AssignmentsByOutlineNode');
+		let B = this.getLink('NonAssignmentAssessmentItemsByOutlineNode');
 
 		if (!this.shouldShowAssignments()) {
 			return Promise.reject('No Assignments');
@@ -90,8 +90,8 @@ export default class Instance extends Base {
 		let contents = o => o ? o.getContents() : Promise.reject(NOT_DEFINED);
 		let getId = o => o ? o.getID(): null;
 
-		var sectionId = getId(this.Discussions);
-		var parentId = getId(this.ParentDiscussions);
+		let sectionId = getId(this.Discussions);
+		let parentId = getId(this.ParentDiscussions);
 
 		return Promise.all([
 			contents(this.Discussions).catch(logAndResume),
@@ -114,7 +114,7 @@ export default class Instance extends Base {
 
 
 	getOutline () {
-		var outline = this.Outline;
+		let outline = this.Outline;
 		if (!this[OutlineCache]) {
 			//We have to wait for the CCE to load to know if its in preview mode or not.
 			this[OutlineCache] = this.waitForPending().then(()=>
@@ -143,10 +143,10 @@ export default class Instance extends Base {
 
 
 	resolveContentURL (url) {
-		var bundle = this.ContentPackageBundle;
-		var pkg = ((bundle && bundle.ContentPackages) || [])[0];//probably should search all packages...
+		let bundle = this.ContentPackageBundle;
+		let pkg = ((bundle && bundle.ContentPackages) || [])[0];//probably should search all packages...
 
-		var root = Url.parse(pkg.root);
+		let root = Url.parse(pkg.root);
 
 		return Promise.resolve(root.resolve(url));
 	}
@@ -160,7 +160,7 @@ function resolveCatalogEntry(service, inst) {
 	const url = inst.getLink('CourseCatalogEntry');
 	const cached = cache.get(url);
 
-	var work;
+	let work;
 
 	if (cached) {
 		work = Promise.resolve(cached);
@@ -198,11 +198,11 @@ function resolveCatalogEntry(service, inst) {
  * @return {Object}        The binned forums
  */
 function binDiscussions (section, parent) {
-	var bins = {};
+	let bins = {};
 
 	function addTo(key, group) {
 
-		var items = (group && group.Items) || [];
+		let items = (group && group.Items) || [];
 		for(let item of items) {
 			let bin = item.getBin();
 			if (!bins[bin]) {

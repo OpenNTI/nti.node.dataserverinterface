@@ -35,8 +35,8 @@ export default class FillInTheBlank extends Part {
 
 
 	isAnswered (partValue) {
-		var maybe = true;
-		var keys = this[ValueKeys];
+		let maybe = true;
+		let keys = this[ValueKeys];
 
 		for(let i of keys) {
 			//all values have to be non-nully

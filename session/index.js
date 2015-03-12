@@ -19,7 +19,7 @@ export default class SessionManager {
 
 		return this.getServiceDocument(context)
 			.then(doc => {
-					var w = doc.getUserWorkspace();
+					let w = doc.getUserWorkspace();
 					if (w) {
 						return w.Title;
 					}
@@ -30,14 +30,14 @@ export default class SessionManager {
 
 
 	getServiceDocument (context) {
-		var server = this.server;
+		let server = this.server;
 		return server.ping(context)
 			.then(server.getServiceDocument.bind(server, context));
 	}
 
 
 	setupIntitalData (context) {
-		var url = context.originalUrl || context.url;
+		let url = context.originalUrl || context.url;
 		logger.debug('SESSION [PRE-FETCHING DATA] %s %s (User: %s)', context.method, url, context.username);
 		return this.server.getServiceDocument(context)
 			.then(service => {
@@ -55,9 +55,9 @@ export default class SessionManager {
 
 
 	middleware (req, res, next) {
-		var start = Date.now();
-		var url = req.originalUrl || req.url;
-		var basepath = this.config.basepath || '/';
+		let start = Date.now();
+		let url = req.originalUrl || req.url;
+		let basepath = this.config.basepath || '/';
 
 		req.responseHeaders = {};
 

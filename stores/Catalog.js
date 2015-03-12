@@ -13,13 +13,13 @@ export default class Catalog extends EventEmitter {
 	static load (service, reload) {
 		return get(service, service.getCoursesCatalogURL(), reload)
 			.then(data => {
-				var catalog = new this(service, data);
+				let catalog = new this(service, data);
 				return waitFor(catalog[Pending]).then(() => catalog);
 			});
 	}
 
 	constructor (service, data) {
-		var pending = [];
+		let pending = [];
 
 		this[Service] = service;
 		this[Pending] = pending;
@@ -41,7 +41,7 @@ export default class Catalog extends EventEmitter {
 
 
 	findEntry (entryId) {
-		var found;
+		let found;
 
 		this.every(course => {
 			if (course.getID() === entryId) {
@@ -57,9 +57,9 @@ export default class Catalog extends EventEmitter {
 
 
 function get(s, url, ignoreCache) {
-	var cache = s.getDataCache();
+	let cache = s.getDataCache();
 
-	var cached = cache.get(url), result;
+	let cached = cache.get(url), result;
 	if (!cached || ignoreCache) {
 		result = s.get(url)
 			.catch(()=>({titles: [], Items: []}))

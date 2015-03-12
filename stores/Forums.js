@@ -22,7 +22,7 @@ export default class Forums {
 	}
 
 	reportItem (o) {
-		var link = o && o.getLink && o.getLink('flag') || o.getLink('flag.metoo');
+		let link = o && o.getLink && o.getLink('flag') || o.getLink('flag.metoo');
 		if (!link) {
 			return Promise.reject('Item has neither flag nor flag.metoo link.');
 		}

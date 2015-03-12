@@ -49,7 +49,7 @@ export default class Part extends Base {
 			return [];
 		}
 
-		var out = [],
+		let out = [],
 			dom = new global.DOMParser().parseFromString(this.content, 'text/xml'),//Safari???
 			nodes = dom.querySelectorAll('object.naqvideo');
 
@@ -68,8 +68,8 @@ export default class Part extends Base {
 
 
 	getWordBankEntry (wid) {
-		var p = this.parent() || {};
-		var wordbanks = [this.wordbank, p.wordbank].filter(x=>x);
+		let p = this.parent() || {};
+		let wordbanks = [this.wordbank, p.wordbank].filter(x=>x);
 
 		return wordbanks.reduce((found, x)=>found || x && x.getEntry(wid), null);
 	}

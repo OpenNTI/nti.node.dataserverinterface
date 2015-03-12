@@ -9,8 +9,8 @@ export default class Matching extends Part {
 	[ContentKeys] () { return super[ContentKeys]().concat(['values', 'labels']); }
 
 	isAnswered (partValue) {
-		var maybe = !!partValue;
-		var {length} = this.values;
+		let maybe = !!partValue;
+		let {length} = this.values;
 
 		for(let i = 0; maybe && i < length; i++) {
 			//all values have to be non-nully

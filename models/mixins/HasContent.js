@@ -4,7 +4,7 @@ import clean from '../../utils/sanitize-markup';
 
 function cleanupContentString(content) {
 	try {
-		var root = this.getContentRoot();
+		let root = this.getContentRoot();
 		content = fixRefs(content, root);
 	} catch (e) {
 		console.error('Content cannot be rooted. %s', e.stack || e.message || e);
@@ -14,8 +14,8 @@ function cleanupContentString(content) {
 }
 
 function setup (data, keys) {
-	var props = {};
-	var clean = cleanupContentString.bind(this);
+	let props = {};
+	let clean = cleanupContentString.bind(this);
 
 	for(let key of keys) {
 		let content = data[key] || '';
@@ -48,7 +48,7 @@ export const SetupContentProperties = Symbol('SetupContentProperties');
 export default {
 
 	constructor (data) {
-		var keys = this[ContentKeys] &&
+		let keys = this[ContentKeys] &&
 		 			this[ContentKeys]();
 
 		if (keys === undefined) {

@@ -3,7 +3,7 @@ export default {
 
 	getAssessedRoot () {
 
-		var p = this.parent();
+		let p = this.parent();
 
 		if (!p || !p.getAssessedRoot) {
 			return this;

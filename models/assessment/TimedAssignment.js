@@ -30,8 +30,8 @@ export default class TimedAssignment extends Assignment {
 
 
 	isOverTime () {
-		var max = this.getMaximumTimeAllowed();
-		var dur = this.getDuration() || (new Date() - this.getStartTime());
+		let max = this.getMaximumTimeAllowed();
+		let dur = this.getDuration() || (new Date() - this.getStartTime());
 		return max < dur;
 	}
 
@@ -42,7 +42,7 @@ export default class TimedAssignment extends Assignment {
 
 
 	start () {
-		var link = this.getLink('Commence');
+		let link = this.getLink('Commence');
 
 		if (!link) {
 			return Promise.reject('No commence link');
@@ -54,13 +54,13 @@ export default class TimedAssignment extends Assignment {
 
 
 	getDuration () {
-		var md = this.Metadata;
+		let md = this.Metadata;
 		return md && md.Duration;
 	}
 
 
 	getStartTime () {
-		var md = this.Metadata;
+		let md = this.Metadata;
 		return md && md.StartTime;
 	}
 
@@ -71,9 +71,9 @@ export default class TimedAssignment extends Assignment {
 
 
 	getTimeRemaining () {
-		var now = new Date().getTime();
-		var max = this.getMaximumTimeAllowed();
-		var start = this.getStartTime();
+		let now = new Date().getTime();
+		let max = this.getMaximumTimeAllowed();
+		let start = this.getStartTime();
 
 		return  !start ?
 					max :

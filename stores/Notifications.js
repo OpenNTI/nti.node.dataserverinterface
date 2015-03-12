@@ -17,9 +17,9 @@ import QueryString from 'query-string';
 
 import waitFor from '../utils/waitfor';
 
-var BATCH_SIZE = 5;
+let BATCH_SIZE = 5;
 
-var inflight;
+let inflight;
 
 
 function cleanInflight() { inflight = null; }
@@ -38,7 +38,7 @@ export default class Notifications extends EventEmitter {
 		inflight = service.getPageInfo(ROOT_NTIID)
 		//Find our url to fetch notifications from...
 			.then(pageInfo => {
-				var url = pageInfo.getLink(REL_MESSAGE_INBOX);
+				let url = pageInfo.getLink(REL_MESSAGE_INBOX);
 				if (!url) {
 					return Promise.reject('No Notifications url');
 				}
@@ -94,7 +94,7 @@ export default class Notifications extends EventEmitter {
 
 
 	nextBatch () {
-		var clean = cleanInflight;
+		let clean = cleanInflight;
 
 		if (!inflight) {
 			if (this.nextBatchSrc) {
@@ -123,9 +123,9 @@ export default class Notifications extends EventEmitter {
 
 
 function get(s, url, ignoreCache) {
-	var cache = s.getDataCache();
+	let cache = s.getDataCache();
 
-	var cached = cache.get(url), result;
+	let cached = cache.get(url), result;
 	if (!cached || ignoreCache) {
 		result = s.get(url)
 		.then(data => cache.set(url, data) && data)
@@ -139,7 +139,7 @@ function get(s, url, ignoreCache) {
 
 
 function resolveUIData(service, data) {
-	var pending = [];
+	let pending = [];
 
 	data.Items = data.Items.map(o => {
 		try {

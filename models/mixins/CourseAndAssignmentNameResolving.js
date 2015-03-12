@@ -9,13 +9,13 @@ import {Service} from '../../CommonSymbols';
 export default {
 
 	constructor () {
-		var service = this[Service];
+		let service = this[Service];
 
-		var courseInstanceUrl = (this.getLink('AssignmentHistoryItem') || this.href || '')
+		let courseInstanceUrl = (this.getLink('AssignmentHistoryItem') || this.href || '')
 									.replace(/\/AssignmentHistories.*/, '');
 
-		var assignmentId = this.AssignmentId;
-		var a, b, result;
+		let assignmentId = this.AssignmentId;
+		let a, b, result;
 
 
 		//If this model has an assignment parent model instance,

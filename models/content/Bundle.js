@@ -44,7 +44,7 @@ export default class Bundle extends Base {
 	}
 
 	getDefaultAssetRoot () {
-		var root = ([this].concat(this.ContentPackages))
+		let root = ([this].concat(this.ContentPackages))
 				.reduce((agg, o) => agg || o.root, null);
 
 		if (!root) {
@@ -65,7 +65,7 @@ export default class Bundle extends Base {
 			p.getTableOfContents().then(t => ({ id: p.getID(), toc: t }))))
 
 			.then(tables => {
-				var result = tables.slice();
+				let result = tables.slice();
 
 				tables.forEach((v, i) =>
 					result[v.id] = result[i] = v.toc);

@@ -36,7 +36,7 @@ export default class Forum extends Base {
 
 	getRecentActivity (size) {
 
-		var params = {
+		let params = {
 			batchStart: 0,
 			batchSize: size||5,
 			sortOrder: 'descending',
@@ -49,14 +49,14 @@ export default class Forum extends Base {
 	createTopic (data) {
 		const service = this[Service];
 
-		var link = this.getLink('add');
+		let link = this.getLink('add');
 		if (!link) {
 			return Promise.reject('Cannot post comment. Item has no \'add\' link.');
 		}
 
-		var {title, body} = data;
+		let {title, body} = data;
 
-		var payload = {
+		let payload = {
 			MimeType: 'application/vnd.nextthought.forums.post',
 			tags: [],
 			title: title,

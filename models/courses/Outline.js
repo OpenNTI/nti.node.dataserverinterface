@@ -20,7 +20,7 @@ export default class Outline extends Base {
 
 
 	get () {
-		var promise = this[OUTLINE_CONTENT_CACHE];
+		let promise = this[OUTLINE_CONTENT_CACHE];
 
 		if (this.contents) {
 			promise = Promise.resolve(this);
@@ -94,19 +94,19 @@ export default class Outline extends Base {
 
 
 	isAssignment  (outlineNodeId, assessmentId) {
-		var collection = this.assignments;
+		let collection = this.assignments;
 		return collection && collection.isAssignment(outlineNodeId, assessmentId);
 	}
 
 
 	getAssignment  (outlineNodeId, assignmentId) {
-		var collection = this.assignments;
+		let collection = this.assignments;
 		return collection && collection.getAssignment(outlineNodeId, assignmentId);
 	}
 
 
 	getAssignments  () {
-		var collection = this.assignments;
+		let collection = this.assignments;
 		if (collection) {
 			return collection.getAssignments(this.getID());
 		}

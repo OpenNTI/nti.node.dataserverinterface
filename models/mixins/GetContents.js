@@ -6,7 +6,7 @@ const Service = Symbol.for('Service');
 
 export default {
 	getContents (params) {
-		var link = this.getLink('contents');
+		let link = this.getLink('contents');
 		if (!link) {
 			return Promise.reject('No Link!?');
 		}

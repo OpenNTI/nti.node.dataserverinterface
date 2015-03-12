@@ -29,7 +29,7 @@ export default class Package extends Base {
 
 
 	getDefaultAssetRoot () {
-		var root = this.root;
+		let root = this.root;
 
 		if (!root) {
 			console.error('No root for content package: ', this);
@@ -41,10 +41,10 @@ export default class Package extends Base {
 
 
 	getTableOfContents () {
-		var service = this[Service];
-		var toc = this.tableOfContents;
-		var cache = service.getDataCache();
-		var cached = cache.get(this.index);
+		let service = this[Service];
+		let toc = this.tableOfContents;
+		let cache = service.getDataCache();
+		let cached = cache.get(this.index);
 
 		if (!toc) {
 			toc = cached ?
@@ -62,16 +62,16 @@ export default class Package extends Base {
 
 
 	getVideoIndex () {
-		var service = this[Service];
-		var promise = this[VideoIndexReqest];
-		var cache = service.getDataCache();
+		let service = this[Service];
+		let promise = this[VideoIndexReqest];
+		let cache = service.getDataCache();
 
 		function find(toc) {
 			return toc.getVideoIndexRef() || Promise.reject('No Video Index');
 		}
 
 		function get(url) {
-			var cached = cache.get(url);
+			let cached = cache.get(url);
 			if (cached) {
 				return cached;
 			}
@@ -96,8 +96,8 @@ export default class Package extends Base {
 }
 
 function parseVideoIndex (toc, json) {
-	var keyOrder = [];
-	var root = this.root;
+	let keyOrder = [];
+	let root = this.root;
 
 	function prefix(o) {
 		o.src = urlJoin(root, o.src);
@@ -109,7 +109,7 @@ function parseVideoIndex (toc, json) {
 		// Since the <[topic|object] ntiid="..." is not guaranteed to be unique,
 		// this will just order by first occurance of any element that has an
 		// ntiid attribute with value of what is asked for (a & b)
-		var c = toc.getSortPosition(a),
+		let c = toc.getSortPosition(a),
 		d = toc.getSortPosition(b),
 		p = c > d;
 		return p ? 1 : -1;

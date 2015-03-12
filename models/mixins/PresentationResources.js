@@ -7,7 +7,7 @@ const ASSET_MAP = {
 	background: 'background.png'
 };
 
-var MISSING_ASSET_DATA = {};
+let MISSING_ASSET_DATA = {};
 
 /**
  * return the root that should be used if PlatforPresentationResources isn't defined
@@ -35,7 +35,7 @@ export default {
 	getAssetRoot () {
 		if (this.presentationroot) { return this.presentationroot; }
 
-		var resources = this.PlatformPresentationResources || [],
+		let resources = this.PlatformPresentationResources || [],
 			root;
 
 		resources.every(
@@ -54,7 +54,7 @@ export default {
 	 * @return {Promise} whether or not the asset exists
 	 */
 	getAsset (name) {
-		var assetPath = ASSET_MAP[name] || ('missing-' + name + '-asset.png'),
+		let assetPath = ASSET_MAP[name] || ('missing-' + name + '-asset.png'),
 			root = this.getAssetRoot(),
 			url = root && urlJoin(root, assetPath);
 			// cache = this[Service].getDataCache(),

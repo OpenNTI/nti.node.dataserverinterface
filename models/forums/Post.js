@@ -12,7 +12,7 @@ export default class Post extends Base {
 
 	setProperties(newProps) {
 		const link = this.getLink('edit');
-		var props = {};
+		let props = {};
 
 		if (!link) {
 			throw new Error('Post is not editable. (No edit link).');

@@ -13,12 +13,12 @@ export default class AssignmentFeedbackContainer extends Base {
 	}
 
 	addPost (body) {
-		var link = this.getLink('edit');
+		let link = this.getLink('edit');
 		if (!link) {
 			return Promise.reject(new Error('No Edit Link'));
 		}
 
-		var payload = {
+		let payload = {
 			MimeType: 'application/vnd.nextthought.assessment.userscourseassignmenthistoryitemfeedback',
 			Class: 'UsersCourseAssignmentHistoryItemFeedback',
 			body: Array.isArray(body) ? body : [body]

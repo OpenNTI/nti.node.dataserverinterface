@@ -49,11 +49,11 @@ export default class DataServerInterface {
 	 */
 	_request (options, context) {
 
-		var result;
-		var abortMethod;
-		var pending = context ? (context.__pendingServerRequests = (context.__pendingServerRequests || [])) : [];
-		var start = Date.now();
-		var url = (options || {}).url;
+		let result;
+		let abortMethod;
+		let pending = context ? (context.__pendingServerRequests = (context.__pendingServerRequests || [])) : [];
+		let start = Date.now();
+		let url = (options || {}).url;
 
 		if (!options) {
 			options = {};
@@ -66,9 +66,9 @@ export default class DataServerInterface {
 
 		url = Url.parse(this.config.server).resolve(url || '');
 
-		var mime = (options.headers || {}).accept;
-		var data = options.data;
-		var opts = Object.assign({}, {
+		let mime = (options.headers || {}).accept;
+		let data = options.data;
+		let opts = Object.assign({}, {
 			method: data ? 'POST' : 'GET'
 		}, options, {
 			url: url//ensure the resolved url is used.
@@ -101,8 +101,8 @@ export default class DataServerInterface {
 		}
 
 		function getContentType(headers) {
-			var reg = /Content-Type/i;
-			var key = Object.keys(headers).reduce((i, k) => i || (reg.test(k) && k), null);
+			let reg = /Content-Type/i;
+			let key = Object.keys(headers).reduce((i, k) => i || (reg.test(k) && k), null);
 
 			if (key) {
 				return headers[key];
@@ -120,8 +120,8 @@ export default class DataServerInterface {
 					res = {headers:{}};
 				}
 
-				var contentType = getContentType(res.headers);
-				var code = res.statusCode;
+				let contentType = getContentType(res.headers);
+				let code = res.statusCode;
 
 				try {
 					if (isEmpty(contentType) || jsonContent.test(contentType) || mightBeJson.test(body)) {
@@ -211,7 +211,7 @@ export default class DataServerInterface {
 
 	getPurchasables  (ids, context) {
 		console.debug('{FIXME} does not belong here');
-		var url = '/dataserver2/store/get_purchasables';
+		let url = '/dataserver2/store/get_purchasables';
 
 		if (ids) {
 			if (Array.isArray(ids)) {
@@ -229,7 +229,7 @@ export default class DataServerInterface {
 
 
 	getServiceDocument (context) {
-		var cache = DataCache.getForContext(context),
+		let cache = DataCache.getForContext(context),
 			cached = cache.get('service-doc-instance'),
 			promise;
 
@@ -265,10 +265,10 @@ export default class DataServerInterface {
 
 
 	logInPassword (url,credentials) {
-		var username = credentials ? credentials.username : undefined;
-		var password = credentials ? credentials.password : undefined;
-		var auth = password ? ('Basic ' + btoa(username+':'+password)) : undefined;
-		var options = {
+		let username = credentials ? credentials.username : undefined;
+		let password = credentials ? credentials.password : undefined;
+		let auth = password ? ('Basic ' + btoa(username+':'+password)) : undefined;
+		let options = {
 			url: url,
 			method: 'GET',
 			xhrFields: { withCredentials: true },
@@ -290,12 +290,12 @@ export default class DataServerInterface {
 	ping (context, username) {
 		username = username || (context && context.cookies && context.cookies.username);
 
-		var me = this;
+		let me = this;
 
 		return me._get('logon.ping', context)//ping
 			//pong
 			.then(data => {
-				var urls = getLink.asMap(data);
+				let urls = getLink.asMap(data);
 
 				if (!urls['logon.handshake']) {
 					return Promise.reject('No handshake present');
@@ -330,7 +330,7 @@ export default class DataServerInterface {
 	handshake  (urls, username, context) {
 		return this._post(urls['logon.handshake'], {_asFORM: true, username: username}, context)
 			.then(data => {
-				var result = {links: Object.assign({}, urls, getLink.asMap(data))};
+				let result = {links: Object.assign({}, urls, getLink.asMap(data))};
 				if (!getLink(data, 'logon.continue')) {
 					result.reason = 'Not authenticated, no continue after handshake.';
 					return Promise.reject(result);
@@ -343,7 +343,7 @@ export default class DataServerInterface {
 	deleteTOS (context) {
 		return this.ping(context)
 			.then(result => {
-				var link = result.links['content.initial_tos_page'];
+				let link = result.links['content.initial_tos_page'];
 				if (link) {
 					return this._delete(link, context);
 				}
@@ -429,7 +429,7 @@ export default class DataServerInterface {
 
 		return this.getServiceDocument(context)
 			.then(doc => {
-				var headers = {},
+				let headers = {},
 					url = doc.getObjectURL(ntiid);
 
 				if (mime) {
@@ -453,7 +453,7 @@ export default class DataServerInterface {
 			ntiids = [ntiids];
 		}
 
-		var me = this;
+		let me = this;
 
 		return Promise.all(ntiids.map(n =>
 			me.getObject(n, undefined, context)))
@@ -465,7 +465,7 @@ export default class DataServerInterface {
 
 
 	getPageInfo (ntiid, context) {
-		var mime = 'application/vnd.nextthought.pageinfo+json';
+		let mime = 'application/vnd.nextthought.pageinfo+json';
 
 		if (!NTIIDs.isNTIID(ntiid)) {
 			return Promise.reject('Bad NTIID');

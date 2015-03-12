@@ -15,7 +15,7 @@ export default class Video {
 			NO_TRANSCRIPT_LANG
 		});
 
-		var sources = data.sources;
+		let sources = data.sources;
 
 		Object.assign(this, data);
 
@@ -25,7 +25,7 @@ export default class Video {
 
 
 	getPoster () {
-		var first = this.sources[0];
+		let first = this.sources[0];
 		return first ? first.getPoster() : Promise.reject('No Source');
 	}
 
@@ -41,8 +41,8 @@ export default class Video {
 	 * @return {Promise}
 	 */
 	getTranscript (lang) {
-		var target = lang || 'en';
-		var scripts = this.transcripts;
+		let target = lang || 'en';
+		let scripts = this.transcripts;
 
 		if (isEmpty(scripts)) {
 			return Promise.reject(NO_TRANSCRIPT);

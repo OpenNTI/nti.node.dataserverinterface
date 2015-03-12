@@ -21,15 +21,15 @@ export default class TableOfContentsBackedPageSource extends Base{
 
 
 	getPagesAround (pageId) {
-		var query = './/*[@ntiid="' + pageId + '"]';
-		var {root} = this;
-		var node = root.find(query) || (root.get('ntiid') === pageId && root);
-		var nodes = this.pagesInRange;
+		let query = './/*[@ntiid="' + pageId + '"]';
+		let {root} = this;
+		let node = root.find(query) || (root.get('ntiid') === pageId && root);
+		let nodes = this.pagesInRange;
 
-		var index = nodes.indexOf(node);
+		let index = nodes.indexOf(node);
 
-		var next = nodes[index + 1];
-		var prev = nodes[index - 1];
+		let next = nodes[index + 1];
+		let prev = nodes[index - 1];
 
 		return {
 			total: nodes.length,
@@ -57,13 +57,13 @@ function buildRef(node, root) {
 
 
 function suppressed(node) {
-	var isAnchor = suppressed.is || (suppressed.id = /#/);
-	var isTopic = suppressed.tag || (suppressed.tag = /topic/i);
+	let isAnchor = suppressed.is || (suppressed.id = /#/);
+	let isTopic = suppressed.tag || (suppressed.tag = /topic/i);
 
 	return node && isTopic.test(node.tag) && !isAnchor.test(node.get('href'));
 }
 
 function flatten(node) {
-	var fn = flatten.fnLoop || (flatten.fnLoop = (a,n)=>a.concat(flatten(n)));
+	let fn = flatten.fnLoop || (flatten.fnLoop = (a,n)=>a.concat(flatten(n)));
 	return [node].concat(node._children.reduce(fn, []));
 }

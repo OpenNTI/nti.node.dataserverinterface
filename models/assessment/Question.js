@@ -18,7 +18,7 @@ export default class Question extends Base {
 
 	getVideos () {
 		//Eeewww...
-		var all = this.getModel('assessment.part').prototype.getVideos.call(this);
+		let all = this.getModel('assessment.part').prototype.getVideos.call(this);
 
 		for(let p of this.parts) {
 			all.push.apply(all, p.getVideos());
@@ -41,8 +41,8 @@ export default class Question extends Base {
 
 
 	isAnswered (questionSubmission) {
-		var expect = this.parts.length;
-		var {parts} = questionSubmission;
+		let expect = this.parts.length;
+		let {parts} = questionSubmission;
 
 		return this.parts.filter((p,i)=>p.isAnswered(parts[i])).length === expect;
 	}

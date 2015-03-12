@@ -35,7 +35,7 @@ export default class CourseCatalogEntry extends Base {
 
 
 	getAuthorLine () {
-		var taRe = (/Teaching Assistant/i),
+		let taRe = (/Teaching Assistant/i),
 			instructors = this.Instructors;
 
 		return (instructors && instructors

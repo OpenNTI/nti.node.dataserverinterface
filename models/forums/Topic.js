@@ -24,12 +24,12 @@ export default class Topic extends Base {
 
 	addComment (comment, inReplyTo) {
 		const service = this[Service];
-		var link = this.getLink('add');
+		let link = this.getLink('add');
 		if (!link) {
 			return Promise.reject('Cannot post comment. Item has no \'add\' link.');
 		}
 
-		var payload = {
+		let payload = {
 			MimeType: 'application/vnd.nextthought.forums.post',
 			tags: [],
 			body: Array.isArray(comment) ? comment : [comment]

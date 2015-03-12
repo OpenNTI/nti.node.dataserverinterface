@@ -8,14 +8,14 @@ export default {
 	canSubmit () {
 		if (this.isSubmitted()) {return false;}
 
-		var list = this.questions || this.parts || [];
+		let list = this.questions || this.parts || [];
 
 		return list.reduce((can, q) => can || q.canSubmit(), false);
 	},
 
 
 	isSubmitted () {
-		var p;
+		let p;
 
 		//Test if we are explicitly marked submitted
 		return Boolean(this[Submitted] ||
@@ -32,7 +32,7 @@ export default {
 
 
 	submit () {
-		var target = (this[Service].getCollectionFor(this) || {}).href;
+		let target = (this[Service].getCollectionFor(this) || {}).href;
 		if (!target) {
 			console.error('No where to save object: %o', this);
 		}

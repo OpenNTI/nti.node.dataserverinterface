@@ -34,7 +34,7 @@ export default class Enrollment extends Base {
 			], 'CourseInstance.CatalogEntry'));
 
 
-		var i = this[parse]('CourseInstance');
+		let i = this[parse]('CourseInstance');
 
 		i.on('changed', this.onChange.bind(this));
 	}
@@ -56,7 +56,7 @@ export default class Enrollment extends Base {
 
 
 	[PerformToCNodeFilter] (toc, remove) {
-		var status = this.LegacyEnrollmentStatus;
+		let status = this.LegacyEnrollmentStatus;
 
 
 		for(let e of toc.findall('*[@visibility]')) {
@@ -79,7 +79,7 @@ function getToCNodesReferencing (ntiid, toc) {
 	}
 
 	function getNodesForKey(keys) {
-		var nodes = [];
+		let nodes = [];
 
 		for(let k of keys) {
 			nodes = unique(nodes.concat(toc.findall('*[@' + k + '="' + ntiid + '"]')));

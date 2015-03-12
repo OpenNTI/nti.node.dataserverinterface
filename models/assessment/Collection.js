@@ -32,12 +32,12 @@ export default class Collection extends Base {
 
 		this.tables = tables;
 
-		var a =	this.visibleAssignments = {};
+		let a =	this.visibleAssignments = {};
 		for(let key of Object.keys(assignments)) {
 			process(assignments[key], key, a);
 		}
 
-		var b = this.notAssignments = {};
+		let b = this.notAssignments = {};
 		for(let key of Object.keys(assessments)) {
 			process(assessments[key], key, b);
 		}
@@ -61,7 +61,7 @@ export default class Collection extends Base {
 
 
 	isAssignment  (outlineNodeID, assessmentId) {
-		var maybe = this.getAssignment(outlineNodeID, assessmentId);
+		let maybe = this.getAssignment(outlineNodeID, assessmentId);
 		if (maybe) {
 			return null;
 		}
@@ -72,7 +72,7 @@ export default class Collection extends Base {
 
 
 	getAssignment (outlineNodeID, assignmentId) {
-		var maybe = this.getAssignments(outlineNodeID);
+		let maybe = this.getAssignments(outlineNodeID);
 		return maybe && find(maybe, assignmentId);
 	}
 }
@@ -87,7 +87,7 @@ function find(list, id) {
 
 
 function nodeToNTIIDs(node) {
-	var id = node.get('ntiid');
+	let id = node.get('ntiid');
 	return (id? [id] : []).concat(
 			node.getchildren().reduce((a, b) =>
 				a.concat(nodeToNTIIDs(b)), []));

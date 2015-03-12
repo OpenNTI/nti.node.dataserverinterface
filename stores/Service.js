@@ -14,7 +14,7 @@ import getLink from '../utils/getlink';
 import joinWithURL from '../utils/urljoin';
 import {isNTIID} from '../utils/ntiids';
 
-var inflight = {};
+let inflight = {};
 
 const Server = Symbol.for('Server');
 const Service = Symbol.for('Service');
@@ -28,7 +28,7 @@ export default class ServiceDocument {
 		this[Server] = server;
 		this[Context] = context;
 
-		var caps = json.CapabilityList || [];
+		let caps = json.CapabilityList || [];
 
 		Object.assign(this, json);
 
@@ -55,7 +55,7 @@ export default class ServiceDocument {
 
 
 	get (url) {
-		var key = typeof url === 'string' ? url : JSON.stringify(url);
+		let key = typeof url === 'string' ? url : JSON.stringify(url);
 
 		if (inflight[key]) {
 			return inflight[key];
@@ -65,7 +65,7 @@ export default class ServiceDocument {
 			delete inflight[key];
 		}
 
-		var p = inflight[key] = this.getServer()._get(url, this[Context]);
+		let p = inflight[key] = this.getServer()._get(url, this[Context]);
 
 		p.then(clean, clean);
 
@@ -94,8 +94,8 @@ export default class ServiceDocument {
 
 
 	hasCookie (cookie) {
-		var c = this[Context];
-		var d = global.document;
+		let c = this[Context];
+		let d = global.document;
 		c = (c && c.headers) || d;
 		c = c && (c.Cookie || c.cookie);
 		c = (c && c.split(/;\W*/)) || [];
@@ -114,10 +114,10 @@ export default class ServiceDocument {
 
 
 	getPageInfo (ntiid) {
-		var key = 'pageinfo-' + ntiid;
-		var cache = this.getDataCache();
-		var cached = cache.get(key);
-		var result;
+		let key = 'pageinfo-' + ntiid;
+		let cache = this.getDataCache();
+		let cached = cache.get(key);
+		let result;
 
 		if (cached) {
 			result = Promise.resolve(cached);
@@ -151,17 +151,17 @@ export default class ServiceDocument {
 	}
 
 	getAppUsername  () {
-		var w = this.getUserWorkspace();
+		let w = this.getUserWorkspace();
 		return w && w.Title;
 	}
 
 
 	getAppUser () {
-		var key = 'appuser';
-		var cache = this.getDataCache();
-		var cached = cache.get(key);
-		var result;
-		var url;
+		let key = 'appuser';
+		let cache = this.getDataCache();
+		let cached = cache.get(key);
+		let result;
+		let url;
 
 		if (cached) {
 			result = Promise.resolve(cached);
@@ -197,10 +197,10 @@ export default class ServiceDocument {
 
 
 	__requestUserResolve (username) {
-		var key = 'user-'+username;
-		var cache = this.getDataCache();
-		var cached = cache.get(key);
-		var result;
+		let key = 'user-'+username;
+		let cache = this.getDataCache();
+		let cached = cache.get(key);
+		let result;
 
 		if (cached) {
 			result = Promise.resolve(cached);
@@ -208,8 +208,8 @@ export default class ServiceDocument {
 		else {
 			result = this.get(this.getResolveUserURL(username))
 				.then(data => {
-					var items = data.Items || [data];
-					var user = items.reduce((user, data) =>
+					let items = data.Items || [data];
+					let user = items.reduce((user, data) =>
 						user || (data.Username === username && data), null);
 
 					cache.set(key, user);
@@ -224,16 +224,16 @@ export default class ServiceDocument {
 
 
 	resolveUser (username) {
-		var key = 'user-respository';
-		var cache = this.getDataCache();
-		var repo = cache.get(key) || {};
+		let key = 'user-respository';
+		let cache = this.getDataCache();
+		let repo = cache.get(key) || {};
 		cache.setVolatile(key, repo);
 
 		if (repo[username]) {
 			return Promise.resolve(repo[username]);
 		}
 
-		var req = repo[username] = this.__requestUserResolve(username);
+		let req = repo[username] = this.__requestUserResolve(username);
 
 		req.then(
 			user=> repo[username] = user,
@@ -244,7 +244,7 @@ export default class ServiceDocument {
 
 
 	getUserWorkspace () {
-		var workspace;
+		let workspace;
 		this.Items.every(function(o) {
 			if (getLink(o, 'ResolveSelf')) {
 				workspace = o;
@@ -257,7 +257,7 @@ export default class ServiceDocument {
 
 
 	getWorkspace (name) {
-		var workspace;
+		let workspace;
 		this.Items.every(function(o) {
 			if (o.Title === name) {
 				workspace = o;
@@ -270,7 +270,7 @@ export default class ServiceDocument {
 
 
 	getCollection (title, workspaceName) {
-		var workspace = workspaceName ?
+		let workspace = workspaceName ?
 					this.getWorkspace(workspaceName) :
 					this.getUserWorkspace(),
 			items = (workspace && workspace.Items) || [],
@@ -288,17 +288,17 @@ export default class ServiceDocument {
 
 
 	ensureAnalyticsSession  () {
-		var workspace = this.getWorkspace('Analytics');
-		var url = getLink(workspace, 'analytics_session');
+		let workspace = this.getWorkspace('Analytics');
+		let url = getLink(workspace, 'analytics_session');
 
 		return this.hasCookie('nti.da_session') ? Promise.resolve() : this.post(url);
 	}
 
 
 	postAnalytics (events) {
-		var workspace = this.getWorkspace('Analytics');
-		var url = getLink(workspace, 'batch_events');
-		var payload = {
+		let workspace = this.getWorkspace('Analytics');
+		let url = getLink(workspace, 'batch_events');
+		let payload = {
 			MimeType: 'application/vnd.nextthought.analytics.batchevents',
 			events: events
 		};
@@ -314,7 +314,7 @@ export default class ServiceDocument {
 	 * @param {String} [title]
 	 */
 	getCollectionFor (mimeType, title) {
-		var result = null,
+		let result = null,
 			items = this.Items || [];
 
 		if (mimeType && typeof mimeType !== 'string') {
@@ -322,7 +322,7 @@ export default class ServiceDocument {
 		}
 
 		items.every(function(workspace) {
-			var items = workspace.Items || [];
+			let items = workspace.Items || [];
 
 			items.every(function(collection) {
 				if (collection.accepts.indexOf(mimeType) > -1) {
@@ -342,8 +342,8 @@ export default class ServiceDocument {
 
 
 	getContainerURL (ntiid) {
-		var base = this.getResolveAppUserURL();
-		var pageURI = encodeURIComponent('Pages('+ntiid+')');
+		let base = this.getResolveAppUserURL();
+		let pageURI = encodeURIComponent('Pages('+ntiid+')');
 
 		return joinWithURL(base, pageURI);
 	}
@@ -375,8 +375,8 @@ export default class ServiceDocument {
 
 
 	getObjectURL (ntiid, field) {
-		var collection = this.getCollection('Objects', 'Global') || {};
-		var parts = [
+		let collection = this.getCollection('Objects', 'Global') || {};
+		let parts = [
 			collection.href || '',
 			encodeURIComponent(ntiid || '')
 		];
@@ -389,7 +389,7 @@ export default class ServiceDocument {
 
 
 	getUserSearchURL (username) {
-		var l = getLink(
+		let l = getLink(
 			(this.getWorkspace('Global') || {}).Links || [],
 			REL_USER_SEARCH);
 
@@ -402,7 +402,7 @@ export default class ServiceDocument {
 
 
 	getUserUnifiedSearchURL () {
-		var l = getLink(
+		let l = getLink(
 			(this.getUserWorkspace() || {}).Links || [],
 			REL_USER_UNIFIED_SEARCH);
 
@@ -420,7 +420,7 @@ export default class ServiceDocument {
 			return this.getObjectURL(username);
 		}
 
-		var l = getLink(
+		let l = getLink(
 			(this.getWorkspace('Global') || {}).Links || [],
 			REL_USER_RESOLVE);
 
@@ -433,7 +433,7 @@ export default class ServiceDocument {
 
 
 	getBulkResolveUserURL () {
-		var l = getLink(
+		let l = getLink(
 			(this.getWorkspace('Global') || {}).Links || [],
 			REL_BULK_USER_RESOLVE);
 

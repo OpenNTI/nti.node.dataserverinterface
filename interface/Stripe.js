@@ -3,7 +3,7 @@
 import ServiceModel from '../stores/Service';
 import getLink from '../utils/getlink';
 
-var _pollInterval = 1000;
+let _pollInterval = 1000;
 
 const Server = Symbol.for('Server');
 const Context = Symbol.for('Context');
@@ -35,7 +35,7 @@ export default class StripeInterface {
 		}
 
 		//TODO: purchasable should be a model... getLink should be never imported outside of Base class for models
-		var link = getLink(purchasable.Links,'price');
+		let link = getLink(purchasable.Links,'price');
 		if (link) {
 			return this.post(link, {
 				purchasableID: purchasable.ID
@@ -52,8 +52,8 @@ export default class StripeInterface {
 			console.error('purchasable needs to be a model');
 		}
 		//TODO: purchasable should be a model... getLink should be never imported outside of Base class for models
-		var link = getLink(purchasable.Links, 'price_purchasable_with_stripe_coupon');
-		var data = {
+		let link = getLink(purchasable.Links, 'price_purchasable_with_stripe_coupon');
+		let data = {
 				purchasableID: purchasable.ID
 			};
 
@@ -82,14 +82,14 @@ export default class StripeInterface {
 	}
 
 	submitPayment (data) {
-		var stripeToken = data.stripeToken.id;
-		var purchasable = data.purchasable;
-		var pricing = data.pricing;
-		var giftInfo = data.giftInfo;
-		var linkRel = giftInfo ? 'gift_stripe_payment' : 'post_stripe_payment';
-		var pollUrl = giftInfo ? '/dataserver2/store/get_gift_purchase_attempt' : '/dataserver2/store/get_purchase_attempt';
-		var paymentUrl = getLink(purchasable.Links, linkRel);
-		var payload = {
+		let stripeToken = data.stripeToken.id;
+		let purchasable = data.purchasable;
+		let pricing = data.pricing;
+		let giftInfo = data.giftInfo;
+		let linkRel = giftInfo ? 'gift_stripe_payment' : 'post_stripe_payment';
+		let pollUrl = giftInfo ? '/dataserver2/store/get_gift_purchase_attempt' : '/dataserver2/store/get_purchase_attempt';
+		let paymentUrl = getLink(purchasable.Links, linkRel);
+		let payload = {
 			PurchasableID: purchasable.ID,
 			token: stripeToken,
 			context: {
@@ -114,7 +114,7 @@ export default class StripeInterface {
 
 		return this.post(paymentUrl, payload)
 			.then(result => {
-				var attempt = result.Items[0];
+				let attempt = result.Items[0];
 
 				return this._pollPurchaseAttempt(attempt.ID, attempt.Creator, pollUrl);
 			});
@@ -122,12 +122,12 @@ export default class StripeInterface {
 
 
 	_pollPurchaseAttempt (purchaseId, creator, pollUrl) {
-		var me = this;
+		let me = this;
 
 		return new Promise((fulfill, reject) => {
 
 			function pollResponse(result) {
-				var attempt = result.Items[0];
+				let attempt = result.Items[0];
 				if(/^Failed|Success$/i.test(attempt.State)) {
 					return fulfill(attempt);
 				}
@@ -138,7 +138,7 @@ export default class StripeInterface {
 
 			function check() {
 				console.warn('URI Encoding purchase id for polling to work with broken server.');
-				var params = '?purchaseId=' + encodeURIComponent(purchaseId);
+				let params = '?purchaseId=' + encodeURIComponent(purchaseId);
 
 				if (creator) {
 					params += '&creator=' + encodeURIComponent(creator);

@@ -78,8 +78,8 @@ function getRelatedWorkProps(node) {
 
 
 function getAssessment(node, fallbackMime, outlineNode) {
-	var ntiid = node.get('target-ntiid');
-	var assignment = outlineNode.getAssignment(ntiid);
+	let ntiid = node.get('target-ntiid');
+	let assignment = outlineNode.getAssignment(ntiid);
 
 	return {
 		MimeType: assignment ? 'application/vnd.nextthought.assignment' : fallbackMime,
@@ -90,7 +90,7 @@ function getAssessment(node, fallbackMime, outlineNode) {
 
 
 function notAThing(node) {
-	var ignored = {
+	let ignored = {
 		'application/vnd.nextthought.ntislidedeck': 1,
 		'application/vnd.nextthought.relatedworkref': 1
 	};
@@ -106,7 +106,7 @@ function getConfigForNode(node, outlineNode) {
 		return;
 	}
 
-	var obj = {
+	let obj = {
 		MimeType: node.get('mimeType') || node.get('type'),
 		NTIID: node.get('ntiid'),
 		visibility: node.get('visibility') || 'everyone',
@@ -114,14 +114,14 @@ function getConfigForNode(node, outlineNode) {
 		section: node.get('section')
 	};
 
-	var parser = MIME_PARSER[obj.MimeType||node.tag] || noOp;
+	let parser = MIME_PARSER[obj.MimeType||node.tag] || noOp;
 
 	return Object.assign(obj, parser(node, obj.MimeType, outlineNode));
 }
 
 
 export default function buildFromToc (element, outlineNode) {
-	var sections = {},
+	let sections = {},
 		items = [];
 
 	for(let node of element.getchildren()) {

@@ -6,7 +6,7 @@ export default class OutlineNodeProgress extends Base{
 	constructor(service, parent, data) {
 		super(service, parent, data);
 
-		var {Items} = this;
+		let {Items} = this;
 		for (let o of Object.keys(Items)) {
 			Items[o] = this[parse](Items[o]);
 		}

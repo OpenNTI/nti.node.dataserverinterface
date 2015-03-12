@@ -19,7 +19,7 @@ export default class AssessedQuestion extends Base {
 
 
 	isCorrect () {
-		var p = this.parts || [],
+		let p = this.parts || [],
 			i = p.length - 1, v;
 
 		for (i; i >= 0; i--) {

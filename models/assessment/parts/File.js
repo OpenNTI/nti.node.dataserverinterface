@@ -5,7 +5,7 @@ import isEmpty from '../../../utils/isempty';
 
 function getRegExp (pattern, regExpFormat) {
 	//TODO: get the RegExp#escape impl form WebApp... (escape is not part of the spec)
-	var o = RegExp.escape(pattern).replace(/\\\*/g, '[^/]+');
+	let o = RegExp.escape(pattern).replace(/\\\*/g, '[^/]+');
 	return new RegExp((regExpFormat || '^{0}$').replace('{0}', o));
 }
 
@@ -16,7 +16,7 @@ export default class File extends Part {
 	}
 
 	isFileAcceptable (file) {
-		var name = this.checkFileExtention(file.name),
+		let name = this.checkFileExtention(file.name),
 			type = this.checkMimeType(file.type),
 			size = this.checkFileSize(file.size),
 			r = this.reasons = [];
@@ -55,7 +55,7 @@ export default class File extends Part {
 
 
 	checkFileSize (size) {
-		var max = this.max_file_size || Infinity;
+		let max = this.max_file_size || Infinity;
 		return size < max && size > 0;
 	}
 

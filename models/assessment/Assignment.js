@@ -34,7 +34,7 @@ export default class Assignment extends Base {
 
 
 	isNonSubmit () {
-		var p = this.parts;
+		let p = this.parts;
 
 		if (this.hasOwnProperty('NoSubmit')) {
 			return this.NoSubmit;
@@ -83,7 +83,7 @@ export default class Assignment extends Base {
 
 	getSubmission () {
 		let model = this.getModel('assessment.assignmentsubmission');
-		var s = model.build(this[Service], {
+		let s = model.build(this[Service], {
 			assignmentId: this.getID(),
 			parts: []
 		});
@@ -105,8 +105,8 @@ export default class Assignment extends Base {
 
 
 	loadHistory () {
-		var service = this[Service];
-		var link = this.getLink('History');
+		let service = this[Service];
+		let link = this.getLink('History');
 
 		if (!link) {
 			return Promise.reject('No Link');
@@ -117,8 +117,8 @@ export default class Assignment extends Base {
 
 
 	loadSavePoint () {
-		var service = this[Service];
-		var link = this.getLink('Savepoint');
+		let service = this[Service];
+		let link = this.getLink('Savepoint');
 
 		if (!link) {
 			return Promise.reject('No Link');
@@ -130,17 +130,17 @@ export default class Assignment extends Base {
 
 
 	postSavePoint (data) {
-		var link = this.getLink('Savepoint');
+		let link = this.getLink('Savepoint');
 		if (!link) {
 			return Promise.resolve({});
 		}
 
-		var last = this[ActiveSavePointPost];
+		let last = this[ActiveSavePointPost];
 		if (last && last.abort) {
 			last.abort();
 		}
 
-		var result = this[ActiveSavePointPost] = this[Service].post(link, data);
+		let result = this[ActiveSavePointPost] = this[Service].post(link, data);
 
 		result.catch(()=>{}).then(()=>{
 			if (result === this[ActiveSavePointPost]) {

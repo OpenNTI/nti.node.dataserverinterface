@@ -5,7 +5,7 @@ import {
 	Parser as parse
 } from '../../CommonSymbols';
 
-var SUBMITTED_TYPE = 'application/vnd.nextthought.assessment.assessedquestionset';
+let SUBMITTED_TYPE = 'application/vnd.nextthought.assessment.assessedquestionset';
 
 export default class QuestionSet extends Base {
 	constructor (service, parent, data) {
@@ -41,7 +41,7 @@ export default class QuestionSet extends Base {
 
 	getSubmission () {
 		let Model = this.getModel('assessment.questionsetsubmission');
-		var s = Model.build(this[Service], {
+		let s = Model.build(this[Service], {
 			questionSetId: this.getID(),
 			ContainerId: this.containerId,
 			CreatorRecordedEffortDuration: null,
@@ -59,7 +59,7 @@ export default class QuestionSet extends Base {
 
 
 	loadPreviousSubmission () {
-		var dataProvider = this.parent('getUserDataLastOfType');
+		let dataProvider = this.parent('getUserDataLastOfType');
 		if (!dataProvider) {
 			return Promise.reject('Nothing to do');
 		}

@@ -20,7 +20,7 @@ export default class BasicEvent {
 	}
 
 	getData () {
-		var k, v, d = {};
+		let k, v, d = {};
 
 		for (k in this) {
 			if (!this.hasOwnProperty(k)) {continue;}

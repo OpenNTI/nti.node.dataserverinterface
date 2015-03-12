@@ -3,8 +3,7 @@ import {
 	Parser as parse
 } from '../../CommonSymbols';
 
-var submission = require('../mixins/Submission');
-
+import Submission from '../mixins/Submission';
 
 export default class AssignmentSubmission extends Base {
 
@@ -13,7 +12,7 @@ export default class AssignmentSubmission extends Base {
 	}
 
 	constructor (service, parent, data) {
-		super(service, parent, data, submission, {
+		super(service, parent, data, Submission, {
 			MimeType: 'application/vnd.nextthought.assessment.assignmentsubmission'
 		});
 

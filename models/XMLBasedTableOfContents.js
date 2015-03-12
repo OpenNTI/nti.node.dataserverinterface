@@ -7,7 +7,7 @@ import forwardFunctions from '../utils/function-forwarding';
 
 function cleanNodes(x, o) {
 	function getParent(e) {
-		var key = 'ntiid',
+		let key = 'ntiid',
 		id = e.get(key);
 
 		if (!id) {
@@ -18,9 +18,9 @@ function cleanNodes(x, o) {
 		return x.find('*[@' + key + '="' + id + '"]/..') || {remove:()=>{}};
 	}
 
-	var hiddenMethod = Symbol.for('ToC:PerformNodeFilter');
+	let hiddenMethod = Symbol.for('ToC:PerformNodeFilter');
 
-	var p = o.parent(hiddenMethod);
+	let p = o.parent(hiddenMethod);
 
 	if (p) {
 		p[hiddenMethod](x, e=>getParent(e).remove(e));
@@ -42,13 +42,13 @@ export default class TableOfContents extends Base {
 
 
 	getVideoIndexRef () {
-		var ref = this.root.find('.//reference[@type="application/vnd.nextthought.videoindex"]');
+		let ref = this.root.find('.//reference[@type="application/vnd.nextthought.videoindex"]');
 		return ref && ref.get('href');
 	}
 
 
 	getNode (id) {
-		var n = this.root,
+		let n = this.root,
 			r = n._root;
 
 		if (r.get('ntiid') === id) {
@@ -66,7 +66,7 @@ export default class TableOfContents extends Base {
 
 
 	getSortPosition (id) {
-		var node = this.getNode(id);
+		let node = this.getNode(id);
 		return (node && node._id) || -1;
 	}
 

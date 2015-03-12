@@ -13,7 +13,7 @@ export default class AssignmentHistoryItem extends Base {
 
 
 	getQuestions () {
-		var submission = this.pendingAssessment || this.Submission;
+		let submission = this.pendingAssessment || this.Submission;
 		return submission ? submission.getQuestions() : [];
 	}
 
@@ -24,13 +24,13 @@ export default class AssignmentHistoryItem extends Base {
 
 
 	isGradeExcused () {
-		var g = this.Grade || false;
+		let g = this.Grade || false;
 		return g && g.isExcused();
 	}
 
 
 	getGradeValue () {
-		var g = this.Grade;
+		let g = this.Grade;
 		return g && g.getValue();
 	}
 

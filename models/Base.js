@@ -21,7 +21,7 @@ import {
 import parseDate from '../utils/parse-date';
 
 
-var CONTENT_VISIBILITY_MAP = {OU: 'OUID'};
+let CONTENT_VISIBILITY_MAP = {OU: 'OUID'};
 
 function dateGetter(key) {
 	const symbol = Symbol.for(`parsedDate:${key}`);
@@ -76,7 +76,7 @@ export default class Base extends EventEmitter {
 
 
 	addToPending (...pending) {
-		var list = this[Pending] = (this[Pending] || []);
+		let list = this[Pending] = (this[Pending] || []);
 
 		list.push(...pending);
 
@@ -85,7 +85,7 @@ export default class Base extends EventEmitter {
 				.then(()=> {
 					//remember JavaScript is not multi-threaded,
 					// this action is effectively atomic... if that ever changes (it won't), this is not thread safe ;)
-					var i = list.indexOf(p);
+					let i = list.indexOf(p);
 					if (i >= 0) {
 						list.splice(i,1);//remove promise from the array
 					}
@@ -126,7 +126,7 @@ export default class Base extends EventEmitter {
 		}
 
 
-		var key;
+		let key;
 		//If the param is:
 		//	1) a string, and
 		//	2) the value at that key on 'this' is an object, and
@@ -141,7 +141,7 @@ export default class Base extends EventEmitter {
 			}
 		}
 
-		var o = raw && doParse(this, raw);
+		let o = raw && doParse(this, raw);
 		if (o && o[Pending]) {
 			this.addToPending(...o[Pending]);
 		}
@@ -157,7 +157,7 @@ export default class Base extends EventEmitter {
 
 
 	getData () {
-		var k, v, d = {};
+		let k, v, d = {};
 
 		for (k in this) {
 			if (!this.hasOwnProperty(k)) {continue;}
@@ -233,7 +233,7 @@ export default class Base extends EventEmitter {
 
 
 	fetchLink (rel) {
-		var link = this.getLink(rel);
+		let link = this.getLink(rel);
 		if (!link) {
 			return Promise.reject('No Link');
 		}
@@ -266,7 +266,7 @@ export default class Base extends EventEmitter {
 	 * @return {Model}
 	 */
 	parent (...query) {
-		var p = this[Parent];
+		let p = this[Parent];
 
 		if (p && (query.length === 0 || p[is](...query))) {
 			return p;
@@ -287,8 +287,8 @@ export default class Base extends EventEmitter {
 	 * @return {Model[]}
 	 */
 	parents (...query) {
-		var matches = [];
-		var p = this[Parent];
+		let matches = [];
+		let p = this[Parent];
 
 		if (p && p.parents) {
 
@@ -325,13 +325,13 @@ export default class Base extends EventEmitter {
 
 	hasVisibility (el, status) {
 		function getProp(p) {
-			var fn = ['getAttribute', 'get']
+			let fn = ['getAttribute', 'get']
 				.reduce(function(f, n) { return f || el[n] && n; }, 0);
 			return (fn && el[fn](p)) || el[p];
 		}
 
 
-		var u = this[Service].getAppUserSync() || {},
+		let u = this[Service].getAppUserSync() || {},
 			visibilityKey = getProp('visibility'),
 			attr = CONTENT_VISIBILITY_MAP[visibilityKey] || visibilityKey;
 

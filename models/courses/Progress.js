@@ -37,7 +37,7 @@ export default class Progress extends Base{
 
 
 	hasProgress () {
-		var data = this[HIDDEN];
+		let data = this[HIDDEN];
 		return data.HasProgress;
 	}
 

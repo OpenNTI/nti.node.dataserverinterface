@@ -22,7 +22,7 @@ export default class AssessedPart extends Base {
 
 
 	isCorrect () {
-		var a = this.assessedValue;
+		let a = this.assessedValue;
 		//true, false, or null (if the assessedValue is not a number, return null)
 		return typeof a === 'number' ? a === 1 : null;
 	}
