@@ -18,11 +18,7 @@ export default class UserData extends EventEmitter {
 		let bin = (bin, item) =>
 			(this.Items[bin] = (this.Items[bin] || [])).push(item);
 
-		let load = service.get(source);
-
-		pending.push(load);
-
-		load.then(data=> {
+		let load = service.get(source).then(data=> {
 			this.loading = false;
 			Object.assign(this, data);
 
@@ -36,6 +32,7 @@ export default class UserData extends EventEmitter {
 			this.emit('load');
 		});
 
+		pending.push(load);
 
 		this.on('load', ()=>console.log('Load: %o',this));
 	}
