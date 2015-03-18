@@ -14,6 +14,8 @@ import getLink from '../utils/getlink';
 import NTIIDs from '../utils/ntiids';
 import waitFor from '../utils/waitfor';
 
+import chain from '../utils/function-chain';
+
 import Service from '../stores/Service';
 
 import {Pending, SiteName} from '../CommonSymbols';
@@ -112,6 +114,20 @@ export default class DataServerInterface {
 		result = new Promise((fulfill, reject) => {
 			if(!isBrowser) {
 				logger.info('REQUEST <- %s %s', opts.method, url);
+			}
+
+			if (context && context.dead) {
+				return reject('request/connection aborted');
+			}
+
+			if (context && context.on) {
+				let abort = ()=> abortMethod();
+				let n = ()=> context.removeListener('abort', abort);
+
+				fulfill = chain(fulfill, n);
+				reject = chain(reject, n);
+
+				context.on('abort', abort);
 			}
 
 			let active = request(opts, (error, res, body) => {
