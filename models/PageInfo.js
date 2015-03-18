@@ -36,10 +36,9 @@ export default class PageInfo extends Base {
 	}
 
 	getContent () {
-		let url = this.getLink('content');
 		let root = this.getContentRoot();
 
-		return this[Service].get(url)
+		return this.fetchLink('content')
 			.then(html=>fixRefs(html, root));
 	}
 
