@@ -95,7 +95,7 @@ export default class Base extends EventEmitter {
 
 		list.push(...pending);
 
-		pending.forEach(p=>{
+		for (let p of pending) {
 			p.catch(noop)//prevent failures from interupting our cleanup
 				.then(()=> {
 					//remember JavaScript is not multi-threaded,
@@ -105,7 +105,7 @@ export default class Base extends EventEmitter {
 						list.splice(i,1);//remove promise from the array
 					}
 			});
-		});
+		}
 	}
 
 
