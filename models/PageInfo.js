@@ -4,12 +4,15 @@ import path from 'path';
 
 import QueryString from 'query-string';
 
-import {REL_USER_GENERATED_DATA} from '../constants';
+import {REL_USER_GENERATED_DATA, REL_RELEVANT_USER_GENERATED_DATA} from '../constants';
 
 import fixRefs from '../utils/rebase-references';
 
-import {Service, Parser as parse} from '../CommonSymbols';
+import {Service, Pending, Parser as parse} from '../CommonSymbols';
 
+import UserDataStore from '../stores/UserData';
+
+const UserData = Symbol('UserData');
 
 export default class PageInfo extends Base {
 	constructor (service, data) {
@@ -89,6 +92,22 @@ export default class PageInfo extends Base {
 
 		return this.getResource(url.format())
 			.then(objects=>this[parse](objects.Items[0]));
+	}
+
+
+	getUserData () {
+		let store = this[UserData];
+
+		if (!store) {
+			store = this[UserData] = new UserDataStore(
+				this[Service],
+				this.getLink(REL_RELEVANT_USER_GENERATED_DATA)
+			);
+
+			this.addToPending(...store[Pending]);
+		}
+
+		return Promise.resolve(store);//in the future, this may need to be async...
 	}
 }
 
