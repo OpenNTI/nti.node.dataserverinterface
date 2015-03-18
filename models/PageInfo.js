@@ -101,6 +101,7 @@ export default class PageInfo extends Base {
 		if (!store) {
 			store = this[UserData] = new UserDataStore(
 				this[Service],
+				this.getID(),
 				this.getLink(REL_RELEVANT_USER_GENERATED_DATA)
 			);
 
