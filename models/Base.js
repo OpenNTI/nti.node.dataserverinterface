@@ -33,6 +33,21 @@ function dateGetter(key) {
 	};
 }
 
+function doParse(parent, data) {
+	let service = parent[Service];
+
+	try {
+		return data && parse(service, parent, data);
+	} catch (e) {
+		let m = e;
+		if (e.NoParser) {
+			m = e.message;
+		}
+		console.warn(m.stack || m.message || m);
+		return data;
+	}
+}
+
 const PASCAL_CASE_REGEX = /(?:^|[^a-z0-9])([a-z0-9])?/igm;
 
 const is = Symbol('isTest');
@@ -105,21 +120,6 @@ export default class Base extends EventEmitter {
 
 
 	[Parser] (raw) {
-
-		function doParse(parent, data) {
-			let service = parent[Service];
-
-			try {
-				return data && parse(service, parent, data);
-			} catch (e) {
-				let m = e;
-				if (e.NoParser) {
-					m = e.message;
-				}
-				console.warn(m.stack || m.message || m);
-				return data;
-			}
-		}
 
 		if (raw === this) {
 		 	throw new Error('Migration failure: something is calling parse with `this` as the first argument.');
