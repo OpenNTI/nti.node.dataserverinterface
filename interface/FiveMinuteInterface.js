@@ -8,8 +8,7 @@
 
 import ServiceModel from '../stores/Service';
 
-const Server = Symbol.for('Server');
-const Context = Symbol.for('Context');
+import {Context, Server} from '../CommonSymbols';
 
 export default class FiveMinuteInterface {
 	static fromService (service) {

@@ -6,8 +6,7 @@ import waitFor from '../utils/waitfor';
 
 import {parseListFn} from './Library';
 
-const Service = Symbol.for('Service');
-const Pending = Symbol.for('PendingRequests');
+import {Service, Pending} from '../CommonSymbols';
 
 export default class Catalog extends EventEmitter {
 	static load (service, reload) {

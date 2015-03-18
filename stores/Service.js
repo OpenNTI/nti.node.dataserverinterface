@@ -16,10 +16,8 @@ import {isNTIID} from '../utils/ntiids';
 
 let inflight = {};
 
-const Server = Symbol.for('Server');
-const Service = Symbol.for('Service');
-const Context = Symbol.for('Context');
-const Pending = Symbol.for('PendingRequests');
+import {Context, Server, Service, Pending} from '../CommonSymbols';
+
 const AppUser = Symbol('LoggedInUser');
 
 export default class ServiceDocument {

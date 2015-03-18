@@ -1,6 +1,5 @@
-import {Parser as parse} from '../../CommonSymbols';
+import {Service, Parser as parse} from '../../CommonSymbols';
 
-const Service = Symbol.for('Service');
 const Submitted = Symbol('Submitted');
 
 export default {

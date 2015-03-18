@@ -6,8 +6,7 @@ import unique from '../utils/array-unique';
 
 import {parse} from '../models/Parser';
 
-const Pending = Symbol.for('PendingRequests');
-const Service = Symbol.for('Service');
+import {Service, Pending} from '../CommonSymbols';
 
 let instances = {};
 

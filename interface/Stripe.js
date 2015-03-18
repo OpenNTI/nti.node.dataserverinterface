@@ -5,8 +5,7 @@ import getLink from '../utils/getlink';
 
 let _pollInterval = 1000;
 
-const Server = Symbol.for('Server');
-const Context = Symbol.for('Context');
+import {Context, Server} from '../CommonSymbols';
 
 export default class StripeInterface {
 	static fromService (service) {

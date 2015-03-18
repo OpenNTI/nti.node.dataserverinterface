@@ -1,3 +1,4 @@
+import {Service} from '../CommonSymbols';
 
 const CAPABILITIES = {
 	canUploadAvatar: 'nti.platform.customization.avatar_upload',
@@ -37,7 +38,6 @@ const CAPABILITIES = {
 };
 
 
-const Service = Symbol.for('Service');
 const list = Symbol('lsit');
 
 export default class Capabilities{

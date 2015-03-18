@@ -1,8 +1,7 @@
 import QueryString from 'query-string';
 
-import {Parser as parse} from '../../CommonSymbols';
+import {Service, Parser as parse} from '../../CommonSymbols';
 
-const Service = Symbol.for('Service');
 
 export default {
 	getContents (params) {
