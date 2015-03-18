@@ -167,8 +167,7 @@ export default class DataServerInterface {
 				fulfill(body);
 			});
 
-
-			abortMethod = ()=> active.abort();
+			abortMethod = ()=>{ active.abort(); reject('aborted'); };
 		});
 
 		result.abort = abortMethod || ()=> logger.info('Attempting to abourt request, but missing abort() method.');
