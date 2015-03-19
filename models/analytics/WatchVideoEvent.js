@@ -3,18 +3,19 @@ import {WATCH_VIDEO} from './MimeTypes';
 
 export default class WatchVideoEvent extends BasicEvent {
 
-	constructor (resourceId, rootContextId, context, duration, startTime, endTime, maxDuration, hasTranscript) {
-		super(null, duration);
+	constructor (resourceId, rootContextId, context, startTime, maxDuration, hasTranscript) {
+		super(WATCH_VIDEO, null, rootContextId, startTime);
 		Object.assign(this, {
-			MimeType: WATCH_VIDEO,
 			MaxDuration: maxDuration,
-			type: 'video-watch',
 			resource_id: resourceId,
-			RootContextID: rootContextId,
 			context_path: context,
-			video_start_time: startTime,//the server is expecting seconds
-			video_end_time: endTime, //the server is expecting seconds
+			video_start_time: startTime / 1000, // the server is expecting seconds
 			with_transcript: !!hasTranscript
 		});
+	}
+
+	finish (endTime = Date.now()) {
+		super.finish(endTime);
+		this.video_end_time = endTime / 1000;
 	}
 }
