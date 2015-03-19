@@ -3,10 +3,11 @@ import {EventEmitter} from 'events';
 import {parse, getModelByType} from './Parser';
 
 import getLink from '../utils/getlink';
-import isFunction from '../utils/isfunction';
 import mixin from '../utils/mixin';
 import noop from '../utils/empty-function';
 import waitFor from '../utils/waitfor';
+
+import JSONValue from './mixins/JSONValue';
 
 import {
 	Parent,
@@ -64,12 +65,11 @@ export default class Base extends EventEmitter {
 			Object.assign(this, data);
 		}
 
+		mixin(this, JSONValue);
+
 		// mixin
 		for (let partial of mixins) {
-			mixin(this, partial);
-			if (partial.constructor) {
-				partial.constructor.call(this, data);
-			}
+			mixin(this, partial, data);
 		}
 
 		for (let fieldName of dateFields) {
@@ -153,26 +153,6 @@ export default class Base extends EventEmitter {
 			}
 		}
 		return o;
-	}
-
-
-	getData () {
-		let k, v, d = {};
-
-		for (k in this) {
-			if (!this.hasOwnProperty(k)) {continue;}
-			v = this[k];
-			if (v !== void undefined && !isFunction(v)) {
-
-				if (v && isFunction(v.getData)) {
-					v = v.getData();
-				}
-
-				d[k] = v;
-			}
-		}
-
-		return d;
 	}
 
 

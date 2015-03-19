@@ -38,6 +38,8 @@
         "it",
         "spyOn",
         "jasmine",
-        "spyOnConstructor"
+        "spyOnConstructor",
+        "xdescribe",
+        "xit"
     ]
 }
