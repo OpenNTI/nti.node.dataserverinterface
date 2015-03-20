@@ -16,6 +16,8 @@ export default class WatchVideoEvent extends BasicEvent {
 
 	finish (videoEndTime, eventEndTime = Date.now()) {
 		super.finish(eventEndTime);
-		this.video_end_time = videoEndTime;
+		// if this event is being halted (analytics store can do this on beforeunload, etc.)
+		// we won't have a videoEndTime. best-guess it based on the duration (time_length) of this event.
+		this.video_end_time = videoEndTime || this.video_start_time + this.time_length;
 	}
 }
