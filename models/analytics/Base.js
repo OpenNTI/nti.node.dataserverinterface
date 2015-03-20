@@ -20,7 +20,6 @@ export default class BasicEvent {
 			console.warn('Unrecognized MimeType for analytics event: \'%s\'', mimeType);
 		}
 
-		// symbols are non-iterable; not included in getData's output.
 		this[_startTime] = startTime;
 		this[_finished] = false;
 		this[_minDuration] = minimumDurationSeconds;
@@ -30,14 +29,13 @@ export default class BasicEvent {
 			MimeType: mimeType || MimeTypes.UNKNOWN_TYPE,
 			RootContextID,
 			course: courseId,
-			timestamp: null,
-			[_startTime]: _startTime
+			timestamp: null
 		});
 
 	}
 
 	get id() {
-		return this._id;
+		return this[_id];
 	}
 
 	get finished() {
@@ -51,6 +49,10 @@ export default class BasicEvent {
 		this.time_length = durationSeconds(this[_startTime], endTime);
 		this.timestamp = endTime / 1000; // the server is expecting seconds
 		this[_finished] = true;
+	}
+
+	get startTime() {
+		return this[_startTime];
 	}
 
 	setContextPath (path) {
