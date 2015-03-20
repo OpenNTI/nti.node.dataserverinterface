@@ -6,6 +6,7 @@ const _startTime = Symbol('_startTime');
 const _finished = Symbol('_finished');
 const _minDuration = Symbol('_minDuration');
 const _id = Symbol('_id');
+const _halted = Symbol('_halted');
 
 function durationSeconds(startTime = Date.now(), endTime = Date.now()) {
 	return (endTime - startTime) / 1000;
@@ -24,6 +25,7 @@ export default class BasicEvent {
 		this[_finished] = false;
 		this[_minDuration] = minimumDurationSeconds;
 		this[_id] = guid();
+		this[_halted] = false;
 
 		Object.assign(this, {
 			MimeType: mimeType || MimeTypes.UNKNOWN_TYPE,
@@ -40,6 +42,11 @@ export default class BasicEvent {
 
 	get finished() {
 		return this[_finished];
+	}
+
+	halt() {
+		this[_halted] = true;
+		this.finish();
 	}
 
 	finish (endTime = Date.now()) {
