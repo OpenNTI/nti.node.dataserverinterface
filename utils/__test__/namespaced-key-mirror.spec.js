@@ -1,49 +1,47 @@
-'use strict';
+import nsKeyMirror from '../namespaced-key-mirror';
 
-var nsKeyMirror = require('utils/namespaced-key-mirror');
+describe('namespaced-key-mirror', ()=> {
 
-describe('namespaced-key-mirror', function () {
-
-	var input = {
+	let input = {
 		key1: null,
 		key2: null
 	};
 
-	var namespace = 'test';
+	let namespace = 'test';
 
-	it('should return an object with values equal to namespace:key', function () {
-		var expectedOutput = {
+	it('should return an object with values equal to namespace:key', ()=>{
+		let expectedOutput = {
 			key1: 'test:key1',
 			key2: 'test:key2'
 		};
 		expect(nsKeyMirror(namespace, input)).toEqual(expectedOutput);
 	});
 
-	it('should return keys equal to values if no namespace is given', function() {
-		var expectedOutput = {
+	it('should return keys equal to values if no namespace is given', ()=>{
+		let expectedOutput = {
 			key1: 'key1',
 			key2: 'key2'
 		};
 		expect(nsKeyMirror(null, input)).toEqual(expectedOutput);
 	});
 
-	it('should use the specified separator', function() {
+	it('should use the specified separator', ()=>{
 
-		var separator = '-';
+		let separator = '-';
 
-		var expectedOutput = {
+		let expectedOutput = {
 			key1: 'test-key1',
 			key2: 'test-key2'
 		};
-		
+
 		expect(nsKeyMirror(namespace, input, separator)).toEqual(expectedOutput);
 	});
 
-	it('should throw if handed a non-string namespace', function() {
+	it('should throw if handed a non-string namespace', ()=>{
 		expect(nsKeyMirror.bind(null,input)).toThrow();
 	});
 
-	it('should throw if handed a non-object', function() {
+	it('should throw if handed a non-object', ()=>{
 		expect(nsKeyMirror.bind(null, namespace, 'bad input')).toThrow();
 	});
 

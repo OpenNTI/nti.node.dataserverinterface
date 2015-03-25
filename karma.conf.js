@@ -27,11 +27,12 @@ module.exports = function (config) {
 		frameworks: ['jasmine'],
 
 		files: [
-			'tests/**/*',
+			'test/**/*',
 			'**/__test__/*.js'
 		],
 
 		preprocessors: {
+			'test/**/*': ['webpack'],
 			'**/__test__/*.js': ['webpack', 'sourcemap']
 		},
 

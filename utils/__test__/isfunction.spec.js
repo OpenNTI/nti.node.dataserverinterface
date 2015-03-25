@@ -1,12 +1,11 @@
-'use strict';
+import isFunction from '../isfunction';
 
-var isFunction = require('utils/isfunction');
+describe('isFunction', ()=> {
 
-describe('isFunction', function () {
-
-	it('should identify a function', function () {
+	it('should identify a function', ()=> {
 		expect(isFunction).toBeDefined();
 
+		expect(isFunction(()=>{})).toBeTruthy();
 		expect(isFunction(function(){})).toBeTruthy();
 
 		expect(isFunction()).toBeFalsy();

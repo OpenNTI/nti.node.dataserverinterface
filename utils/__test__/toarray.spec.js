@@ -1,16 +1,14 @@
-'use strict';
+import toArray from '../toarray';
 
-var toArray = require('utils/toarray');
+describe('toArray', ()=> {
+	let abc = ['a', 'b', 'c'];
+	let empty3 = new Array(3);
+	let empty = [];
 
-describe('toArray', function () {
-	var abc = ['a', 'b', 'c'];
-	var empty3 = new Array(3);
-	var empty = [];
+	let a = {0: 'a', 1: 'b', 2: 'c', length: 3};
+	let b = {length: 3};
 
-	var a = {0: 'a', 1: 'b', 2: 'c', length: 3};
-	var b = {length: 3};
-
-	it('should convert object with length to array of length', function () {
+	it('should convert object with length to array of length', ()=> {
 		expect(toArray(a)).toEqual(abc);
 		expect(toArray(b)).toEqual(empty3);
 
@@ -19,7 +17,7 @@ describe('toArray', function () {
 	});
 
 
-	it('should return [] for invalid input', function () {
+	it('should return [] for invalid input', ()=> {
 		expect(toArray(1)).toEqual(empty);
 		expect(toArray(true)).toEqual(empty);
 		expect(toArray(false)).toEqual(empty);

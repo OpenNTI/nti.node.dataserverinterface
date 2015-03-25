@@ -1,10 +1,8 @@
-'use strict';
+import between from '../between';
 
-var between = require('utils/between');
+describe('between', () => {
 
-describe('between', function () {
-
-	it('should not throw errors with odd input', function () {
+	it('should not throw errors with odd input', () => {
 
 		expect(between(0)).toBe(false);
 		expect(between('0')).toBe(false);
@@ -17,7 +15,7 @@ describe('between', function () {
 
 	});
 
-	it('should correctly work with numbers', function () {
+	it('should correctly work with numbers', () => {
 
 		expect(between(0, -1, 1)).toBe(true);
 		expect(between(0, -1, 1, false)).toBe(true);

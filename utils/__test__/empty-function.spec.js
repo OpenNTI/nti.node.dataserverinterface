@@ -1,29 +1,27 @@
-'use strict';
+import isFunction from '../isfunction';
 
-var isFunction = require('utils/isfunction');
+import emptyFunction from '../empty-function';
+import emptyFunction2 from '../empty-function';
 
-var emptyFunction = require('utils/empty-function');
-var emptyFunction2 = require('utils/empty-function');
+describe('empty function', ()=> {
 
-describe('empty function', function () {
-
-	it('should be a function', function () {
+	it('should be a function', ()=> {
 		expect(emptyFunction).toBeDefined();
 		expect(isFunction(emptyFunction)).toBeTruthy();
 	});
 
-	it('should be a singleton', function () {
+	it('should be a singleton', ()=> {
 		expect(emptyFunction).toBe(emptyFunction2);
 	});
 
-	it('should be frozen', function() {
+	it('should be frozen', ()=> {
 		expect(Object.isFrozen(emptyFunction)).toBeTruthy();
 	});
 
-	it('should be empty', function() {
-		var source = emptyFunction.toString();
-		var regex = /^function[^{]*\{(.*)\}\s*$/;
-		var body = regex.exec(source);
+	it('should be empty', ()=> {
+		let source = emptyFunction.toString();
+		let regex = /^function[^{]*\{(.*)\}\s*$/;
+		let body = regex.exec(source);
 
 		expect(body).toBeTruthy();
 		expect(emptyFunction.length).toBe(0);
