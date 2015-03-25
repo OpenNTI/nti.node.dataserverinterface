@@ -1,10 +1,9 @@
-'use strict';
 
-module.exports = function withValue(value, enumerable) {
+export default function withValue(value, enumerable = false, writable = false) {
 	return value && {
-		enumerable: enumerable || false,
-		writable: false,
+		enumerable,
+		writable,
 		configurable: true,
 		value: value
 	};
-};
+}
