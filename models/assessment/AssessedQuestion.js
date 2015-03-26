@@ -17,6 +17,11 @@ export default class AssessedQuestion extends Base {
 		return this.questionId || this.NTIID;
 	}
 
+	
+	isSubmitted () {
+		return true;
+	}
+
 
 	isCorrect () {
 		let p = this.parts || [],

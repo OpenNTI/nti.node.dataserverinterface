@@ -286,6 +286,7 @@ export default class Base extends EventEmitter {
 		this[Parent] = newParent;
 	}
 
+
 	[is] (attributeQuery, attributeQueryValue) {
 		if (attributeQueryValue === undefined) {
 			if (attributeQuery.test) {
