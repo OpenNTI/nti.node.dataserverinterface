@@ -36,6 +36,20 @@ export default class BasicEvent {
 
 	}
 
+	static halt(event) {
+		event[_halted] = true;
+		this.finish(event);
+	}
+
+	static finish(event, endTime = Date.now()) {
+		if (event.finished) {
+			console.warn('finish invoked on an already-finished analytics event. %O', event);
+		}
+		event.time_length = durationSeconds(event[_startTime], endTime);
+		event.timestamp = endTime / 1000; // the server is expecting seconds
+		event[_finished] = true;
+	}
+
 	get id() {
 		return this[_id];
 	}
@@ -45,17 +59,11 @@ export default class BasicEvent {
 	}
 
 	halt() {
-		this[_halted] = true;
-		this.finish();
+		this.constructor.halt(this);
 	}
 
 	finish (endTime = Date.now()) {
-		if (this.finished) {
-			console.warn('finish invoked on an already-finished analytics event. %O', this);
-		}
-		this.time_length = durationSeconds(this[_startTime], endTime);
-		this.timestamp = endTime / 1000; // the server is expecting seconds
-		this[_finished] = true;
+		this.constructor.finish(this, endTime);
 	}
 
 	get startTime() {
